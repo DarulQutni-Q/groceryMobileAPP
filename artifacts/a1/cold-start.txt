@@ -1,0 +1,6 @@
+PASS: native login on a normal dev APK reached Home.
+PASS: Android process force-stopped and reopened without clearing data; saved session restored.
+PASS: after the final UI update, normal dev APK reinstalled with data retained, force-stopped and reopened.
+PASS: final Home displayed the expected store without login after splash completed.
+Device: emulator-5554
+Date: 2026-10-20

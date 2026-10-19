@@ -1,0 +1,12 @@
+PASS GET /health: 200
+PASS POST /auth/register: 200
+PASS POST /auth/register: 400
+PASS POST /auth/register: 422
+PASS POST /auth/login: 401
+PASS GET /auth/me: 401
+PASS GET /auth/me: 200
+PASS POST /auth/login: 200
+PASS POST /auth/refresh: 200
+PASS PATCH /auth/fcm-token: 200
+PASS POST /auth/google: 503
+PASS acceptance curl: no credentials printed
