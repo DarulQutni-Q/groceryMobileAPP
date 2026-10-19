@@ -27,12 +27,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) => AuthLayout(
-    title: _step == 4 ? null : ['Akun', 'Info Toko', 'Pengiriman'][_step - 1],
+    title: _step == 4 ? null : 'Daftar Toko',
     onBack: () => _step == 1 ? widget.onBack() : setState(() => _step--),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (_step < 4) _progress(),
+        if (_step < 4) _stepTitle(),
         if (_step == 1)
           AccountForm(
             register: true,
@@ -45,24 +45,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     ),
   );
 
-  Widget _progress() => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 16),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        for (var i = 1; i <= 3; i++)
-          Column(
-            children: [
-              CircleAvatar(
-                radius: 17,
-                backgroundColor: i <= _step ? sellerPrimary : sellerInput,
-                child: Text('$i', style: const TextStyle(color: sellerInk)),
-              ),
-              const SizedBox(height: 6),
-              Text(['Akun', 'Info Toko', 'Pengiriman'][i - 1]),
-            ],
-          ),
-      ],
+  Widget _stepTitle() => Padding(
+    padding: const EdgeInsets.only(left: 48, bottom: 18),
+    child: Text(
+      ['Akun', 'Info Toko', 'Pengiriman'][_step - 1],
+      style: const TextStyle(fontSize: 18, color: Colors.black),
     ),
   );
 
@@ -72,8 +59,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       const SizedBox(height: 20),
       const ReferenceArtwork(
         asset: 'store-info.png',
-        rect: Rect.fromLTWH(188, 144, 164, 86),
-        width: 220,
+        rect: Rect.fromLTWH(188, 147, 164, 83),
+        width: 164,
         semanticLabel: 'Maskot kardus toko',
       ),
       const SizedBox(height: 32),
@@ -124,7 +111,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             _deliveryCard(
               'Instant',
               'Antar 1 jam setelah bayar, min. belanja Rp 25rb',
-              Icons.bolt,
+              Icons.inventory_2_outlined,
             ),
             _deliveryCard(
               'Kurir Marketplace',
@@ -166,7 +153,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   );
 
   Widget _deliveryCard(String title, String subtitle, IconData icon) =>
-      Card.filled(
+      Card.outlined(
         color: sellerInput,
         margin: const EdgeInsets.only(bottom: 14),
         child: RadioListTile<String>(
@@ -176,7 +163,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           subtitle: Text(subtitle),
-          secondary: Icon(icon),
+          controlAffinity: ListTileControlAffinity.trailing,
+          secondary: Icon(icon, size: 36, color: Colors.black),
         ),
       );
 
@@ -210,21 +198,42 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           style: TextStyle(fontSize: 18),
         ),
         const SizedBox(height: 30),
-        Card.filled(
-          color: sellerInput,
+        Card.outlined(
+          color: Colors.white,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                Text(
-                  user?.namaToko ?? 'Toko',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                  ),
+                Row(
+                  children: [
+                    const Text('Toko', style: TextStyle(fontSize: 18)),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        user?.namaToko ?? 'Toko',
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
-                Text(_shipping),
+                Row(
+                  children: [
+                    const Text('Pengiriman', style: TextStyle(fontSize: 18)),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        _shipping,
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

@@ -15,28 +15,18 @@ class AuthLayout extends StatelessWidget {
     body: Stack(
       children: [
         const Positioned(
-          top: -220,
+          top: -268,
           right: -160,
           width: 700,
           height: 380,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Color(0xFFE3E6D1),
-              shape: BoxShape.circle,
-            ),
-          ),
+          child: ClipOval(child: ColoredBox(color: Color(0xFFE3E6D1))),
         ),
         const Positioned(
-          bottom: -310,
+          bottom: -430,
           left: -200,
           width: 850,
           height: 520,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Color(0xFFF3F6E3),
-              shape: BoxShape.circle,
-            ),
-          ),
+          child: ClipOval(child: ColoredBox(color: Color(0xFFF3F6E3))),
         ),
         SafeArea(
           child: Align(
