@@ -1,0 +1,11 @@
+fastapi>=0.115,<1
+uvicorn>=0.34,<1
+sqlalchemy>=2.0,<3
+psycopg2-binary>=2.9,<3
+pydantic[email]>=2.10,<3
+pydantic-settings>=2.7,<3
+python-jose[cryptography]>=3.4,<4
+bcrypt>=4.2,<6
+alembic>=1.14,<2
+google-auth[requests]>=2.38,<3
+limits[redis]>=5,<6

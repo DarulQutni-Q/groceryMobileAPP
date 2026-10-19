@@ -1,0 +1,37 @@
+name: grocery-a1
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: grocery
+      POSTGRES_DB: grocery
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Isi POSTGRES_PASSWORD}
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U grocery -d grocery"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg2://grocery:${POSTGRES_PASSWORD:?Isi POSTGRES_PASSWORD}@db:5432/grocery
+      JWT_SECRET: ${JWT_SECRET:?Isi JWT_SECRET}
+      CORS_ORIGINS: ${CORS_ORIGINS:-[]}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      RATE_LIMIT_STORAGE_URI: ${RATE_LIMIT_STORAGE_URI:-memory://}
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+volumes:
+  postgres_data:
