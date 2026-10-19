@@ -35,11 +35,15 @@ void main() {
   late SecureStorage storage;
   var failWrite = false;
   var failDelete = false;
+  Completer<void>? deletePause;
+  Completer<void>? deleteStarted;
 
   setUp(() {
     saved = {};
     failWrite = false;
     failDelete = false;
+    deletePause = null;
+    deleteStarted = null;
     storage = SecureStorage();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
@@ -54,6 +58,8 @@ void main() {
               saved[key!] = args['value'] as String;
             }
             if (call.method == 'delete') {
+              deleteStarted?.complete();
+              if (deletePause != null) await deletePause!.future;
               if (failDelete) {
                 throw PlatformException(code: 'keystore-unavailable');
               }
@@ -101,20 +107,66 @@ void main() {
     await storage.saveSession('old-access', 'old-refresh');
     var refreshCount = 0;
     final dio = Dio(BaseOptions(baseUrl: 'https://api.example.com'));
-    dio.httpClientAdapter = TestAdapter((request) async =>
-      request.headers['Authorization'] == 'Bearer renewed'
-          ? jsonBody({}, 200) : jsonBody({}, 401));
+    dio.httpClientAdapter = TestAdapter(
+      (request) async => request.headers['Authorization'] == 'Bearer renewed'
+          ? jsonBody({}, 200)
+          : jsonBody({}, 401),
+    );
     final refresh = Dio(BaseOptions(baseUrl: dio.options.baseUrl));
     refresh.httpClientAdapter = TestAdapter((_) async {
       refreshCount++;
       await Future<void>.delayed(const Duration(milliseconds: 20));
-      return jsonBody({'access_token': 'renewed', 'refresh_token': 'next-refresh'}, 200);
+      return jsonBody({
+        'access_token': 'renewed',
+        'refresh_token': 'next-refresh',
+      }, 200);
     });
-    final api = ApiClient(baseUrl: dio.options.baseUrl, storage: storage, dio: dio, refreshDio: refresh);
-    final results = await Future.wait(List.generate(5, (_) => api.dio.get<dynamic>('/auth/me')));
+    final api = ApiClient(
+      baseUrl: dio.options.baseUrl,
+      storage: storage,
+      dio: dio,
+      refreshDio: refresh,
+    );
+    final results = await Future.wait(
+      List.generate(5, (_) => api.dio.get<dynamic>('/auth/me')),
+    );
     expect(results.every((response) => response.statusCode == 200), isTrue);
     expect(refreshCount, 1);
   });
+
+  test(
+    'expired cleanup does not cancel a newer login during slow deletion',
+    () async {
+      await storage.saveSession('old-access', 'old-refresh');
+      deletePause = Completer<void>();
+      deleteStarted = Completer<void>();
+      var expired = 0;
+      final dio = Dio(BaseOptions(baseUrl: 'https://api.example.com'));
+      dio.httpClientAdapter = TestAdapter((_) async => jsonBody({}, 401));
+      final refresh = Dio(BaseOptions(baseUrl: dio.options.baseUrl));
+      refresh.httpClientAdapter = TestAdapter((_) async => jsonBody({}, 401));
+      final api = ApiClient(
+        baseUrl: dio.options.baseUrl,
+        storage: storage,
+        dio: dio,
+        refreshDio: refresh,
+        onSessionExpired: () => expired++,
+      );
+      final request = expectLater(
+        api.dio.get<dynamic>('/auth/me'),
+        throwsA(isA<DioException>()),
+      );
+      await deleteStarted!.future;
+      final login = storage.saveSession(
+        'new-account-access',
+        'new-account-refresh',
+      );
+      deletePause!.complete();
+      await Future.wait([request, login]);
+      expect(expired, 0);
+      expect(await storage.readAccessToken(), 'new-account-access');
+    },
+  );
 
   test('storage can retry after a failed write', () async {
     failWrite = true;

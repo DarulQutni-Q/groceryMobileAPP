@@ -194,6 +194,71 @@ def test_fcm_and_password_are_persisted_safely(client, account, tmp_path):
     assert fcm == "token-uji"
 
 
+def test_verified_google_creates_seller_and_reuses_stable_subject(client, monkeypatch):
+    client.app.state.settings.google_client_id = "configured-client-id"
+    claims = {
+        "sub": "stable-google-subject",
+        "email": "google@example.com",
+        "email_verified": True,
+        "name": "Pemilik Google",
+    }
+    monkeypatch.setattr("google.oauth2.id_token.verify_oauth2_token", lambda *args: claims)
+    first = client.post("/auth/google", json={"id_token": "verified-by-google-library"})
+    assert first.status_code == 200
+    profile = client.get(
+        "/auth/me",
+        headers={
+            "Authorization": f"Bearer {first.json()['access_token']}",
+        },
+    ).json()
+    assert profile["role"] == "seller"
+    assert profile["nama"] == "Pemilik Google"
+    claims["email"] = "updated-google@example.com"
+    second = client.post("/auth/google", json={"id_token": "verified-by-google-library"})
+    assert second.status_code == 200
+    assert (
+        client.get(
+            "/auth/me",
+            headers={
+                "Authorization": f"Bearer {second.json()['access_token']}",
+            },
+        ).json()["id"]
+        == profile["id"]
+    )
+
+
+def test_unverified_google_email_is_rejected(client, monkeypatch):
+    client.app.state.settings.google_client_id = "configured-client-id"
+    monkeypatch.setattr(
+        "google.oauth2.id_token.verify_oauth2_token",
+        lambda *args: {
+            "sub": "unverified-subject",
+            "email": "unverified@example.com",
+            "email_verified": False,
+        },
+    )
+    assert client.post("/auth/google", json={"id_token": "unverified"}).status_code == 401
+
+
+def test_phone_is_unique_and_public_registration_cannot_choose_admin(client, account):
+    account.update(phone="+628123456789", role="admin")
+    first = client.post("/auth/register", json=account)
+    assert first.status_code == 200
+    assert (
+        client.get(
+            "/auth/me",
+            headers={
+                "Authorization": f"Bearer {first.json()['access_token']}",
+            },
+        ).json()["role"]
+        == "seller"
+    )
+    account["email"] = "different@example.com"
+    duplicate = client.post("/auth/register", json=account)
+    assert duplicate.status_code == 400
+    assert duplicate.json()["detail"] == "Nomor telepon sudah terdaftar"
+
+
 def test_expired_missing_expiry_and_tampered_tokens_are_rejected(client, account):
     from jose import jwt
 
@@ -201,11 +266,18 @@ def test_expired_missing_expiry_and_tampered_tokens_are_rejected(client, account
     claims = jwt.get_unverified_claims(token)
     secret = client.app.state.settings.jwt_secret.get_secret_value()
     expired = jwt.encode({**claims, "exp": 1}, secret, algorithm="HS256")
-    without_exp = jwt.encode({k: v for k, v in claims.items() if k != "exp"},
-                             secret, algorithm="HS256")
+    without_exp = jwt.encode(
+        {k: v for k, v in claims.items() if k != "exp"}, secret, algorithm="HS256"
+    )
     parts = token.split(".")
     parts[2] = ("x" if parts[2][0] != "x" else "y") + parts[2][1:]
     for invalid in [expired, without_exp, ".".join(parts)]:
-        assert client.get("/auth/me", headers={
-            "Authorization": f"Bearer {invalid}",
-        }).status_code == 401
+        assert (
+            client.get(
+                "/auth/me",
+                headers={
+                    "Authorization": f"Bearer {invalid}",
+                },
+            ).status_code
+            == 401
+        )

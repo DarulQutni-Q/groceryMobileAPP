@@ -134,8 +134,10 @@ class ApiClient {
 
   Future<void> _expire(RequestOptions request) async {
     if (request.extra['sessionGeneration'] != storage.generation) return;
-    await storage.clearSession();
-    onSessionExpired?.call();
+    final deletion = storage.clearSession();
+    final generation = storage.generation;
+    await deletion;
+    if (storage.generation == generation) onSessionExpired?.call();
   }
 
   Future<void> _rejectWithExpiry(

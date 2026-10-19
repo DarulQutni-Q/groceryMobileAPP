@@ -60,6 +60,10 @@ class AuthApi {
 
 String authErrorMessage(Object error) {
   if (error is DioException) {
+    if (error.type == DioExceptionType.unknown &&
+        (error.message?.startsWith('Sesi ') ?? false)) {
+      return error.message!;
+    }
     final data = error.response?.data;
     final detail = data is Map ? data['detail'] : null;
     if (detail is String) return detail;
