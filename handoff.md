@@ -48,13 +48,13 @@ Screenshot tujuh layar utama, opsi login saat scroll, Beranda, dan cold start te
 - Container Compose project `grocery-a1` dan emulator pengujian sedang berjalan. PostgreSQL/HTTP hanya dibuka pada loopback host.
 - Kredensial uji acak disimpan sementara di `/tmp/grocery-a1-20261020-env.json` dengan mode 0600; tidak dicetak atau dikomit. Tidak membuat `.env` nyata di proyek.
 - Jika membuat environment pengembangan sendiri dengan password lain, hentikan container uji dan gunakan project/volume terpisah, misalnya `docker compose -p grocery-dev up --build -d`. Volume uji lama memiliki password awalnya sendiri; tidak menimpa/menghapusnya otomatis.
-- Dokumen/screenshot sumber milik pengguna tetap untracked sesuai keadaan awal. Commit hanya memasukkan pekerjaan A1, bukan dokumen sumber tersebut. Tidak ada push.
+- Dokumen/screenshot sumber milik pengguna tetap untracked sesuai keadaan awal. Commit tidak memasukkan dokumen sumber tersebut. Hasil A1 telah dipush ke GitHub `main` pada commit penggabungan `d913baf`; commit LICENSE awal remote ikut dipertahankan. Remote memakai HTTPS sesuai autentikasi GitHub CLI yang aktif.
 
 ## Berikutnya
 
 1. Review screenshot dan tutup selisih visual terhadap Figma sebelum menyebut UI final/pixel-identik.
 2. Lengkapi OAuth Google dan verifikasi dengan akun nyata; uji iOS pada macOS.
-3. Lanjut A2 setelah cakupan fase disepakati. Beranda lengkap, produk, pembayaran, OTP dan customer belum dikerjakan.
+3. Permintaan A2 sudah diterima, tetapi terpotong pada "Varian tutup: kalau stat". Draft dan keputusan yang belum disepakati ada di `A2_PLAN.md`. Kode fitur/migrasi A2 belum diterapkan. Beranda lengkap, produk, pembayaran, OTP dan customer belum dikerjakan.
 4. Gunakan task baru untuk fase berikutnya dengan merujuk file ini agar konteks tetap ringkas.
 
 Panduan menjalankan: `README.md`. Daftar endpoint dan curl: `A1_API.md`. Keputusan: `A1_PLAN.md`. Riwayat perbaikan kerja: `MISTAKES.md`.
