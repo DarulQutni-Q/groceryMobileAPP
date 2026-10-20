@@ -1,5 +1,8 @@
 import pytest
+from pydantic import ValidationError
 from test_toko import register
+
+from app.schemas.auth import FcmTokenRequest
 
 
 @pytest.mark.parametrize(
@@ -75,3 +78,11 @@ def test_query_and_uuid_errors_explain_allowed_values(client, account):
         )
         assert response.status_code == 422
         assert expected in response.text
+
+
+def test_deeply_nested_wrong_field_type_is_validation_error():
+    value = 0
+    for _ in range(1000):
+        value = [value]
+    with pytest.raises(ValidationError):
+        FcmTokenRequest.model_validate({"fcm_token": value})

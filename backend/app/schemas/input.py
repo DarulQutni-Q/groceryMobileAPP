@@ -2,15 +2,16 @@ from pydantic import BaseModel, field_validator
 
 
 def safe_text(value):
-    if isinstance(value, str) and "\x00" in value:
-        raise ValueError("Teks tidak boleh memuat karakter NUL")
-    if isinstance(value, list):
-        for item in value:
-            safe_text(item)
-    elif isinstance(value, dict):
-        for key, item in value.items():
-            safe_text(key)
-            safe_text(item)
+    pending = [value]
+    while pending:
+        item = pending.pop()
+        if isinstance(item, str) and "\x00" in item:
+            raise ValueError("Teks tidak boleh memuat karakter NUL")
+        if isinstance(item, list):
+            pending.extend(item)
+        elif isinstance(item, dict):
+            pending.extend(item.keys())
+            pending.extend(item.values())
     return value
 
 

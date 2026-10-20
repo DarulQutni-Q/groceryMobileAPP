@@ -1,4 +1,6 @@
-from fastapi import Request
+import json
+
+from fastapi import HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -91,3 +93,26 @@ async def validation_error(request: Request, exc: RequestValidationError):
             ]
         },
     )
+
+
+async def check_json_depth(request: Request):
+    if request.method not in {"POST", "PUT", "PATCH", "DELETE"}:
+        return
+    content_type = request.headers.get("content-type", "").split(";", 1)[0].lower()
+    if content_type != "application/json" and not content_type.endswith("+json"):
+        return
+    try:
+        value = await request.json()
+    except json.JSONDecodeError:
+        return
+    except (ValueError, RecursionError) as exc:
+        raise HTTPException(400, "JSON tidak dapat dibaca atau terlalu besar") from exc
+    pending = [(value, 0)]
+    while pending:
+        item, depth = pending.pop()
+        if depth > 100:
+            raise HTTPException(400, "JSON terlalu dalam, maksimal 100 tingkat")
+        children = (
+            item.values() if isinstance(item, dict) else item if isinstance(item, list) else ()
+        )
+        pending.extend((child, depth + 1) for child in children)

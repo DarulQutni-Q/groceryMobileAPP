@@ -15,7 +15,7 @@ from app.core.cors import ConfiguredCors
 from app.core.request_log import RequestLog
 from app.core.security import hash_password
 from app.core.upload_limit import UploadLimit
-from app.core.validation import validation_error
+from app.core.validation import check_json_depth, validation_error
 from app.db.base import Base
 from app.db.session import get_db
 from app.routers.auth import router
@@ -47,7 +47,12 @@ async def lifespan(app: FastAPI):
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Daclanari Grocery", version="1.0.0", lifespan=lifespan)
+    app = FastAPI(
+        title="Daclanari Grocery",
+        version="1.0.0",
+        lifespan=lifespan,
+        dependencies=[Depends(check_json_depth)],
+    )
     app.include_router(router)
     app.include_router(toko_router)
     app.include_router(produk_router)
