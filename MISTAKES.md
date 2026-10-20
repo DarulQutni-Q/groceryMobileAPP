@@ -19,3 +19,10 @@
 - Dampak: perjalanan perangkat berhenti sebelum upload atau membaca data sebelum transaksi selesai. Assertion data tetap dipertahankan; tidak ada data produksi yang diubah untuk meluluskan tes.
 - Perbaikan: fixture mempunyai path berekstensi, tunggu editor ditutup sebelum memeriksa API, dan tunggu cache gambar sebelum screenshot. Tes perangkat kemudian lulus sampai pemulihan sesi.
 - Kejadian: satu pola setup fixture dan satu pola sinkronisasi route; belum memenuhi ambang tiga kejadian untuk aturan permanen.
+
+## 21 Oktober 2026: membedakan kegagalan jaringan dan sesi ditolak
+
+- Penyebab: handler refresh/replay memperlakukan semua exception sebagai sesi kedaluwarsa.
+- Dampak: koneksi putus, timeout atau respons 503 dapat menghapus token dan mengeluarkan seller ketika mencoba memuat ulang data.
+- Perbaikan: akhiri sesi hanya untuk penolakan autentikasi definitif atau refresh token yang hilang. Pertahankan token pada kegagalan sementara; empat tes API melindungi refresh offline/timeout/503 dan replay offline, termasuk request berikutnya setelah jaringan pulih.
+- Kejadian: satu akar masalah pada shared client. Tidak ada assertion lama yang dilemahkan.

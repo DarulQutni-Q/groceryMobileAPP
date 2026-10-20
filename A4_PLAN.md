@@ -1,6 +1,6 @@
 # Rancangan Fase A4
 
-Status: implementasi selesai, verifikasi APK normal dan dokumentasi akhir berjalan. Rekomendasi waktu/perbandingan disampaikan pada klarifikasi, lalu pengguna meminta continue. Implementasi mengikuti rekomendasi tersebut.
+Status: seluruh gate fungsional Android lulus, termasuk 106 tes, tiga journey perangkat, APK normal, cold start dan offline/retry. Batas kesamaan visual dicatat di artifacts/a4/README.md. Rekomendasi waktu/perbandingan disampaikan pada klarifikasi, lalu pengguna meminta continue; implementasi mengikuti rekomendasi tersebut.
 
 ## Sumber dan batas cakupan
 

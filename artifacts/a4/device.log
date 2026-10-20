@@ -1,0 +1,832 @@
+Resolving dependencies...
+Downloading packages...
+  code_assets 1.2.1 (2.1.0 available)
+  cross_file 0.3.5+5 (0.4.0 available)
+  equatable 2.1.0 (3.0.0 available)
+  file_selector_macos 0.9.5+1 (0.9.5+2 available)
+  hooks 2.0.2 (2.2.0 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.3 (1.19.0 available)
+  objective_c 9.5.0 (9.6.2 available)
+  petitparser 7.0.2 (7.1.0 available)
+  record_use 0.6.0 (1.1.1 available)
+  test_api 0.7.12 (0.7.15 available)
+  vector_math 2.4.0 (2.4.3 available)
+  xml 7.0.1 (7.1.0 available)
+Got dependencies!
+13 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Running Gradle task 'assembleDevDebug'...                          11.9s
+✓ Built build/app/outputs/flutter-apk/app-dev-debug.apk
+Installing build/app/outputs/flutter-apk/app-dev-debug.apk...      1,431ms
+I/nari.seller.dev(22799): Compiler allocated 5174KB to compile void android.view.ViewRootImpl.performTraversals()
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+VMServiceFlutterDriver: Connecting to Flutter application at http://127.0.0.1:42219/[REDACTED]/
+VMServiceFlutterDriver: Isolate found with number: 2332789094084063
+VMServiceFlutterDriver: Isolate 2332789094084063 is runnable.
+VMServiceFlutterDriver: Isolate is paused at start.
+VMServiceFlutterDriver: Attempting to resume isolate
+I/flutter (22799): 00:00 +0: A2 stores profile, hours, product photo and availability across sessions
+VMServiceFlutterDriver: Connected to Flutter application.
+I/Choreographer(22799): Skipped 37 frames!  The application may be doing too much work on its main thread.
+D/ProfileInstaller(22799): Installing profile for com.daclanari.seller.dev
+D/EGL_emulation(22799): app_time_stats: avg=1823.66ms min=133.63ms max=3513.69ms count=2
+VMServiceFlutterDriver: request_data message is taking a long time to complete...
+D/EGL_emulation(22799): app_time_stats: avg=2292.67ms min=495.58ms max=4089.75ms count=2
+D/EGL_emulation(22799): app_time_stats: avg=253.63ms min=130.86ms max=334.80ms count=5
+D/EGL_emulation(22799): app_time_stats: avg=1093.96ms min=1093.96ms max=1093.96ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=139.05ms min=9.00ms max=324.35ms count=9
+W/nari.seller.dev(22799): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/nari.seller.dev(22799): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+I/ImeTracker(22799): com.daclanari.seller.dev:27f8fba4: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F....ID 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:f4dd3a69: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F....ID 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:fce3926c: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F....ID 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:399dc8d2: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F....ID 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:dc0adc8f: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/EGL_emulation(22799): app_time_stats: avg=645.74ms min=524.11ms max=767.37ms count=2
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:36fb8029: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+I/ImeTracker(22799): com.daclanari.seller.dev:9688175: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:db5b5904: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:767c64c: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/InsetsController(22799): show(ime(), fromIme=true)
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:f4dd3a69: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+W/InteractionJankMonitor(22799): Initializing without READ_DEVICE_CONFIG permission. enabled=true, interval=1, missedFrameThreshold=3, frameTimeThreshold=64, package=com.daclanari.seller.dev
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+I/ImeTracker(22799): com.daclanari.seller.dev:27f8fba4: onShown
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+I/nari.seller.dev(22799): Background concurrent mark compact GC freed 757KB AllocSpace bytes, 9(1860KB) LOS objects, 49% free, 2912KB/5825KB, paused 2.057ms,6.192ms total 43.996ms
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/EGL_emulation(22799): app_time_stats: avg=139.11ms min=65.19ms max=277.22ms count=8
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:fce3926c: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:399dc8d2: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:dc0adc8f: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:36fb8029: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:9688175: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:db5b5904: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/InsetsController(22799): hide(ime(), fromIme=true)
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1127252, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1127281, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed App frame:UNKNOWN: 88, 1127303, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 88, 1127303, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1127325, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1127347, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1127369, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1127435, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed App frame:UNKNOWN: 88, 1127457, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 88, 1127457, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1127472, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed App frame:UNKNOWN: 88, 1127493, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 88, 1127493, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1127516, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 66, 1127552, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed App frame:UNKNOWN: 88, 1127574, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 88, 1127574, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1127589, 0, CUJ=J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+V/PerfettoTrigger(22799): Triggering /system/bin/trigger_perfetto com.android.telemetry.interaction-jank-monitor-80
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=44.43ms min=9.43ms max=398.21ms count=21
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+I/ImeTracker(22799): com.daclanari.seller.dev:909eb6de: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_ON_ANIMATION_STATE_CHANGED fromUser false
+I/ImeTracker(22799): com.daclanari.seller.dev:767c64c: onHidden
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=129.14ms min=46.43ms max=295.96ms count=8
+D/EGL_emulation(22799): app_time_stats: avg=137.00ms min=8.93ms max=403.13ms count=8
+D/EGL_emulation(22799): app_time_stats: avg=128.75ms min=7.56ms max=1219.30ms count=16
+D/EGL_emulation(22799): app_time_stats: avg=133.17ms min=18.87ms max=315.55ms count=8
+D/EGL_emulation(22799): app_time_stats: avg=1178.93ms min=1178.93ms max=1178.93ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=154.23ms min=20.53ms max=317.71ms count=7
+D/EGL_emulation(22799): app_time_stats: avg=1036.21ms min=1036.21ms max=1036.21ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=146.11ms min=10.74ms max=340.60ms count=7
+D/EGL_emulation(22799): app_time_stats: avg=1181.72ms min=1181.72ms max=1181.72ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=130.78ms min=8.91ms max=311.93ms count=8
+D/EGL_emulation(22799): app_time_stats: avg=1282.63ms min=1282.63ms max=1282.63ms count=1
+W/nari.seller.dev(22799): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/nari.seller.dev(22799): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+D/EGL_emulation(22799): app_time_stats: avg=160.10ms min=114.59ms max=317.97ms count=7
+W/WindowOnBackDispatcher(22799): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher(22799): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+D/EGL_emulation(22799): app_time_stats: avg=144.57ms min=9.27ms max=334.89ms count=7
+D/EGL_emulation(22799): app_time_stats: avg=1232.67ms min=1232.67ms max=1232.67ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=116.62ms min=20.41ms max=316.32ms count=11
+D/EGL_emulation(22799): app_time_stats: avg=1283.80ms min=1283.80ms max=1283.80ms count=1
+W/nari.seller.dev(22799): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/nari.seller.dev(22799): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+D/EGL_emulation(22799): app_time_stats: avg=80.81ms min=13.83ms max=166.52ms count=13
+I/ImeTracker(22799): com.daclanari.seller.dev:570f82cb: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:219ac9a9: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:3dee7e9: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:1af5006: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+I/ImeTracker(22799): com.daclanari.seller.dev:e1a14a18: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:69a7fd1f: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:5776e077: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+D/InsetsController(22799): show(ime(), fromIme=true)
+E/FrameTracker(22799): force finish cuj, time out: J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=1308.48ms min=1308.48ms max=1308.48ms count=1
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:1af5006: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+I/ImeTracker(22799): com.daclanari.seller.dev:219ac9a9: onShown
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:e1a14a18: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:69a7fd1f: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/InsetsController(22799): hide(ime(), fromIme=true)
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+I/ImeTracker(22799): com.daclanari.seller.dev:81e55771: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_ON_ANIMATION_STATE_CHANGED fromUser false
+I/ImeTracker(22799): com.daclanari.seller.dev:5776e077: onHidden
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=94.34ms min=22.66ms max=165.13ms count=11
+D/EGL_emulation(22799): app_time_stats: avg=33.20ms min=7.49ms max=543.44ms count=35
+D/EGL_emulation(22799): app_time_stats: avg=136.86ms min=21.77ms max=315.79ms count=8
+D/EGL_emulation(22799): app_time_stats: avg=232.80ms min=186.32ms max=282.32ms count=5
+D/EGL_emulation(22799): app_time_stats: avg=2166.56ms min=2166.56ms max=2166.56ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=133.62ms min=11.86ms max=317.19ms count=8
+D/EGL_emulation(22799): app_time_stats: avg=1167.22ms min=1167.22ms max=1167.22ms count=1
+I/ImeTracker(22799): com.daclanari.seller.dev:cd3ec0a2: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:da2856dd: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/AssistStructure(22799): Flattened final assist data: 492 bytes, containing 1 windows, 3 views
+D/InputConnectionAdaptor(22799): The input method toggled cursor monitoring on
+D/InsetsController(22799): show(ime(), fromIme=true)
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+I/ImeTracker(22799): com.daclanari.seller.dev:da2856dd: onShown
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=229.00ms min=115.09ms max=474.04ms count=5
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+I/ImeTracker(22799): com.daclanari.seller.dev:c4bf2e4b: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+D/InsetsController(22799): hide(ime(), fromIme=true)
+D/InputConnectionAdaptor(22799): The input method toggled cursor monitoring off
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=31.97ms min=7.80ms max=246.36ms count=29
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+I/ImeTracker(22799): com.daclanari.seller.dev:6ddd4bdd: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_ON_ANIMATION_STATE_CHANGED fromUser false
+I/ImeTracker(22799): com.daclanari.seller.dev:c4bf2e4b: onHidden
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=175.24ms min=104.57ms max=317.02ms count=6
+D/EGL_emulation(22799): app_time_stats: avg=113.68ms min=13.06ms max=315.83ms count=11
+D/EGL_emulation(22799): app_time_stats: avg=184.12ms min=8.44ms max=1251.27ms count=10
+W/WindowOnBackDispatcher(22799): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher(22799): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+I/ImeTracker(22799): com.daclanari.seller.dev:ba48fbbe: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:2c5137b6: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:a3937046: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:874a8a47: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/InsetsController(22799): show(ime(), fromIme=true)
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:2c5137b6: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+I/ImeTracker(22799): com.daclanari.seller.dev:54c242be: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:6d17cfb7: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+I/ImeTracker(22799): com.daclanari.seller.dev:fa4a9308: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:f298d95d: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+I/ImeTracker(22799): com.daclanari.seller.dev:fd8461b7: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=142.52ms min=10.18ms max=884.36ms count=7
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=97.95ms min=11.42ms max=311.05ms count=11
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:a3937046: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:874a8a47: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+I/ImeTracker(22799): com.daclanari.seller.dev:ba48fbbe: onShown
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:54c242be: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:6d17cfb7: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/InputConnectionAdaptor(22799): The input method toggled cursor monitoring on
+D/InputConnectionAdaptor(22799): The input method toggled cursor monitoring off
+D/InputConnectionAdaptor(22799): The input method toggled cursor monitoring on
+D/InputConnectionAdaptor(22799): The input method toggled cursor monitoring off
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:fa4a9308: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:f298d95d: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/InsetsController(22799): hide(ime(), fromIme=true)
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+I/ImeTracker(22799): com.daclanari.seller.dev:d00693ca: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_ON_ANIMATION_STATE_CHANGED fromUser false
+I/ImeTracker(22799): com.daclanari.seller.dev:fd8461b7: onHidden
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=162.74ms min=91.69ms max=317.11ms count=7
+D/EGL_emulation(22799): app_time_stats: avg=42.91ms min=8.41ms max=505.13ms count=25
+W/nari.seller.dev(22799): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/nari.seller.dev(22799): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+E/FrameTracker(22799): force finish cuj, time out: J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+D/EGL_emulation(22799): app_time_stats: avg=153.73ms min=11.28ms max=256.03ms count=7
+E/FrameTracker(22799): force finish cuj, time out: J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/WindowOnBackDispatcher(22799): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher(22799): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+D/EGL_emulation(22799): app_time_stats: avg=128.65ms min=33.72ms max=227.81ms count=8
+D/EGL_emulation(22799): app_time_stats: avg=2764.84ms min=2764.84ms max=2764.84ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=103.25ms min=11.42ms max=316.57ms count=10
+W/WindowOnBackDispatcher(22799): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher(22799): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+E/AccessibilityBridge(22799): transform has not been initialized for id = 232
+I/AccessibilityBridge(22799): Semantics tree:SemanticsNode id=0 identifier=null label=null actions=0 flags=0
+I/AccessibilityBridge(22799): Semantics tree:  +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:  +-- textDirection=UNKNOWN
+I/AccessibilityBridge(22799): Semantics tree:  +-- rect.ltrb=(0.0, 0.0, 1080.0, 2340.0)
+I/AccessibilityBridge(22799): Semantics tree:  +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:  SemanticsNode id=1 identifier=null label=null actions=0 flags=0
+I/AccessibilityBridge(22799): Semantics tree:    +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:    +-- textDirection=LTR
+I/AccessibilityBridge(22799): Semantics tree:    +-- rect.ltrb=(0.0, 0.0, 411.42856, 891.4286)
+I/AccessibilityBridge(22799): Semantics tree:    +-- transform=[2.625, 0.0, 0.0, 0.0, 0.0, 2.625, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:    SemanticsNode id=231 identifier=null label=null actions=0 flags=0
+I/AccessibilityBridge(22799): Semantics tree:      +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:      +-- textDirection=UNKNOWN
+I/AccessibilityBridge(22799): Semantics tree:      +-- rect.ltrb=(0.0, 0.0, 411.42856, 891.4286)
+I/AccessibilityBridge(22799): Semantics tree:      +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:      SemanticsNode id=233 identifier=null label=null actions=0 flags=2048
+I/AccessibilityBridge(22799): Semantics tree:        +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:        +-- textDirection=UNKNOWN
+I/AccessibilityBridge(22799): Semantics tree:        +-- rect.ltrb=(0.0, 0.0, 411.42856, 891.4286)
+I/AccessibilityBridge(22799): Semantics tree:        +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 90.48471, 0.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:        SemanticsNode id=234 identifier=null label=Kembali actions=4194305 flags=2097352
+I/AccessibilityBridge(22799): Semantics tree:          +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:          +-- textDirection=LTR
+I/AccessibilityBridge(22799): Semantics tree:          +-- rect.ltrb=(0.0, 0.0, 48.0, 48.0)
+I/AccessibilityBridge(22799): Semantics tree:          +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 12.0, 36.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:        SemanticsNode id=235 identifier=null label=Pengiriman actions=0 flags=0
+I/AccessibilityBridge(22799): Semantics tree:          +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:          +-- textDirection=LTR
+I/AccessibilityBridge(22799): Semantics tree:          +-- rect.ltrb=(0.0, 0.0, 333.42856, 34.0)
+I/AccessibilityBridge(22799): Semantics tree:          +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 60.0, 43.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:        SemanticsNode id=236 identifier=null label=null actions=0 flags=262144
+I/AccessibilityBridge(22799): Semantics tree:          +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:          +-- textDirection=UNKNOWN
+I/AccessibilityBridge(22799): Semantics tree:          +-- rect.ltrb=(0.0, 0.0, 411.42856, 695.4286)
+I/AccessibilityBridge(22799): Semantics tree:          +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 92.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:          SemanticsNode id=237 identifier=null label=null actions=0 flags=0
+I/AccessibilityBridge(22799): Semantics tree:            +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:            +-- textDirection=UNKNOWN
+I/AccessibilityBridge(22799): Semantics tree:            +-- rect.ltrb=(0.0, 0.0, 371.42856, 311.0)
+I/AccessibilityBridge(22799): Semantics tree:            +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 20.0, 20.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:            SemanticsNode id=238 identifier=null label=null actions=0 flags=0
+I/AccessibilityBridge(22799): Semantics tree:              +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:              +-- textDirection=UNKNOWN
+I/AccessibilityBridge(22799): Semantics tree:              +-- rect.ltrb=(0.0, 0.0, 371.42856, 64.0)
+I/AccessibilityBridge(22799): Semantics tree:              +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:              SemanticsNode id=239 identifier=null label=Instant actions=4194305 flags=270532803
+I/AccessibilityBridge(22799): Semantics tree:                +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:                +-- textDirection=LTR
+I/AccessibilityBridge(22799): Semantics tree:                +-- rect.ltrb=(0.0, 0.0, 363.42856, 56.0)
+I/AccessibilityBridge(22799): Semantics tree:                +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.0, 4.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:            SemanticsNode id=241 identifier=null label=null actions=0 flags=0
+I/AccessibilityBridge(22799): Semantics tree:              +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:              +-- textDirection=UNKNOWN
+I/AccessibilityBridge(22799): Semantics tree:              +-- rect.ltrb=(0.0, 0.0, 371.42856, 64.0)
+I/AccessibilityBridge(22799): Semantics tree:              +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 64.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:              SemanticsNode id=242 identifier=null label=Kurir Marketplace actions=4194305 flags=270532801
+I/AccessibilityBridge(22799): Semantics tree:                +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:                +-- textDirection=LTR
+I/AccessibilityBridge(22799): Semantics tree:                +-- rect.ltrb=(0.0, 0.0, 363.42856, 56.0)
+I/AccessibilityBridge(22799): Semantics tree:                +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.0, 4.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:            SemanticsNode id=244 identifier=null label=null actions=0 flags=0
+I/AccessibilityBridge(22799): Semantics tree:              +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:              +-- textDirection=UNKNOWN
+I/AccessibilityBridge(22799): Semantics tree:              +-- rect.ltrb=(0.0, 0.0, 371.42856, 64.0)
+I/AccessibilityBridge(22799): Semantics tree:              +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 128.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:              SemanticsNode id=245 identifier=null label=Ambil di Toko actions=4194305 flags=270532801
+I/AccessibilityBridge(22799): Semantics tree:                +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:                +-- textDirection=LTR
+I/AccessibilityBridge(22799): Semantics tree:                +-- rect.ltrb=(0.0, 0.0, 363.42856, 56.0)
+I/AccessibilityBridge(22799): Semantics tree:                +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.0, 4.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:            SemanticsNode id=247 identifier=null label=Jarak antar maksimal: 5 km actions=0 flags=0
+I/AccessibilityBridge(22799): Semantics tree:              +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:              +-- textDirection=LTR
+I/AccessibilityBridge(22799): Semantics tree:              +-- rect.ltrb=(0.0, 0.0, 371.42856, 27.0)
+I/AccessibilityBridge(22799): Semantics tree:              +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 216.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:            SemanticsNode id=248 identifier=null label=null actions=0 flags=0
+I/AccessibilityBridge(22799): Semantics tree:              +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:              +-- textDirection=UNKNOWN
+I/AccessibilityBridge(22799): Semantics tree:              +-- rect.ltrb=(0.0, 0.0, 371.42856, 48.0)
+I/AccessibilityBridge(22799): Semantics tree:              +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 243.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:              SemanticsNode id=249 identifier=null label=5 km actions=4194496 flags=10485952
+I/AccessibilityBridge(22799): Semantics tree:                +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:                +-- textDirection=LTR
+I/AccessibilityBridge(22799): Semantics tree:                +-- rect.ltrb=(143.96825, 0.0, 191.96825, 48.0)
+I/AccessibilityBridge(22799): Semantics tree:                +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:              SemanticsNode id=232 identifier=null label=null actions=0 flags=0
+I/AccessibilityBridge(22799): Semantics tree:                +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:                +-- textDirection=null
+I/AccessibilityBridge(22799): Semantics tree:                +-- rect.ltrb=(0.0, 0.0, 0.0, 0.0)
+I/AccessibilityBridge(22799): Semantics tree:                +-- transform=null
+I/AccessibilityBridge(22799): Semantics tree:            SemanticsNode id=250 identifier=null label=1 km actions=0 flags=0
+I/AccessibilityBridge(22799): Semantics tree:              +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:              +-- textDirection=LTR
+I/AccessibilityBridge(22799): Semantics tree:              +-- rect.ltrb=(0.0, 0.0, 31.713867, 20.0)
+I/AccessibilityBridge(22799): Semantics tree:              +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 291.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:            SemanticsNode id=251 identifier=null label=10 km actions=0 flags=0
+I/AccessibilityBridge(22799): Semantics tree:              +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:              +-- textDirection=LTR
+I/AccessibilityBridge(22799): Semantics tree:              +-- rect.ltrb=(0.0, 0.0, 39.83203, 20.0)
+I/AccessibilityBridge(22799): Semantics tree:              +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 331.59653, 291.0, 0.0, 1.0]
+I/AccessibilityBridge(22799): Semantics tree:        SemanticsNode id=252 identifier=null label=Simpan actions=4194305 flags=2097352
+I/AccessibilityBridge(22799): Semantics tree:          +-- headingLevel=0
+I/AccessibilityBridge(22799): Semantics tree:          +-- textDirection=LTR
+I/AccessibilityBridge(22799): Semantics tree:          +-- rect.ltrb=(0.0, 0.0, 371.42856, 52.0)
+I/AccessibilityBridge(22799): Semantics tree:          +-- transform=[1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 20.0, 797.4286, 0.0, 1.0]
+D/EGL_emulation(22799): app_time_stats: avg=123.43ms min=30.73ms max=215.35ms count=9
+D/EGL_emulation(22799): app_time_stats: avg=103.01ms min=10.37ms max=317.53ms count=11
+D/EGL_emulation(22799): app_time_stats: avg=2617.57ms min=2617.57ms max=2617.57ms count=1
+E/FrameTracker(22799): force finish cuj, time out: J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+E/FrameTracker(22799): force finish cuj, time out: J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+D/EGL_emulation(22799): app_time_stats: avg=145.30ms min=18.63ms max=249.71ms count=7
+W/WindowOnBackDispatcher(22799): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher(22799): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+I/ImeTracker(22799): com.daclanari.seller.dev:17a0f229: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:b1556362: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/InputConnectionAdaptor(22799): The input method toggled cursor monitoring on
+I/ImeTracker(22799): com.daclanari.seller.dev:5dcb4d0d: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+D/InsetsController(22799): show(ime(), fromIme=true)
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=1789.14ms min=1789.14ms max=1789.14ms count=1
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/InsetsController(22799): hide(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:b1556362: onCancelled at PHASE_CLIENT_ANIMATION_CANCEL
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=85.34ms min=25.63ms max=158.04ms count=12
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+I/ImeTracker(22799): com.daclanari.seller.dev:3d744cfe: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_ON_ANIMATION_STATE_CHANGED fromUser false
+I/ImeTracker(22799): com.daclanari.seller.dev:5dcb4d0d: onHidden
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/nari.seller.dev(22799): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/nari.seller.dev(22799): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+D/EGL_emulation(22799): app_time_stats: avg=149.33ms min=14.11ms max=315.11ms count=8
+W/WindowOnBackDispatcher(22799): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher(22799): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+E/FrameTracker(22799): force finish cuj, time out: J<IME_INSETS_SHOW_ANIMATION::0@1@com.daclanari.seller.dev>
+I/ImeTracker(22799): com.daclanari.seller.dev:e53a6612: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:fb5ecbc0: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:17ca0876: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:6e579543: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+I/ImeTracker(22799): com.daclanari.seller.dev:ba1c6b9: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+D/InsetsController(22799): show(ime(), fromIme=true)
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=103.79ms min=7.90ms max=1569.90ms count=22
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1138916, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1138945, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed App frame:UNKNOWN: 88, 1138967, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 88, 1138967, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1138996, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1139018, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1139040, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1139062, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1139084, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1139106, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1139128, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1139201, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1139223, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1139252, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1139267, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1139304, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+V/PerfettoTrigger(22799): Triggering /system/bin/trigger_perfetto com.android.telemetry.interaction-jank-monitor-81
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=80.51ms min=11.93ms max=213.85ms count=13
+W/RemoteInputConnectionImpl(22799): getSurroundingText on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:17ca0876: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/InsetsController(22799): show(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:6e579543: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+E/FrameTracker(22799): force finish cuj, time out: J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/InsetsController(22799): hide(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:fb5ecbc0: onCancelled at PHASE_CLIENT_ANIMATION_CANCEL
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+I/ImeTracker(22799): com.daclanari.seller.dev:63a71858: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_ON_ANIMATION_STATE_CHANGED fromUser false
+I/ImeTracker(22799): com.daclanari.seller.dev:ba1c6b9: onHidden
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=125.99ms min=18.54ms max=280.41ms count=10
+D/EGL_emulation(22799): app_time_stats: avg=3024.97ms min=3024.97ms max=3024.97ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=219.18ms min=216.74ms max=227.87ms count=5
+D/EGL_emulation(22799): app_time_stats: avg=219.30ms min=215.88ms max=231.09ms count=5
+D/EGL_emulation(22799): app_time_stats: avg=227.35ms min=7.56ms max=6816.23ms count=32
+W/nari.seller.dev(22799): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/nari.seller.dev(22799): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+I/flutter (22799): 00:46 +1: A3 seller accepts undoes rejects and completes live orders
+D/EGL_emulation(22799): app_time_stats: avg=216.06ms min=212.17ms max=217.59ms count=6
+D/EGL_emulation(22799): app_time_stats: avg=151.55ms min=9.29ms max=252.29ms count=7
+E/FrameTracker(22799): force finish cuj, time out: J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1140334, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1140377, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1140413, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 66, 1140464, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1140479, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1140501, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1140515, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1140530, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1140552, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1140574, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1140596, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1140633, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1140662, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1140684, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1140706, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+V/PerfettoTrigger(22799): Not triggering com.android.telemetry.interaction-jank-monitor-81 - not enough time since last trigger
+D/EGL_emulation(22799): app_time_stats: avg=1400.46ms min=130.91ms max=3431.62ms count=3
+D/EGL_emulation(22799): app_time_stats: avg=143.55ms min=76.00ms max=313.79ms count=7
+D/EGL_emulation(22799): app_time_stats: avg=1116.91ms min=1116.91ms max=1116.91ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=124.95ms min=54.62ms max=317.45ms count=9
+D/EGL_emulation(22799): app_time_stats: avg=93.41ms min=13.64ms max=319.10ms count=13
+D/EGL_emulation(22799): app_time_stats: avg=1365.46ms min=1365.46ms max=1365.46ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=189.58ms min=19.01ms max=532.36ms count=7
+D/EGL_emulation(22799): app_time_stats: avg=78.46ms min=15.42ms max=151.41ms count=13
+D/EGL_emulation(22799): app_time_stats: avg=2900.63ms min=2900.63ms max=2900.63ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=116.76ms min=18.58ms max=318.15ms count=9
+D/EGL_emulation(22799): app_time_stats: avg=114.68ms min=32.46ms max=252.93ms count=9
+D/EGL_emulation(22799): app_time_stats: avg=114.95ms min=22.76ms max=318.33ms count=9
+D/EGL_emulation(22799): app_time_stats: avg=2566.41ms min=2566.41ms max=2566.41ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=192.14ms min=23.22ms max=536.26ms count=7
+D/EGL_emulation(22799): app_time_stats: avg=78.23ms min=27.12ms max=121.96ms count=13
+D/EGL_emulation(22799): app_time_stats: avg=111.55ms min=15.28ms max=315.29ms count=11
+D/EGL_emulation(22799): app_time_stats: avg=3597.95ms min=3597.95ms max=3597.95ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=108.53ms min=8.45ms max=318.98ms count=12
+D/EGL_emulation(22799): app_time_stats: avg=1301.54ms min=1301.54ms max=1301.54ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=127.33ms min=19.19ms max=314.99ms count=9
+D/EGL_emulation(22799): app_time_stats: avg=1148.93ms min=1148.93ms max=1148.93ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=133.25ms min=20.45ms max=313.73ms count=8
+D/EGL_emulation(22799): app_time_stats: avg=73.92ms min=8.13ms max=116.78ms count=14
+D/EGL_emulation(22799): app_time_stats: avg=64.85ms min=15.88ms max=121.22ms count=16
+I/ImeTracker(22799): com.daclanari.seller.dev:5f3d978a: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(22799): com.daclanari.seller.dev:75b06926: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(22799): showSoftInput() view=io.flutter.embedding.android.FlutterView{6ddffce VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/AssistStructure(22799): Flattened final assist data: 516 bytes, containing 1 windows, 3 views
+I/ImeTracker(22799): com.daclanari.seller.dev:bb2683cb: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+W/RemoteInputConnectionImpl(22799): requestCursorUpdates on inactive InputConnection
+D/InsetsController(22799): show(ime(), fromIme=true)
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=1793.54ms min=917.83ms max=2669.25ms count=2
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/InsetsController(22799): hide(ime(), fromIme=true)
+I/ImeTracker(22799): com.daclanari.seller.dev:75b06926: onCancelled at PHASE_CLIENT_ANIMATION_CANCEL
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+W/nari.seller.dev(22799): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/nari.seller.dev(22799): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+I/ImeTracker(22799): com.daclanari.seller.dev:874474bf: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_ON_ANIMATION_STATE_CHANGED fromUser false
+I/ImeTracker(22799): com.daclanari.seller.dev:bb2683cb: onHidden
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/FlutterJNI(22799): Sending viewport metrics to the engine.
+D/EGL_emulation(22799): app_time_stats: avg=120.04ms min=26.01ms max=165.76ms count=9
+D/EGL_emulation(22799): app_time_stats: avg=156.70ms min=28.14ms max=316.43ms count=7
+D/EGL_emulation(22799): app_time_stats: avg=93.52ms min=25.68ms max=215.45ms count=11
+D/EGL_emulation(22799): app_time_stats: avg=124.97ms min=9.07ms max=2132.90ms count=24
+D/EGL_emulation(22799): app_time_stats: avg=113.45ms min=15.63ms max=321.23ms count=9
+D/EGL_emulation(22799): app_time_stats: avg=1517.38ms min=1517.38ms max=1517.38ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=995.23ms min=115.52ms max=3163.40ms count=4
+D/EGL_emulation(22799): app_time_stats: avg=216.41ms min=213.71ms max=219.67ms count=5
+D/EGL_emulation(22799): app_time_stats: avg=219.89ms min=215.99ms max=233.03ms count=5
+E/FrameTracker(22799): force finish cuj, time out: J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1150419, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1150448, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed App frame:UNKNOWN: 88, 1150484, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 88, 1150484, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1150542, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1150564, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1150586, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1150608, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1150630, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1150659, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1150681, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed App frame:UNKNOWN: 88, 1150710, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 88, 1150710, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1150739, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+W/FrameTracker(22799): Missed SF frame:UNKNOWN: 80, 1150761, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.daclanari.seller.dev>
+V/PerfettoTrigger(22799): Not triggering com.android.telemetry.interaction-jank-monitor-81 - not enough time since last trigger
+D/EGL_emulation(22799): app_time_stats: avg=86.46ms min=7.93ms max=246.29ms count=12
+D/EGL_emulation(22799): app_time_stats: avg=6816.84ms min=6816.84ms max=6816.84ms count=1
+I/flutter (22799): 01:19 +2: A4 live report empty, sales, ranges, tooltip and network recovery
+D/EGL_emulation(22799): app_time_stats: avg=215.58ms min=212.34ms max=217.82ms count=6
+D/EGL_emulation(22799): app_time_stats: avg=144.56ms min=20.72ms max=248.77ms count=7
+D/EGL_emulation(22799): app_time_stats: avg=1378.12ms min=129.64ms max=3463.47ms count=3
+D/EGL_emulation(22799): app_time_stats: avg=172.33ms min=113.84ms max=315.44ms count=7
+D/EGL_emulation(22799): app_time_stats: avg=93.39ms min=10.11ms max=317.49ms count=13
+D/EGL_emulation(22799): app_time_stats: avg=1497.47ms min=1497.47ms max=1497.47ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=125.91ms min=9.07ms max=316.13ms count=9
+D/EGL_emulation(22799): app_time_stats: avg=1133.29ms min=1133.29ms max=1133.29ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=125.90ms min=17.47ms max=313.96ms count=9
+D/EGL_emulation(22799): app_time_stats: avg=1136.12ms min=1136.12ms max=1136.12ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=1437.54ms min=1437.54ms max=1437.54ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=2365.38ms min=2365.38ms max=2365.38ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=146.12ms min=15.18ms max=316.33ms count=8
+D/EGL_emulation(22799): app_time_stats: avg=1032.14ms min=1032.14ms max=1032.14ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=85.32ms min=16.44ms max=316.42ms count=13
+D/EGL_emulation(22799): app_time_stats: avg=100.51ms min=12.32ms max=314.22ms count=10
+D/EGL_emulation(22799): app_time_stats: avg=1158.67ms min=866.57ms max=1450.77ms count=2
+D/EGL_emulation(22799): app_time_stats: avg=165.38ms min=111.61ms max=315.22ms count=7
+D/EGL_emulation(22799): app_time_stats: avg=110.31ms min=15.83ms max=230.81ms count=10
+D/EGL_emulation(22799): app_time_stats: avg=219.60ms min=105.65ms max=317.87ms count=6
+D/EGL_emulation(22799): app_time_stats: avg=2582.65ms min=2582.65ms max=2582.65ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=5291.31ms min=5291.31ms max=5291.31ms count=1
+D/EGL_emulation(22799): app_time_stats: avg=114.62ms min=24.77ms max=243.73ms count=9
+D/EGL_emulation(22799): app_time_stats: avg=6982.25ms min=6982.25ms max=6982.25ms count=1
+I/flutter (22799): 01:43 +3: (tearDownAll)
+I/flutter (22799): 01:43 +4: All tests passed!
+I/Choreographer(22799): Skipped 33 frames!  The application may be doing too much work on its main thread.
+All tests passed.
+Leaving the application running.

@@ -1,0 +1,2 @@
+Wi-Fi dan data emulator dimatikan untuk capture APK normal.
+Koneksi awal emulator dipulihkan.

@@ -1,3 +1,44 @@
+# Handoff Fase A4
+
+## Hasil dan keputusan
+
+A4 fungsional Android telah diuji. Dua endpoint laporan, shared dan tab Laporan seller berjalan dengan rentang 7/30 hari, grafik, tooltip, ranking dan empty state. Offline/retry, loading maksimal tiga detik, snackbar Indonesia, locale Indonesia, konfirmasi logout dan perlindungan submit ganda sudah dipasang. Customer, checkout, pembayaran dan push tidak diubah.
+
+Laporan hanya menghitung pesanan selesai milik toko pada JWT. Waktu selesai memakai updated_at, kalender WIB termasuk hari ini; pembanding adalah periode sebelumnya sama panjang. Baseline nol menghasilkan 0% dan ada_pembanding=false. Ringkasan memakai satu statement SQL/CTE agar total, count, qty dan harian konsisten pada transaksi serentak. Nilai produk terlaris adalah bruto snapshot harga * qty. Produk dihapus tetap masuk laporan dengan ID/foto null dan nama snapshot. Tidak ada migrasi baru, head tetap 0003_pesanan. Lihat A4_API.md dan A4_PLAN.md.
+
+Beranda memakai GET /pesanan yang sudah ada. Penjualan hari ini dan Produk Terjual menghitung transaksi selesai hari ini menurut WIB; kartu Pesanan menghitung seluruh pesanan toko. Shared Pesanan sekarang menampung updatedAt opsional. Loading/error tidak ditampilkan sebagai nol. Refresh memuat ulang profil, produk dan pesanan. Banner tiga pesan masih contoh A2; kotak surat dan push belum menjadi fitur fase ini.
+
+Review menemukan refresh token dahulu menghapus sesi pada kegagalan jaringan/server. Empat tes reproduksi kini melindungi koneksi putus, timeout, 503 dan replay offline. Penolakan autentikasi definitif tetap mengakhiri sesi; gangguan sementara mempertahankan token. Penjagaan generation A1 tetap berlaku untuk akun yang berganti.
+
+## Bukti
+
+- 58 tes backend lulus tanpa skip, termasuk PostgreSQL nyata; 16 tes shared dan 32 tes seller lulus. Total 106 tes, ditambah tiga perjalanan perangkat A2/A3/A4.
+- Analyzer shared/seller No issues found; Ruff, import/compileall, Compose dan migrasi lulus. Sebanyak 39 file source Python container cocok dengan host melalui SHA-256.
+- Curl toko kosong menghasilkan nol; tiga pesanan selesai menghasilkan Rp 135.000, sembilan barang dan ranking qty 6/3. Dataset perangkat menghasilkan Rp 275.000, tiga pesanan dan 11 barang.
+- Journey A4 mematikan Wi-Fi/data emulator, memeriksa banner offline, memulihkan jaringan dan menekan Coba lagi. Nilai Beranda sesudah pulih diperiksa secara ketat.
+- APK normal akhir dibangun. Cold start 21 Oktober memulihkan sesi dan membuka Beranda. Tiga pesanan historis tetap ada; penjualan/qty hari ini nol karena pengujian dilanjutkan pada hari berikutnya. Capture native 28 menampilkan header/pills/lima tab utuh, dan 29 merekam cold start.
+- Seluruh bukti, checklist layar dan cara mengulang ada di artifacts/a4/README.md, verification.txt, backend-smoke.txt, device.log dan cold-start.txt.
+
+## Batas yang tetap terbuka
+
+UI belum pixel-identik: font, ikon, kurva dan spacing masih berbeda. Source kanonis 09-laporan.png/04-beranda.png, laporan berdata dan Figma/font tidak tersedia. Gambar pengguna Pasted image (10)/(6) dipakai untuk empty/offline. Beberapa screenshot integration kehilangan layer statis; capture APK normal menampilkan layer tersebut utuh. Ini bukan klaim kesamaan piksel.
+
+iOS, perangkat fisik, signing rilis, OAuth Google akun nyata dan panggilan pembeli nyata belum diuji. Native kamera/lost photo tetap mempunyai batas A2. Video opsional tidak dibuat. Journey auth_test.dart A1 yang memeriksa placeholder lama bukan gate saat ini; A2/A3/A4 dijalankan ulang. Assertion perilaku tidak dilemahkan: interaksi tes mengikuti konfirmasi logout dan label Kembali yang kini Indonesia.
+
+## Lingkungan dan status Git
+
+Repo /home/darulqutni/groceryMobileAPP. Emulator pixel tersedia sebagai emulator-5554, SDK build /opt/android-sdk mengikuti local.properties, Flutter /home/darulqutni/flutter. Compose grocery-a1 melayani API loopback 8000 dan PostgreSQL 55432, ENV dev untuk endpoint dummy. Default konfigurasi tetap prod. Kredensial tidak dicetak/dikomit. Jika layanan berhenti, hidupkan container dengan env yang sudah sesuai volume; jangan menimpa password database.
+
+Commit fitur 79f434f, b559a85, 96d902e dan a63f029 telah dipush ke origin/main; b3ea6e6 menyimpan statistik Beranda. Bukti A4 dicatat dalam commit terpisah. Lihat Git log serta status aktual untuk hasil push akhir, jangan memakai catatan ini sebagai pengganti verifikasi remote.
+
+Perubahan pengguna pada A3_API.md, A3_PLAN.md, CONTEXT.md, README.md, artifacts/a3/README.md dan fallback dead-code SellerShell dipertahankan. Dokumen sumber root dan docs pengguna tetap untracked. Jangan memakai git add . atau restore pada perubahan tersebut.
+
+Untuk fase baru gunakan chat baru dengan handoff ini. Jangan mulai A5 sebelum pengguna memintanya.
+
+---
+
+## Arsip handoff A3
+
 # Handoff Fase A3
 
 ## Cakupan dan keputusan

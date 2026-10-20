@@ -65,13 +65,17 @@ void main() {
       start();
       await tester.pump();
       await binding.convertFlutterSurfaceToImage();
+      await capture('auth-01-splash');
       await tester.pump(const Duration(seconds: 3));
       await waitFor(tester, find.text('Lanjut'));
+      await capture('auth-02-onboarding');
       await tester.tap(find.text('Lanjut'));
       await tester.pumpAndSettle();
+      await capture('auth-03-login');
       await tester.ensureVisible(find.text('Daftar'));
       await tester.tap(find.text('Daftar'));
       await tester.pumpAndSettle();
+      await capture('auth-04-daftar-akun');
       final email =
           'a2-device-${DateTime.now().microsecondsSinceEpoch}@example.com';
       await tester.enterText(
@@ -89,12 +93,15 @@ void main() {
       await tester.ensureVisible(find.widgetWithText(FilledButton, 'Daftar'));
       await tester.tap(find.widgetWithText(FilledButton, 'Daftar'));
       await waitFor(tester, find.text('Kategori Toko'));
+      await capture('auth-05-daftar-info');
       await tester.tap(find.text('Sembako'));
       await tester.tap(find.text('Lanjut'));
       await tester.pumpAndSettle();
+      await capture('auth-06-daftar-pengiriman');
       await tester.ensureVisible(find.widgetWithText(FilledButton, 'Daftar'));
       await tester.tap(find.widgetWithText(FilledButton, 'Daftar'));
       await waitFor(tester, find.text('Toko Kamu Sudah Terdaftar'));
+      await capture('auth-07-daftar-sukses');
       final container = ProviderScope.containerOf(
         tester.element(find.byType(SellerApp)),
       );
@@ -115,6 +122,12 @@ void main() {
       await tester.tap(find.text('+ Tambah Produk').first);
       await tester.pumpAndSettle();
       await capture('04-tambah-produk');
+      await tester.ensureVisible(find.text('Simpan produk'));
+      await tester.tap(find.text('Simpan produk'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('wajib'), findsWidgets);
+      await capture('04-tambah-produk-validasi');
+      await tester.ensureVisible(find.text('Foto Produk'));
       await tester.tap(find.text('Foto Produk'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Pilih dari galeri'));
@@ -219,6 +232,8 @@ void main() {
       expect((await tokoApi.getProfil()).rekeningBank, 'BRI 1234567890');
       await tester.scrollUntilVisible(find.text('Keluar'), 200);
       await tester.tap(find.text('Keluar'));
+      await waitFor(tester, find.text('Keluar dari toko?'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Keluar'));
       await waitFor(tester, find.text('Login ke Toko'));
       await tester.enterText(find.byKey(const Key('email')), email);
       await tester.enterText(

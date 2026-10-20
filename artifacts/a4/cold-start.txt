@@ -1,0 +1,18 @@
+shell am force-stop com.daclanari.seller.dev
+
+shell am start -W -n com.daclanari.seller.dev/com.daclanari.seller.MainActivity
+Starting: Intent { cmp=com.daclanari.seller.dev/com.daclanari.seller.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: com.daclanari.seller.dev/com.daclanari.seller.MainActivity
+TotalTime: 1598
+WaitTime: 1615
+Complete
+
+APK SHA-256: d9a577b7aee1e695bd6a690994dc7c31a349a0238a34f48d0894decc54888eb0
+
+Agregat database toko pengujian terbaru:
+  hari_wib  | seluruh_pesanan | penjualan_hari_ini
+------------+-----------------+--------------------
+ 2026-10-21 |               3 |                  0
+(1 row)

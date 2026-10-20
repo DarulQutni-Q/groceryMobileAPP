@@ -1,0 +1,18 @@
+Backend pytest PostgreSQL + SQLite: 58 passed in 36.08s
+Shared tests: 00:00 +16: All tests passed!
+Seller tests: 00:07 +32: All tests passed!
+Shared analyzer: No issues found! (ran in 2.4s)
+Seller analyzer: No issues found! (ran in 3.3s)
+HTTP/unit/widget total: 58 + 16 + 32 = 106.
+Tiga journey perangkat A2/A3/A4: All tests passed, lihat device.log.
+Controller emulator: Wi-Fi/data dimatikan, dipulihkan, exit 0.
+PostgreSQL migration: 0003_pesanan (head); No new upgrade operations detected.
+OpenAPI: /laporan/ringkasan dan /laporan/produk-terlaris terdaftar.
+SHA-256: 39 file app Python container sama dengan host.
+Backend ruff / compileall / Compose config: lulus.
+Lihat README.md untuk batas visual, platform dan capture integration.
+
+APK akhir: build dev debug berhasil; cold start COLD, Status ok, sesi pulih.
+Native offline/retry: banner muncul saat Wi-Fi/data mati; koneksi dipulihkan dan Coba lagi memuat data.
+Capture native: 28 laporan lengkap; 29 cold start; 30 offline; 31 online kembali.
+PostgreSQL 21 Oktober WIB: toko uji terakhir memiliki 3 pesanan dan penjualan hari ini 0, cocok dengan Beranda.

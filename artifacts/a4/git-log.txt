@@ -1,0 +1,5 @@
+b3ea6e6 hubungkan statistik beranda ke pesanan toko
+a63f029 rapikan kondisi offline dan alur submit seller
+96d902e tambah tampilan laporan seller tujuh dan tiga puluh hari
+b559a85 pertahankan sesi saat refresh terganggu jaringan
+79f434f tambah laporan penjualan seller dengan agregat SQL

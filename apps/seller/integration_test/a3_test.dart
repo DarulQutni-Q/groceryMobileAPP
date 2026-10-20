@@ -111,7 +111,7 @@ void main() {
     await waitClosed(tester, find.text('Kenapa pesanan ditolak?'));
     await waitFor(tester, find.text('Pesanan Ditolak'));
     expect((await api.detail(orders.last.id)).tolakAlasan, 'Stok Habis');
-    await tester.pageBack();
+    await tester.tap(find.byTooltip('Kembali'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('pesanan-tab-selesai')));
     await waitFor(tester, find.text(orders.last.kode));
@@ -130,7 +130,7 @@ void main() {
     await waitFor(tester, find.text('Pesanan ${orders[1].kode} diterima'));
     tester.state<NavigatorState>(find.byType(Navigator)).pop();
     await tester.pumpAndSettle();
-    await tester.pageBack();
+    await tester.tap(find.byTooltip('Kembali'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('pesanan-tab-diproses')));
     await waitFor(tester, find.text(orders[1].kode));
@@ -148,7 +148,7 @@ void main() {
     await waitFor(tester, find.text('Pesanan Selesai'));
     expect((await api.detail(orders[1].id)).status, 'selesai');
     await capture('09-detail-selesai');
-    await tester.pageBack();
+    await tester.tap(find.byTooltip('Kembali'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('pesanan-tab-baru')));
     await tester.pumpAndSettle();
@@ -166,7 +166,7 @@ void main() {
     await tester.tap(find.byKey(const Key('pesanan-reject-confirm')));
     await waitClosed(tester, find.text('Kenapa pesanan ditolak?'));
     await waitFor(tester, find.text('Pesanan Ditolak'));
-    await tester.pageBack();
+    await tester.tap(find.byTooltip('Kembali'));
     await tester.pumpAndSettle();
     await waitFor(tester, find.text('Belum ada pesanan baru'));
     await capture('11-pesanan-kosong');
