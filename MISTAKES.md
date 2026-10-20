@@ -26,3 +26,11 @@
 - Dampak: koneksi putus, timeout atau respons 503 dapat menghapus token dan mengeluarkan seller ketika mencoba memuat ulang data.
 - Perbaikan: akhiri sesi hanya untuk penolakan autentikasi definitif atau refresh token yang hilang. Pertahankan token pada kegagalan sementara; empat tes API melindungi refresh offline/timeout/503 dan replay offline, termasuk request berikutnya setelah jaringan pulih.
 - Kejadian: satu akar masalah pada shared client. Tidak ada assertion lama yang dilemahkan.
+
+## 21 Oktober 2026: batas validasi dan jalur log A5
+
+- Penyebab: validator NUL awal menelusuri list/dict secara rekursif sebelum tipe field divalidasi. Struktur bertingkat dapat memicu RecursionError. Parser juga tidak selalu menolak JSON dalam dengan status yang sama.
+- Dampak: input yang salah tipe berpotensi 500. Perbaikan memakai traversal iteratif dan batas JSON eksplisit 100 tingkat; tes nested field 1000 tingkat dan matriks HTTP tetap mempertahankan assertion awal.
+- Penyebab observabilitas: fallback error dikirim di luar CORS dan access log Uvicorn tetap mencetak query meskipun logger JSON sudah menghilangkannya.
+- Dampak: browser kehilangan akses ke pesan 503/ID dan query rahasia berpotensi masuk log kedua. Fallback kini melewati CORS; entry point menonaktifkan access log bawaan dan diuji memakai marker buatan.
+- Kejadian: satu audit A5 dengan tiga akar masalah berbeda. Belum menjadi aturan permanen tiga kejadian.

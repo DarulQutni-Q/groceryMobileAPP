@@ -1,0 +1,8 @@
+{
+  "http_cases": 369,
+  "unexpected": 0,
+  "server_500_in_acceptance": 0,
+  "pytest": "138 passed, 0 skipped",
+  "sqlite_postgresql": true,
+  "production_container": true
+}

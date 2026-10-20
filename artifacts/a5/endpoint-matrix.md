@@ -1,0 +1,375 @@
+# Matriks endpoint A5
+
+Hasil aktual dari HTTP TestClient SQLite/PostgreSQL dan container Docker production.
+
+| Lingkungan | Endpoint | Input | Expected | Actual |
+| --- | --- | --- | --- | --- |
+| PostgreSQL | PATCH /auth/fcm-token | JSON rusak | 422 | 422 |
+| PostgreSQL | PATCH /auth/fcm-token | array sebagai objek | 422 | 422 |
+| PostgreSQL | PATCH /auth/fcm-token | string kosong | 422 | 422 |
+| PostgreSQL | PATCH /auth/fcm-token | angka negatif sebagai body | 422 | 422 |
+| PostgreSQL | PATCH /auth/fcm-token | JSON terlalu dalam | 400 | 400 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/status | JSON rusak | 422 | 422 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/status | array sebagai objek | 422 | 422 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/status | string kosong | 422 | 422 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/status | angka negatif sebagai body | 422 | 422 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/status | JSON terlalu dalam | 400 | 400 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/tolak | JSON rusak | 422 | 422 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/tolak | array sebagai objek | 422 | 422 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/tolak | string kosong | 422 | 422 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/tolak | angka negatif sebagai body | 422 | 422 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/tolak | JSON terlalu dalam | 400 | 400 |
+| PostgreSQL | PATCH /toko/me/status | JSON rusak | 422 | 422 |
+| PostgreSQL | PATCH /toko/me/status | array sebagai objek | 422 | 422 |
+| PostgreSQL | PATCH /toko/me/status | string kosong | 422 | 422 |
+| PostgreSQL | PATCH /toko/me/status | angka negatif sebagai body | 422 | 422 |
+| PostgreSQL | PATCH /toko/me/status | JSON terlalu dalam | 400 | 400 |
+| PostgreSQL | POST /auth/google | JSON rusak | 422 | 422 |
+| PostgreSQL | POST /auth/google | array sebagai objek | 422 | 422 |
+| PostgreSQL | POST /auth/google | string kosong | 422 | 422 |
+| PostgreSQL | POST /auth/google | angka negatif sebagai body | 422 | 422 |
+| PostgreSQL | POST /auth/google | JSON terlalu dalam | 400 | 400 |
+| PostgreSQL | POST /auth/login | JSON rusak | 422 | 422 |
+| PostgreSQL | POST /auth/login | array sebagai objek | 422 | 422 |
+| PostgreSQL | POST /auth/login | string kosong | 422 | 422 |
+| PostgreSQL | POST /auth/login | angka negatif sebagai body | 422 | 422 |
+| PostgreSQL | POST /auth/login | JSON terlalu dalam | 400 | 400 |
+| PostgreSQL | POST /auth/refresh | JSON rusak | 422 | 422 |
+| PostgreSQL | POST /auth/refresh | array sebagai objek | 422 | 422 |
+| PostgreSQL | POST /auth/refresh | string kosong | 422 | 422 |
+| PostgreSQL | POST /auth/refresh | angka negatif sebagai body | 422 | 422 |
+| PostgreSQL | POST /auth/refresh | JSON terlalu dalam | 400 | 400 |
+| PostgreSQL | POST /auth/register | JSON rusak | 422 | 422 |
+| PostgreSQL | POST /auth/register | array sebagai objek | 422 | 422 |
+| PostgreSQL | POST /auth/register | string kosong | 422 | 422 |
+| PostgreSQL | POST /auth/register | angka negatif sebagai body | 422 | 422 |
+| PostgreSQL | POST /auth/register | JSON terlalu dalam | 400 | 400 |
+| PostgreSQL | POST /pesanan/internal/test | JSON rusak | 422 | 422 |
+| PostgreSQL | POST /pesanan/internal/test | array sebagai objek | 422 | 422 |
+| PostgreSQL | POST /pesanan/internal/test | string kosong | 422 | 422 |
+| PostgreSQL | POST /pesanan/internal/test | angka negatif sebagai body | 422 | 422 |
+| PostgreSQL | POST /pesanan/internal/test | JSON terlalu dalam | 400 | 400 |
+| PostgreSQL | POST /produk | JSON rusak | 422 | 422 |
+| PostgreSQL | POST /produk | array sebagai objek | 422 | 422 |
+| PostgreSQL | POST /produk | string kosong | 422 | 422 |
+| PostgreSQL | POST /produk | angka negatif sebagai body | 422 | 422 |
+| PostgreSQL | POST /produk | JSON terlalu dalam | 400 | 400 |
+| PostgreSQL | PUT /produk/{produk_id} | JSON rusak | 422 | 422 |
+| PostgreSQL | PUT /produk/{produk_id} | array sebagai objek | 422 | 422 |
+| PostgreSQL | PUT /produk/{produk_id} | string kosong | 422 | 422 |
+| PostgreSQL | PUT /produk/{produk_id} | angka negatif sebagai body | 422 | 422 |
+| PostgreSQL | PUT /produk/{produk_id} | JSON terlalu dalam | 400 | 400 |
+| PostgreSQL | PUT /toko/me/jam-buka | JSON rusak | 422 | 422 |
+| PostgreSQL | PUT /toko/me/jam-buka | array sebagai objek | 422 | 422 |
+| PostgreSQL | PUT /toko/me/jam-buka | string kosong | 422 | 422 |
+| PostgreSQL | PUT /toko/me/jam-buka | angka negatif sebagai body | 422 | 422 |
+| PostgreSQL | PUT /toko/me/jam-buka | JSON terlalu dalam | 400 | 400 |
+| PostgreSQL | PUT /toko/me | JSON rusak | 422 | 422 |
+| PostgreSQL | PUT /toko/me | array sebagai objek | 422 | 422 |
+| PostgreSQL | PUT /toko/me | string kosong | 422 | 422 |
+| PostgreSQL | PUT /toko/me | angka negatif sebagai body | 422 | 422 |
+| PostgreSQL | PUT /toko/me | JSON terlalu dalam | 400 | 400 |
+| PostgreSQL | PATCH /produk/{produk_id}/toggle | integer JSON 5000 digit | 400 | 400 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/terima | integer JSON 5000 digit | 400 | 400 |
+| PostgreSQL | DELETE /produk/{produk_id} | integer JSON 5000 digit | 400 | 400 |
+| PostgreSQL | GET /auth/me | tanpa JWT | 401 | 401 |
+| PostgreSQL | PATCH /auth/fcm-token | tanpa JWT | 401 | 401 |
+| PostgreSQL | GET /toko/me | tanpa JWT | 401 | 401 |
+| PostgreSQL | PUT /toko/me | tanpa JWT | 401 | 401 |
+| PostgreSQL | PATCH /toko/me/status | tanpa JWT | 401 | 401 |
+| PostgreSQL | GET /toko/me/jam-buka | tanpa JWT | 401 | 401 |
+| PostgreSQL | PUT /toko/me/jam-buka | tanpa JWT | 401 | 401 |
+| PostgreSQL | GET /produk | tanpa JWT | 401 | 401 |
+| PostgreSQL | POST /produk | tanpa JWT | 401 | 401 |
+| PostgreSQL | GET /produk/{produk_id} | tanpa JWT | 401 | 401 |
+| PostgreSQL | PUT /produk/{produk_id} | tanpa JWT | 401 | 401 |
+| PostgreSQL | DELETE /produk/{produk_id} | tanpa JWT | 401 | 401 |
+| PostgreSQL | PATCH /produk/{produk_id}/toggle | tanpa JWT | 401 | 401 |
+| PostgreSQL | POST /produk/{produk_id}/foto | tanpa JWT | 401 | 401 |
+| PostgreSQL | GET /pesanan | tanpa JWT | 401 | 401 |
+| PostgreSQL | POST /pesanan/internal/test | tanpa JWT | 401 | 401 |
+| PostgreSQL | GET /pesanan/{pesanan_id} | tanpa JWT | 401 | 401 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/terima | tanpa JWT | 401 | 401 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/tolak | tanpa JWT | 401 | 401 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/status | tanpa JWT | 401 | 401 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/urungkan | tanpa JWT | 401 | 401 |
+| PostgreSQL | GET /laporan/ringkasan | tanpa JWT | 401 | 401 |
+| PostgreSQL | GET /laporan/produk-terlaris | tanpa JWT | 401 | 401 |
+| PostgreSQL | GET /produk/{produk_id} | UUID ngawur | 422 | 422 |
+| PostgreSQL | PUT /produk/{produk_id} | UUID ngawur | 422 | 422 |
+| PostgreSQL | DELETE /produk/{produk_id} | UUID ngawur | 422 | 422 |
+| PostgreSQL | PATCH /produk/{produk_id}/toggle | UUID ngawur | 422 | 422 |
+| PostgreSQL | POST /produk/{produk_id}/foto | UUID ngawur | 422 | 422 |
+| PostgreSQL | GET /pesanan/{pesanan_id} | UUID ngawur | 422 | 422 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/terima | UUID ngawur | 422 | 422 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/tolak | UUID ngawur | 422 | 422 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/status | UUID ngawur | 422 | 422 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/urungkan | UUID ngawur | 422 | 422 |
+| PostgreSQL | POST /auth/register | teks NUL | 422 | 422 |
+| PostgreSQL | PATCH /auth/fcm-token | teks NUL | 422 | 422 |
+| PostgreSQL | PUT /toko/me | teks NUL | 422 | 422 |
+| PostgreSQL | POST /produk | teks NUL | 422 | 422 |
+| PostgreSQL | PATCH /pesanan/{pesanan_id}/tolak | teks NUL | 422 | 422 |
+| PostgreSQL | POST /pesanan/internal/test | teks NUL | 422 | 422 |
+| PostgreSQL | GET /produk | q NUL | 422 | 422 |
+| PostgreSQL | GET /produk | kategori NUL | 422 | 422 |
+| PostgreSQL | POST /auth/register | input valid | 200 | 200 |
+| PostgreSQL | POST /auth/login | input valid | 200 | 200 |
+| PostgreSQL | POST /auth/refresh | input valid | 200 | 200 |
+| PostgreSQL | GET /auth/me | input valid | 200 | 200 |
+| PostgreSQL | PATCH /auth/fcm-token | input valid | 200 | 200 |
+| PostgreSQL | POST /auth/google | Google belum dikonfigurasi | 503 | 503 |
+| PostgreSQL | GET /health | input valid | 200 | 200 |
+| PostgreSQL | GET /toko/me | input valid | 200 | 200 |
+| PostgreSQL | PUT /toko/me | input valid | 200 | 200 |
+| PostgreSQL | PATCH /toko/me/status | input valid | 200 | 200 |
+| PostgreSQL | PATCH /toko/me/status | input valid | 200 | 200 |
+| PostgreSQL | GET /toko/me/jam-buka | input valid | 200 | 200 |
+| PostgreSQL | PUT /toko/me/jam-buka | input valid | 200 | 200 |
+| PostgreSQL | POST /produk | input valid | 200 | 200 |
+| PostgreSQL | GET /produk | input valid | 200 | 200 |
+| PostgreSQL | GET /produk?page=1&per_page=200 | input valid | 200 | 200 |
+| PostgreSQL | GET /produk/4dd720fc-431d-4cc9-ae03-86ec18de8d55 | input valid | 200 | 200 |
+| PostgreSQL | PUT /produk/4dd720fc-431d-4cc9-ae03-86ec18de8d55 | input valid | 200 | 200 |
+| PostgreSQL | PATCH /produk/4dd720fc-431d-4cc9-ae03-86ec18de8d55/toggle | input valid | 200 | 200 |
+| PostgreSQL | POST /produk/4dd720fc-431d-4cc9-ae03-86ec18de8d55/foto | input valid | 200 | 200 |
+| PostgreSQL | GET /uploads/2c055e786ad34c498c67e4c884f82396.png | input valid | 200 | 200 |
+| PostgreSQL | POST /pesanan/internal/test | input valid | 200 | 200 |
+| PostgreSQL | GET /pesanan | input valid | 200 | 200 |
+| PostgreSQL | GET /pesanan?page=1 | input valid | 200 | 200 |
+| PostgreSQL | GET /pesanan/3f9c0e3b-dd05-4704-b493-68b50d65eb05 | input valid | 200 | 200 |
+| PostgreSQL | PATCH /pesanan/3f9c0e3b-dd05-4704-b493-68b50d65eb05/terima | input valid | 200 | 200 |
+| PostgreSQL | PATCH /pesanan/3f9c0e3b-dd05-4704-b493-68b50d65eb05/urungkan | input valid | 200 | 200 |
+| PostgreSQL | PATCH /pesanan/3f9c0e3b-dd05-4704-b493-68b50d65eb05/terima | input valid | 200 | 200 |
+| PostgreSQL | PATCH /pesanan/3f9c0e3b-dd05-4704-b493-68b50d65eb05/status | input valid | 200 | 200 |
+| PostgreSQL | PATCH /pesanan/3f9c0e3b-dd05-4704-b493-68b50d65eb05/status | input valid | 200 | 200 |
+| PostgreSQL | PATCH /pesanan/3f9c0e3b-dd05-4704-b493-68b50d65eb05/status | input valid | 200 | 200 |
+| PostgreSQL | POST /pesanan/internal/test | input valid | 200 | 200 |
+| PostgreSQL | PATCH /pesanan/5bb08fbb-b994-497d-909f-3317e9607b18/tolak | input valid | 200 | 200 |
+| PostgreSQL | GET /laporan/ringkasan?range=7h | input valid | 200 | 200 |
+| PostgreSQL | GET /laporan/produk-terlaris?range=30h&limit=5 | input valid | 200 | 200 |
+| PostgreSQL | DELETE /produk/4dd720fc-431d-4cc9-ae03-86ec18de8d55 | input valid | 200 | 200 |
+| SQLite | PATCH /auth/fcm-token | JSON rusak | 422 | 422 |
+| SQLite | PATCH /auth/fcm-token | array sebagai objek | 422 | 422 |
+| SQLite | PATCH /auth/fcm-token | string kosong | 422 | 422 |
+| SQLite | PATCH /auth/fcm-token | angka negatif sebagai body | 422 | 422 |
+| SQLite | PATCH /auth/fcm-token | JSON terlalu dalam | 400 | 400 |
+| SQLite | PATCH /pesanan/{pesanan_id}/status | JSON rusak | 422 | 422 |
+| SQLite | PATCH /pesanan/{pesanan_id}/status | array sebagai objek | 422 | 422 |
+| SQLite | PATCH /pesanan/{pesanan_id}/status | string kosong | 422 | 422 |
+| SQLite | PATCH /pesanan/{pesanan_id}/status | angka negatif sebagai body | 422 | 422 |
+| SQLite | PATCH /pesanan/{pesanan_id}/status | JSON terlalu dalam | 400 | 400 |
+| SQLite | PATCH /pesanan/{pesanan_id}/tolak | JSON rusak | 422 | 422 |
+| SQLite | PATCH /pesanan/{pesanan_id}/tolak | array sebagai objek | 422 | 422 |
+| SQLite | PATCH /pesanan/{pesanan_id}/tolak | string kosong | 422 | 422 |
+| SQLite | PATCH /pesanan/{pesanan_id}/tolak | angka negatif sebagai body | 422 | 422 |
+| SQLite | PATCH /pesanan/{pesanan_id}/tolak | JSON terlalu dalam | 400 | 400 |
+| SQLite | PATCH /toko/me/status | JSON rusak | 422 | 422 |
+| SQLite | PATCH /toko/me/status | array sebagai objek | 422 | 422 |
+| SQLite | PATCH /toko/me/status | string kosong | 422 | 422 |
+| SQLite | PATCH /toko/me/status | angka negatif sebagai body | 422 | 422 |
+| SQLite | PATCH /toko/me/status | JSON terlalu dalam | 400 | 400 |
+| SQLite | POST /auth/google | JSON rusak | 422 | 422 |
+| SQLite | POST /auth/google | array sebagai objek | 422 | 422 |
+| SQLite | POST /auth/google | string kosong | 422 | 422 |
+| SQLite | POST /auth/google | angka negatif sebagai body | 422 | 422 |
+| SQLite | POST /auth/google | JSON terlalu dalam | 400 | 400 |
+| SQLite | POST /auth/login | JSON rusak | 422 | 422 |
+| SQLite | POST /auth/login | array sebagai objek | 422 | 422 |
+| SQLite | POST /auth/login | string kosong | 422 | 422 |
+| SQLite | POST /auth/login | angka negatif sebagai body | 422 | 422 |
+| SQLite | POST /auth/login | JSON terlalu dalam | 400 | 400 |
+| SQLite | POST /auth/refresh | JSON rusak | 422 | 422 |
+| SQLite | POST /auth/refresh | array sebagai objek | 422 | 422 |
+| SQLite | POST /auth/refresh | string kosong | 422 | 422 |
+| SQLite | POST /auth/refresh | angka negatif sebagai body | 422 | 422 |
+| SQLite | POST /auth/refresh | JSON terlalu dalam | 400 | 400 |
+| SQLite | POST /auth/register | JSON rusak | 422 | 422 |
+| SQLite | POST /auth/register | array sebagai objek | 422 | 422 |
+| SQLite | POST /auth/register | string kosong | 422 | 422 |
+| SQLite | POST /auth/register | angka negatif sebagai body | 422 | 422 |
+| SQLite | POST /auth/register | JSON terlalu dalam | 400 | 400 |
+| SQLite | POST /pesanan/internal/test | JSON rusak | 422 | 422 |
+| SQLite | POST /pesanan/internal/test | array sebagai objek | 422 | 422 |
+| SQLite | POST /pesanan/internal/test | string kosong | 422 | 422 |
+| SQLite | POST /pesanan/internal/test | angka negatif sebagai body | 422 | 422 |
+| SQLite | POST /pesanan/internal/test | JSON terlalu dalam | 400 | 400 |
+| SQLite | POST /produk | JSON rusak | 422 | 422 |
+| SQLite | POST /produk | array sebagai objek | 422 | 422 |
+| SQLite | POST /produk | string kosong | 422 | 422 |
+| SQLite | POST /produk | angka negatif sebagai body | 422 | 422 |
+| SQLite | POST /produk | JSON terlalu dalam | 400 | 400 |
+| SQLite | PUT /produk/{produk_id} | JSON rusak | 422 | 422 |
+| SQLite | PUT /produk/{produk_id} | array sebagai objek | 422 | 422 |
+| SQLite | PUT /produk/{produk_id} | string kosong | 422 | 422 |
+| SQLite | PUT /produk/{produk_id} | angka negatif sebagai body | 422 | 422 |
+| SQLite | PUT /produk/{produk_id} | JSON terlalu dalam | 400 | 400 |
+| SQLite | PUT /toko/me/jam-buka | JSON rusak | 422 | 422 |
+| SQLite | PUT /toko/me/jam-buka | array sebagai objek | 422 | 422 |
+| SQLite | PUT /toko/me/jam-buka | string kosong | 422 | 422 |
+| SQLite | PUT /toko/me/jam-buka | angka negatif sebagai body | 422 | 422 |
+| SQLite | PUT /toko/me/jam-buka | JSON terlalu dalam | 400 | 400 |
+| SQLite | PUT /toko/me | JSON rusak | 422 | 422 |
+| SQLite | PUT /toko/me | array sebagai objek | 422 | 422 |
+| SQLite | PUT /toko/me | string kosong | 422 | 422 |
+| SQLite | PUT /toko/me | angka negatif sebagai body | 422 | 422 |
+| SQLite | PUT /toko/me | JSON terlalu dalam | 400 | 400 |
+| SQLite | PATCH /produk/{produk_id}/toggle | integer JSON 5000 digit | 400 | 400 |
+| SQLite | PATCH /pesanan/{pesanan_id}/terima | integer JSON 5000 digit | 400 | 400 |
+| SQLite | DELETE /produk/{produk_id} | integer JSON 5000 digit | 400 | 400 |
+| SQLite | GET /auth/me | tanpa JWT | 401 | 401 |
+| SQLite | PATCH /auth/fcm-token | tanpa JWT | 401 | 401 |
+| SQLite | GET /toko/me | tanpa JWT | 401 | 401 |
+| SQLite | PUT /toko/me | tanpa JWT | 401 | 401 |
+| SQLite | PATCH /toko/me/status | tanpa JWT | 401 | 401 |
+| SQLite | GET /toko/me/jam-buka | tanpa JWT | 401 | 401 |
+| SQLite | PUT /toko/me/jam-buka | tanpa JWT | 401 | 401 |
+| SQLite | GET /produk | tanpa JWT | 401 | 401 |
+| SQLite | POST /produk | tanpa JWT | 401 | 401 |
+| SQLite | GET /produk/{produk_id} | tanpa JWT | 401 | 401 |
+| SQLite | PUT /produk/{produk_id} | tanpa JWT | 401 | 401 |
+| SQLite | DELETE /produk/{produk_id} | tanpa JWT | 401 | 401 |
+| SQLite | PATCH /produk/{produk_id}/toggle | tanpa JWT | 401 | 401 |
+| SQLite | POST /produk/{produk_id}/foto | tanpa JWT | 401 | 401 |
+| SQLite | GET /pesanan | tanpa JWT | 401 | 401 |
+| SQLite | POST /pesanan/internal/test | tanpa JWT | 401 | 401 |
+| SQLite | GET /pesanan/{pesanan_id} | tanpa JWT | 401 | 401 |
+| SQLite | PATCH /pesanan/{pesanan_id}/terima | tanpa JWT | 401 | 401 |
+| SQLite | PATCH /pesanan/{pesanan_id}/tolak | tanpa JWT | 401 | 401 |
+| SQLite | PATCH /pesanan/{pesanan_id}/status | tanpa JWT | 401 | 401 |
+| SQLite | PATCH /pesanan/{pesanan_id}/urungkan | tanpa JWT | 401 | 401 |
+| SQLite | GET /laporan/ringkasan | tanpa JWT | 401 | 401 |
+| SQLite | GET /laporan/produk-terlaris | tanpa JWT | 401 | 401 |
+| SQLite | GET /produk/{produk_id} | UUID ngawur | 422 | 422 |
+| SQLite | PUT /produk/{produk_id} | UUID ngawur | 422 | 422 |
+| SQLite | DELETE /produk/{produk_id} | UUID ngawur | 422 | 422 |
+| SQLite | PATCH /produk/{produk_id}/toggle | UUID ngawur | 422 | 422 |
+| SQLite | POST /produk/{produk_id}/foto | UUID ngawur | 422 | 422 |
+| SQLite | GET /pesanan/{pesanan_id} | UUID ngawur | 422 | 422 |
+| SQLite | PATCH /pesanan/{pesanan_id}/terima | UUID ngawur | 422 | 422 |
+| SQLite | PATCH /pesanan/{pesanan_id}/tolak | UUID ngawur | 422 | 422 |
+| SQLite | PATCH /pesanan/{pesanan_id}/status | UUID ngawur | 422 | 422 |
+| SQLite | PATCH /pesanan/{pesanan_id}/urungkan | UUID ngawur | 422 | 422 |
+| SQLite | POST /auth/register | teks NUL | 422 | 422 |
+| SQLite | PATCH /auth/fcm-token | teks NUL | 422 | 422 |
+| SQLite | PUT /toko/me | teks NUL | 422 | 422 |
+| SQLite | POST /produk | teks NUL | 422 | 422 |
+| SQLite | PATCH /pesanan/{pesanan_id}/tolak | teks NUL | 422 | 422 |
+| SQLite | POST /pesanan/internal/test | teks NUL | 422 | 422 |
+| SQLite | GET /produk | q NUL | 422 | 422 |
+| SQLite | GET /produk | kategori NUL | 422 | 422 |
+| SQLite | POST /auth/register | input valid | 200 | 200 |
+| SQLite | POST /auth/login | input valid | 200 | 200 |
+| SQLite | POST /auth/refresh | input valid | 200 | 200 |
+| SQLite | GET /auth/me | input valid | 200 | 200 |
+| SQLite | PATCH /auth/fcm-token | input valid | 200 | 200 |
+| SQLite | POST /auth/google | Google belum dikonfigurasi | 503 | 503 |
+| SQLite | GET /health | input valid | 200 | 200 |
+| SQLite | GET /toko/me | input valid | 200 | 200 |
+| SQLite | PUT /toko/me | input valid | 200 | 200 |
+| SQLite | PATCH /toko/me/status | input valid | 200 | 200 |
+| SQLite | PATCH /toko/me/status | input valid | 200 | 200 |
+| SQLite | GET /toko/me/jam-buka | input valid | 200 | 200 |
+| SQLite | PUT /toko/me/jam-buka | input valid | 200 | 200 |
+| SQLite | POST /produk | input valid | 200 | 200 |
+| SQLite | GET /produk | input valid | 200 | 200 |
+| SQLite | GET /produk?page=1&per_page=200 | input valid | 200 | 200 |
+| SQLite | GET /produk/01cfe001-7328-4780-a52c-d6a1ba03fc96 | input valid | 200 | 200 |
+| SQLite | PUT /produk/01cfe001-7328-4780-a52c-d6a1ba03fc96 | input valid | 200 | 200 |
+| SQLite | PATCH /produk/01cfe001-7328-4780-a52c-d6a1ba03fc96/toggle | input valid | 200 | 200 |
+| SQLite | POST /produk/01cfe001-7328-4780-a52c-d6a1ba03fc96/foto | input valid | 200 | 200 |
+| SQLite | GET /uploads/93ea9c284fc54233a6dc5f3ffeba1b82.png | input valid | 200 | 200 |
+| SQLite | POST /pesanan/internal/test | input valid | 200 | 200 |
+| SQLite | GET /pesanan | input valid | 200 | 200 |
+| SQLite | GET /pesanan?page=1 | input valid | 200 | 200 |
+| SQLite | GET /pesanan/01b1b159-69f0-463b-a20e-bc4ea7084e93 | input valid | 200 | 200 |
+| SQLite | PATCH /pesanan/01b1b159-69f0-463b-a20e-bc4ea7084e93/terima | input valid | 200 | 200 |
+| SQLite | PATCH /pesanan/01b1b159-69f0-463b-a20e-bc4ea7084e93/urungkan | input valid | 200 | 200 |
+| SQLite | PATCH /pesanan/01b1b159-69f0-463b-a20e-bc4ea7084e93/terima | input valid | 200 | 200 |
+| SQLite | PATCH /pesanan/01b1b159-69f0-463b-a20e-bc4ea7084e93/status | input valid | 200 | 200 |
+| SQLite | PATCH /pesanan/01b1b159-69f0-463b-a20e-bc4ea7084e93/status | input valid | 200 | 200 |
+| SQLite | PATCH /pesanan/01b1b159-69f0-463b-a20e-bc4ea7084e93/status | input valid | 200 | 200 |
+| SQLite | POST /pesanan/internal/test | input valid | 200 | 200 |
+| SQLite | PATCH /pesanan/fda83125-b078-4746-b564-1ef448d43dee/tolak | input valid | 200 | 200 |
+| SQLite | GET /laporan/ringkasan?range=7h | input valid | 200 | 200 |
+| SQLite | GET /laporan/produk-terlaris?range=30h&limit=5 | input valid | 200 | 200 |
+| SQLite | DELETE /produk/01cfe001-7328-4780-a52c-d6a1ba03fc96 | input valid | 200 | 200 |
+| Docker prod | GET /health | DB aktif | 200 | 200 |
+| Docker prod | GET /docs | ENV=prod | 404 | 404 |
+| Docker prod | GET /redoc | ENV=prod | 404 | 404 |
+| Docker prod | GET /openapi.json | ENV=prod | 404 | 404 |
+| Docker prod | POST /pesanan/internal/test | ENV=prod tanpa JWT | 404 | 404 |
+| Docker prod | GET /produk | tanpa JWT | 401 | 401 |
+| Docker prod | POST /auth/register | registrasi pertama | 200 | 200 |
+| Docker prod | POST /auth/register | email duplikat | 400 | 400 |
+| Docker prod | POST /auth/register | email duplikat | 400 | 400 |
+| Docker prod | POST /auth/register | registrasi keempat | 429 | 429 |
+| Docker prod | POST /auth/login | login salah | 401 | 401 |
+| Docker prod | POST /auth/login | login salah | 401 | 401 |
+| Docker prod | POST /auth/login | login salah | 401 | 401 |
+| Docker prod | POST /auth/login | login salah | 401 | 401 |
+| Docker prod | POST /auth/login | login salah | 401 | 401 |
+| Docker prod | POST /auth/login | login keenam | 429 | 429 |
+| Docker prod | POST /produk | produk valid | 200 | 200 |
+| Docker prod | GET /produk | per_page=200 | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | kuota mutasi | 200 | 200 |
+| Docker prod | PATCH /toko/me/status | mutasi ke-61 | 429 | 429 |
+| Docker prod | GET /health | koneksi PostgreSQL mati | 503 | 503 |

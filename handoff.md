@@ -1,3 +1,53 @@
+# Handoff Fase A5
+
+## Hasil dan kontrak
+
+Backend A5 sudah diimplementasikan dan diuji. Rincian per file, contoh curl dan
+batas cakupan ada di A5_API.md; rencana/ADR ada di A5_PLAN.md; bukti di artifacts/a5/.
+Tidak ada Flutter yang diubah dalam fase ini. Perubahan pengguna yang sudah ada
+di seller_shell.dart, dokumen A3/root dan specs untracked tetap dipertahankan.
+
+JWT memuat User+toko dalam satu query. List pesanan joinedload items/customer;
+detail/mutasi tetap selectinload dan row lock. Pagination eksplisit dengan page
+atau per_page menghasilkan data/meta, default1/20 dan clamp100. Request lama
+tanpa parameter tetap array lengkap supaya Dio dan statistik Beranda tidak rusak.
+Index status pesanan/kategori produk ditambahkan lewat0004_query_indexes; kedua
+toko_id dan unique email sudah berindex, tidak diduplikasi.
+
+Login5/menit/IP, register3/menit/IP dan mutasi60/menit/user sudah diuji, termasuk
+429 dengan sisa detik. JSON request log dan traceback stderr aktif, default
+Uvicorn access log dinonaktifkan agar query rahasia tidak ikut tercetak.
+CORS env ketat, docs/internal non-dev404 sebelum parser; health SELECT1 dengan
+versi1.0.0 dan DB gagal503. NUL, batas integer/string/telepon/boolean, JSON dalam
+dan integer5000digit ditangani tanpa500 pada acceptance.
+
+## Bukti dan batas
+
+138 tes lulus tanpa skip (89.19detik), 369 kasus HTTP expected=actual tanpa500.
+Ruff, compile, Compose, migration upgrade/downgrade/check dan dua review lulus.
+Docker prod mengulang rate limit, health DB mati, guard404 dan cap100; marker
+query/password/JWT tidak masuk log. Hash45file app container sama dengan host.
+Container/schema runtime uji dibersihkan; backend utama tetap ENVdev, port8000,
+health200, migrationhead0004_query_indexes. Build memakai classic builder karena
+plugin buildx tidak tersedia; build image tetap berhasil.
+
+Invoice/webhook Xendit belum ada, sehingga tidak membuat fitur pembayaran baru
+dan tidak mengklaim batas invoice/token webhook terverifikasi. Refresh/Google
+dan URL foto publik dipertahankan agar Flutter tetap kompatibel. Memory limiter
+berlaku pada satu proses yang diuji; Redis aktif multiworker dan deployment
+internet belum diuji. Perubahan A5 dibuat dalam commit kecil; push A5 belum dilakukan.
+
+## Masalah tombol Toko
+
+toko_screen.dart menampilkan Chip tanpa callback, sehingga tidak bisa diklik.
+PATCH /toko/me/status telah terbukti bisa membuka/menutup toko melalui API.
+Perbaikan UI yang disarankan memakai ActionChip dan StoreNotifier.mutate yang
+sudah dipakai Beranda, beserta busy/error/refresh dan tes widget. Pertanyaan
+pengecualian Flutter masih belum dijawab; jangan menganggap sudah disetujui.
+Setelah izin itu jelas, lanjut pada task baru agar konteks perubahan UI terpisah.
+
+## Arsip handoff A4
+
 # Handoff Fase A4
 
 ## Hasil dan keputusan
