@@ -10,7 +10,14 @@ class ConfiguredCors:
         if scope["type"] != "http":
             return await self.app(scope, receive, send)
         if (
-            scope["path"] in {"/docs", "/redoc", "/openapi.json", "/docs/oauth2-redirect"}
+            scope["path"].rstrip("/")
+            in {
+                "/docs",
+                "/redoc",
+                "/openapi.json",
+                "/docs/oauth2-redirect",
+                "/pesanan/internal/test",
+            }
             and scope["app"].state.settings.env != "dev"
         ):
             return await JSONResponse({"detail": "Tidak ditemukan"}, status_code=404)(

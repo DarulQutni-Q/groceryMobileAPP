@@ -3,6 +3,7 @@ from uuid import UUID
 
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import sessionmaker
 from test_toko import register
 
@@ -72,3 +73,16 @@ def test_unexpected_error_returns_request_id_and_logs_traceback(client, capfd):
     assert "Traceback (most recent call last)" in failure["traceback"]
     assert "a5-test-fault" in failure["traceback"]
     assert any(row.get("status_code") == 500 for row in records)
+
+
+def test_database_fallback_keeps_cors_headers(client):
+    def unavailable():
+        raise OperationalError("SELECT 1", {}, RuntimeError("a5-database-unavailable"))
+
+    client.app.add_api_route("/a5-unavailable", unavailable, methods=["GET"])
+    with TestClient(client.app, raise_server_exceptions=False) as http:
+        http.app.state.settings.cors_origins = ["https://seller.example.com"]
+        response = http.get("/a5-unavailable", headers={"Origin": "https://seller.example.com"})
+    assert response.status_code == 503
+    assert response.headers["access-control-allow-origin"] == "https://seller.example.com"
+    assert "X-Request-ID" in response.headers["access-control-expose-headers"]

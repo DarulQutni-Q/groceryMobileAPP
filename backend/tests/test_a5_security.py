@@ -28,6 +28,14 @@ def test_dev_documentation_and_prod_internal_guard(client):
     assert client.post("/pesanan/internal/test").status_code == 404
 
 
+def test_production_hides_internal_route_even_with_malformed_body(client):
+    client.app.state.settings.env = "prod"
+    result = client.post(
+        "/pesanan/internal/test", content="{", headers={"Content-Type": "application/json"}
+    )
+    assert result.status_code == 404
+
+
 def test_cors_exposes_request_id_only_to_configured_origin(client, account):
     client.app.state.settings.cors_origins = ["https://seller.example.com"]
     response = client.get(

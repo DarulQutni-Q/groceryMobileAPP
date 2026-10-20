@@ -9,6 +9,8 @@ from uuid import uuid4
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
+from app.core.cors import ConfiguredCors
+
 
 class StderrHandler(logging.StreamHandler):
     def emit(self, record):
@@ -63,7 +65,7 @@ class RequestLog:
                         else "Terjadi kesalahan server. Hubungi pengelola dengan ID permintaan."
                     },
                 )
-                await response(scope, receive, response_send)
+                await ConfiguredCors(response)(scope, receive, response_send)
             raise
         finally:
             logger.info(
