@@ -73,12 +73,18 @@ class ApiClient {
     if (request.extra['retried'] == true) {
       return _rejectWithExpiry(error, handler);
     }
+    var refreshing = false;
     try {
       final current = await storage.readAccessToken();
       final sent = request.headers['Authorization'];
-      final token = current != null && sent != 'Bearer $current'
-          ? current
-          : await _refreshOnce(request.extra['sessionGeneration'] as int);
+      final String token;
+      if (current != null && sent != 'Bearer $current') {
+        token = current;
+      } else {
+        refreshing = true;
+        token = await _refreshOnce(request.extra['sessionGeneration'] as int);
+        refreshing = false;
+      }
       final retry = request.copyWith(
         data: request.data is FormData
             ? (request.data as FormData).clone()
@@ -88,18 +94,22 @@ class ApiClient {
       );
       handler.resolve(await dio.fetch<dynamic>(retry));
     } catch (failure, stack) {
-      await _rejectWithExpiry(
-        failure is DioException
-            ? failure
-            : DioException(
-                requestOptions: request,
-                error: failure,
-                stackTrace: stack,
-                message: 'Sesi berakhir. Silakan login kembali.',
-              ),
-        handler,
-        request: request,
-      );
+      final rejected = failure is DioException
+          ? failure
+          : DioException(
+              requestOptions: request,
+              error: failure,
+              stackTrace: stack,
+              message: 'Sesi belum dapat diperbarui. Silakan coba lagi.',
+            );
+      final status = rejected.response?.statusCode;
+      if (status == 401 ||
+          (refreshing && status == 403) ||
+          (failure is StateError && failure.message == 'Sesi berakhir')) {
+        await _rejectWithExpiry(rejected, handler, request: request);
+      } else {
+        handler.reject(rejected);
+      }
     }
   }
 

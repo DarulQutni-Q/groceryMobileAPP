@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 
 import '../models/user.dart';
@@ -59,7 +61,14 @@ class AuthApi {
 }
 
 String authErrorMessage(Object error) {
+  if (error is TimeoutException) {
+    return 'Permintaan terlalu lama. Silakan coba lagi.';
+  }
   if (error is DioException) {
+    if (error.type == DioExceptionType.connectionError &&
+        error.message == 'Tidak ada koneksi internet') {
+      return 'Tidak ada koneksi internet';
+    }
     if (error.type == DioExceptionType.unknown &&
         (error.message?.startsWith('Sesi ') ?? false)) {
       return error.message!;

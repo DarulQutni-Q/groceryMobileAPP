@@ -134,6 +134,66 @@ void main() {
     expect(refreshCount, 1);
   });
 
+  for (final failure in ['offline', 'timeout', '503', 'replay-offline']) {
+    test(
+      'temporary $failure during refresh preserves the session for retry',
+      () async {
+        await storage.saveSession('old-access', 'old-refresh');
+        var expired = 0;
+        final dio = Dio(BaseOptions(baseUrl: 'https://api.example.com'));
+        dio.httpClientAdapter = TestAdapter((request) async {
+          if (request.extra['retried'] == true) {
+            throw DioException(
+              requestOptions: request,
+              type: DioExceptionType.connectionError,
+            );
+          }
+          return jsonBody({}, 401);
+        });
+        final refresh = Dio(BaseOptions(baseUrl: dio.options.baseUrl));
+        refresh.httpClientAdapter = TestAdapter((request) async {
+          if (failure == '503') return jsonBody({}, 503);
+          if (failure == 'replay-offline') {
+            return jsonBody({
+              'access_token': 'renewed',
+              'refresh_token': 'renewed-refresh',
+            }, 200);
+          }
+          throw DioException(
+            requestOptions: request,
+            type: failure == 'timeout'
+                ? DioExceptionType.receiveTimeout
+                : DioExceptionType.connectionError,
+          );
+        });
+        final api = ApiClient(
+          baseUrl: dio.options.baseUrl,
+          storage: storage,
+          dio: dio,
+          refreshDio: refresh,
+          onSessionExpired: () => expired++,
+        );
+        await expectLater(
+          api.dio.get<dynamic>('/toko/me'),
+          throwsA(isA<DioException>()),
+        );
+        expect(
+          await storage.readAccessToken(),
+          failure == 'replay-offline' ? 'renewed' : 'old-access',
+        );
+        expect(
+          await storage.readRefreshToken(),
+          failure == 'replay-offline' ? 'renewed-refresh' : 'old-refresh',
+        );
+        expect(expired, 0);
+        dio.httpClientAdapter = TestAdapter(
+          (_) async => jsonBody({'nama': 'Pulih'}, 200),
+        );
+        expect((await api.dio.get<dynamic>('/toko/me')).statusCode, 200);
+      },
+    );
+  }
+
   test(
     'expired cleanup does not cancel a newer login during slow deletion',
     () async {
