@@ -80,6 +80,9 @@ class ApiClient {
           ? current
           : await _refreshOnce(request.extra['sessionGeneration'] as int);
       final retry = request.copyWith(
+        data: request.data is FormData
+            ? (request.data as FormData).clone()
+            : request.data,
         headers: {...request.headers, 'Authorization': 'Bearer $token'},
         extra: {...request.extra, 'retried': true},
       );

@@ -2,3 +2,7 @@ export 'src/api/api_client.dart';
 export 'src/api/auth_api.dart';
 export 'src/core/secure_storage.dart';
 export 'src/models/user.dart';
+export 'src/models/toko.dart';
+export 'src/models/produk.dart';
+export 'src/api/toko_api.dart';
+export 'src/api/produk_api.dart';
