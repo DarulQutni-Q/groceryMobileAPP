@@ -8,8 +8,10 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models.produk import Produk
 from app.models.toko import Toko
+from app.schemas.pagination import Page
 from app.schemas.produk import ProdukCreate, ProdukResponse, ProdukUpdate
 from app.services.foto import read_photo, remove_photo, save_photo
+from app.services.pagination import Pagination, list_response, pagination_params
 from app.services.toko import get_store
 
 router = APIRouter(prefix="/produk", tags=["Produk"])
@@ -29,10 +31,11 @@ def get_produk(
     return produk
 
 
-@router.get("", response_model=list[ProdukResponse])
+@router.get("", response_model=list[ProdukResponse] | Page[ProdukResponse])
 def listing(
     q: str = Query(default="", max_length=160, pattern=r"^[^\x00]*$"),
     kategori: str = Query(default="", max_length=80, pattern=r"^[^\x00]*$"),
+    pagination: Pagination | None = Depends(pagination_params),
     toko: Toko = Depends(get_store),
     db: Session = Depends(get_db),
 ):
@@ -41,7 +44,7 @@ def listing(
         query = query.where(func.lower(Produk.nama).contains(q.strip().lower(), autoescape=True))
     if kategori:
         query = query.where(Produk.kategori == kategori)
-    return db.scalars(query.order_by(Produk.created_at.desc(), Produk.id)).all()
+    return list_response(db, query.order_by(Produk.created_at.desc(), Produk.id), pagination)
 
 
 @router.post("", response_model=ProdukResponse)

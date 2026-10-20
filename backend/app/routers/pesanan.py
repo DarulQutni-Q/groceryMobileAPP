@@ -8,7 +8,9 @@ from sqlalchemy.orm import Session, joinedload, selectinload
 from app.db.session import get_db
 from app.models.pesanan import TAB_STATUS, Pesanan
 from app.models.toko import Toko
+from app.schemas.pagination import Page
 from app.schemas.pesanan import PesananResponse, PesananTest, StatusRequest, TolakRequest
+from app.services.pagination import Pagination, list_response, pagination_params
 from app.services.pesanan import create_test_order, transition
 from app.services.toko import get_store
 
@@ -42,24 +44,20 @@ def test_order(
     return create_test_order(db, toko.id, data)
 
 
-@router.get("", response_model=list[PesananResponse])
+@router.get("", response_model=list[PesananResponse] | Page[PesananResponse])
 def listing(
     status: Literal["baru", "diproses", "selesai"] | None = None,
+    pagination: Pagination | None = Depends(pagination_params),
     toko: Toko = Depends(get_store),
     db: Session = Depends(get_db),
 ):
     query = select(Pesanan).where(Pesanan.toko_id == toko.id)
     if status is not None:
         query = query.where(Pesanan.status.in_(TAB_STATUS[status]))
-    return (
-        db.scalars(
-            query.options(joinedload(Pesanan.items), joinedload(Pesanan.customer)).order_by(
-                Pesanan.created_at.desc(), Pesanan.id
-            )
-        )
-        .unique()
-        .all()
+    query = query.options(joinedload(Pesanan.items), joinedload(Pesanan.customer)).order_by(
+        Pesanan.created_at.desc(), Pesanan.id
     )
+    return list_response(db, query, pagination)
 
 
 @router.get("/{pesanan_id}", response_model=PesananResponse)
