@@ -1,7 +1,9 @@
 import pytest
-from sqlalchemy import event
+from sqlalchemy import event, select
 from test_a5_queries import seeded_orders as seeded_orders
 from test_pesanan import product, seller
+
+from app.models.pesanan import Pesanan, PesananItem
 
 
 def test_product_pagination_preserves_legacy_list_and_owned_filtered_counts(client, account):
@@ -63,3 +65,19 @@ def test_order_pagination_including_empty_pages_needs_three_queries(
     assert data["meta"]["total"] == total
     assert len(statements) <= 3
     assert all(row["items"] and row["nama_pembeli"] == "Pembeli Uji" for row in data["data"])
+
+
+def test_pagination_limits_orders_instead_of_joined_item_rows(seeded_orders):
+    client, headers = seeded_orders
+    with client.app.state.sessions() as db:
+        orders = db.scalars(select(Pesanan)).all()
+        db.add_all(
+            PesananItem(pesanan_id=row.id, nama_snapshot="Minyak", harga_snapshot=10000, qty=1)
+            for row in orders
+        )
+        db.commit()
+    response = client.get("/pesanan?per_page=7", headers=headers)
+    assert response.status_code == 200
+    assert len(response.json()["data"]) == 7
+    assert response.json()["meta"]["total"] == 20
+    assert all(len(row["items"]) == 2 for row in response.json()["data"])
