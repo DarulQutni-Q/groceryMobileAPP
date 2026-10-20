@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session, joinedload, selectinload
 
 from app.db.session import get_db
 from app.models.pesanan import TAB_STATUS, Pesanan
@@ -51,11 +51,15 @@ def listing(
     query = select(Pesanan).where(Pesanan.toko_id == toko.id)
     if status is not None:
         query = query.where(Pesanan.status.in_(TAB_STATUS[status]))
-    return db.scalars(
-        query.options(selectinload(Pesanan.items), selectinload(Pesanan.customer)).order_by(
-            Pesanan.created_at.desc(), Pesanan.id
+    return (
+        db.scalars(
+            query.options(joinedload(Pesanan.items), joinedload(Pesanan.customer)).order_by(
+                Pesanan.created_at.desc(), Pesanan.id
+            )
         )
-    ).all()
+        .unique()
+        .all()
+    )
 
 
 @router.get("/{pesanan_id}", response_model=PesananResponse)

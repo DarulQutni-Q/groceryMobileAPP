@@ -5,7 +5,7 @@ import bcrypt
 from fastapi import Depends, HTTPException, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.rate_limit import check_user_limit
 from app.db.session import get_db
@@ -70,7 +70,11 @@ def get_current_user(
 ) -> User:
     if credentials is None:
         raise HTTPException(401, "Silakan login terlebih dahulu")
-    user = db.get(User, decode_user_id(credentials.credentials, request, "access"))
+    user = db.get(
+        User,
+        decode_user_id(credentials.credentials, request, "access"),
+        options=[joinedload(User.toko)],
+    )
     if user is None or user.role != "seller":
         raise HTTPException(401, "Akun seller tidak ditemukan")
     check_user_limit(request, user.id)

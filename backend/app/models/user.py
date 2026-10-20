@@ -1,10 +1,14 @@
 import uuid
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, String, Uuid
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
+if TYPE_CHECKING:
+    from app.models.toko import Toko
 
 
 def now_utc():
@@ -24,6 +28,9 @@ class User(Base):
     google_subject: Mapped[str | None] = mapped_column(String(255), unique=True)
     nama_toko: Mapped[str | None] = mapped_column(String(120))
     fcm_token: Mapped[str | None] = mapped_column(String(4096))
+    toko: Mapped["Toko | None"] = relationship(
+        "Toko", foreign_keys="Toko.owner_id", uselist=False, lazy="raise"
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=now_utc, onupdate=now_utc
