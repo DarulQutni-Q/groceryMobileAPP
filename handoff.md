@@ -1,60 +1,55 @@
-# Handoff Fase A1
+# Handoff Fase A2
 
-## Cakupan dan keputusan
+## Keputusan dan cakupan
 
-Fokus seller, shared auth, dan backend. Customer tidak diubah. Pengguna menyetujui penambahan Email pada login/daftar serta antislop selama pengerjaan. Dokumen sumber tetap di root; roadmap bertahap belum diberikan. Batas fase mengikuti attachment A1, bukan cakupan OTP/customer/Home penuh pada plan lama.
+Pengguna meminta A2 lengkap lebih dahulu, A3 nanti. Seller, shared dan backend sudah terhubung untuk Beranda, Produk dan Toko. Customer tidak diubah. Rekomendasi A2 dan pengecualian Urungkan A3 sudah disetujui; jangan meminta persetujuan ulang untuk hal yang sama. Rancangan A3 tetap di `A3_PLAN.md`, tanpa implementasi pesanan.
+
+Dokumen sumber aktual ada di root: `prd.md`, `design.md`, `rules.md`, `plan.md`. `docs/ROADMAP_BERTAHAP.md` belum tersedia. Gambar A2 memakai nama `Pasted image (4)-(9), (12)-(14), (21)-(22).png` di `docs/screenshots/seller/`. Sumber milik pengguna tetap untracked seperti keadaan awal.
 
 ## Yang sudah berjalan
 
-- Backend register/login/Google/refresh/me/fcm-token, User UUID, bcrypt, JWT akses 15 menit dan refresh 7 hari, rate limit lima login per menit per IP, pesan validasi Indonesia, CORS allowlist dan health database.
-- Identitas Google memakai audience dan subject terverifikasi; email yang sudah ada tidak ditautkan otomatis. Pengujian Google positif memakai mock pada library verifikasi eksternal, bukan akun Google nyata.
-- Client Dio menggabungkan refresh serentak, mengulang maksimal sekali, dan mengisolasi request/callback dari sesi lama. Storage dapat pulih setelah operasi gagal.
-- Seller splash, onboarding sekali, login, register Akun/Info Toko/Pengiriman/sukses, dan Beranda placeholder. Kategori/pengiriman tidak dikirim ke backend. Apple/lupa sandi hanya snackbar.
-- Native flavor/scheme dev/staging/prod dan environment contoh tanpa secrets. APK Android dev berhasil dibangun. Build memakai SDK dari `android/local.properties`, yaitu `/opt/android-sdk` pada host verifikasi.
+- Backend A1 tetap aktif. Akun seller baru dan Toko dibuat satu transaksi. Migrasi `0002_toko_produk` menambahkan Toko, tujuh JamBuka dan Produk, serta backfill akun A1. Toko satu per seller, awal tutup, radius 5 km; fallback Google `Toko [nama]` maksimal 120 karakter.
+- Dua belas endpoint toko/produk: profil, jam tujuh hari, status, CRUD, pencarian/filter, toggle dan foto. Seluruh akses dibatasi toko dari JWT. Validasi harga/stok/satuan/jam memakai pesan Indonesia. Lihat `A2_API.md`.
+- Upload memeriksa ekstensi/MIME/decode JPG/PNG/WebP, maksimal 5 MB dan 25 MP. Nama file UUID, rollback membersihkan file baru, penggantian/hapus membersihkan file lama. Row lock melindungi upload versus delete. Volume `uploads_data` mempertahankan file saat recreate container.
+- Shared menyediakan model Toko/JamBuka/Produk dan API toko/produk. Retry multipart setelah refresh 401 memakai FormData clone agar stream tidak dipakai ulang.
+- Seller mempunyai lima tab. Beranda menghitung stok <= 5 dari seluruh produk sendiri; transaksi tetap nol. Produk mendukung foto galeri/kamera, create/edit/delete, search, kategori dan toggle. Toko menyimpan profil, tujuh hari jam, pengiriman/radius dan rekening. Jadwal tidak otomatis mengubah status toko.
+- Registrasi A2 menyimpan kategori/pengiriman/radius ke backend. Pilihan A1 lama yang hanya lokal tidak dapat dipulihkan; dapat diisi ulang di Toko. State toko dipisahkan per User dan editor ditutup saat sesi berakhir.
+- Error logout tetap mempertahankan User agar bisa retry. Mutation yang sudah berhasil tetap dianggap sukses saat refresh gagal; error refresh tampil pada banner Coba lagi. Penghapusan gagal menampilkan pesan di editor.
 
-## Hasil verifikasi pada 20 Oktober 2026
+## Bukti verifikasi 20 Oktober 2026
 
 | Pemeriksaan | Hasil |
 | --- | --- |
-| Backend pytest dengan dependency terkunci | 17 passed |
-| Ruff backend | Lulus |
-| Import `app.main` | Lulus tanpa membuat koneksi saat import |
-| Acceptance curl terhadap Docker/PostgreSQL | Lulus; bukti `artifacts/a1/backend-smoke.txt` |
-| Health saat database dihentikan | 503; database kemudian dijalankan kembali |
+| Backend pytest | 27 passed, termasuk konflik HTTP upload/delete pada PostgreSQL terisolasi |
+| Backend ruff dan import | Lulus |
+| Shared Flutter test / analyze | 9 passed / No issues found |
+| Seller Flutter test / analyze | 9 passed / No issues found |
+| Android integration A2 | Lulus: registrasi, tambah/foto/toggle/search produk, profil/jam/pengiriman/rekening, logout/login dan rekreasi sesi |
+| APK dev normal | Build dan install berhasil; force-stop lalu buka ulang langsung Beranda dengan data tersimpan |
+| Galeri Android native | Pemilih sistem berhasil mengembalikan gambar dan preview tampil pada form produk APK normal |
+| Acceptance curl A2 | Semua lulus; `artifacts/a2/backend-smoke.txt` |
 | Compose config | Valid |
-| Alembic current/check di PostgreSQL | `0001_user (head)`, tidak ada perubahan skema tertunda |
-| Shared Flutter test | 7 passed |
-| Shared Flutter analyze | No issues found |
-| Seller Flutter test | 3 passed, termasuk viewport 320x568 dan keyboard |
-| Seller Flutter analyze | No issues found |
-| Android integration test | Lulus: daftar, kategori/pengiriman, Beranda, logout, login ulang, rekreasi app dengan sesi tersimpan, Google belum dikonfigurasi |
-| APK dev entry point normal | Build berhasil setelah tes integrasi |
-| Cold start proses Android | Lulus pada APK normal: force-stop, buka ulang, langsung Beranda; bukti `artifacts/a1/cold-start.txt` dan `09-cold-start.png` |
+| Alembic pada PostgreSQL | `0002_toko_produk (head)`; check tanpa perubahan tertunda |
+| Source container | SHA-256 semua file app Python cocok dengan source host yang diuji |
+| Foto setelah recreate container | Hash tetap sama, URL tetap dapat dibaca |
+| Viewport kecil/keyboard | 320x568 lulus, tanpa overflow Flutter |
+| iOS picker config | Info.plist valid; build/run iOS belum diuji |
+| Customer | Tidak ada perubahan tracked |
 
-Screenshot tujuh layar utama, opsi login saat scroll, Beranda, dan cold start tersimpan di `artifacts/a1/`. Indeksnya ada di `artifacts/a1/README.md`. Pengambilan menunggu aset/frame selesai agar tidak menyimpan frame transisi. Gambar asli dan salinan artwork dibandingkan byte-per-byte, tetap sama.
+Bukti ada di `artifacts/a2/README.md`, `verification.txt`, `storage-persistence.txt`, `cold-start.txt`, dan screenshot 01-16. Foto pada journey integrasi memakai fixture screenshot login; picker diganti pada tes, seluruh upload dan API berjalan nyata. Galeri native diperiksa terpisah pada APK normal. Tes A1 unit dan HTTP tetap lulus. Skrip perangkat `integration_test/auth_test.dart` masih menyimpan assertion Beranda placeholder A1 sebagai catatan fase; tidak diubah untuk memaksa lulus pada UI A2. Journey perangkat aktif adalah `integration_test/a2_test.dart`.
 
-## Gap yang tetap terbuka
+## Gap yang belum diverifikasi atau belum termasuk kontrak
 
-- Login Google memakai akun nyata belum diuji, membutuhkan OAuth client ID dan signing yang benar.
-- Build, signing, dan run iOS belum diuji pada Linux. Scheme hanya diperiksa secara statis.
-- Build staging/prod belum dijalankan; konfigurasi ada. HP fisik dan performa produksi belum diuji.
-- UI mengikuti warna, artwork dan alur referensi, tetapi belum pixel-identik: latar dekoratif, clipping artwork, dan beberapa spacing/ukuran teks masih berbeda. Tambahan Email sudah disetujui; langkah Info Toko mengikuti request A1 yang hanya meminta kategori, berbeda dari gambar yang juga berisi form akun.
-- Aset yang diberikan hanya screenshot dengan frame perangkat, bukan logo/ilustrasi transparan atau font sumber. Salinannya dirender melalui clipping, tanpa mengubah file asli.
-- Logout A1 menghapus sesi perangkat; token refresh lama masih berlaku sampai kedaluwarsa. Revokasi server belum termasuk cakupan ini.
-- Emulator menampilkan diagnostik frame/IME sistem saat pengetikan; tidak ada exception Flutter/overflow pada tes yang lulus. Performa di HP fisik belum diukur.
+- UI belum pixel-identik: font sumber tidak tersedia, dekorasi latar dan beberapa ikon/spacing masih berbeda. Field kategori produk ditambahkan sesuai persetujuan; varian tutup memakai empat statistik sesuai kontrak A2. Tidak ada URL/node Figma untuk mengukur token sumber lebih jauh.
+- Upload logo Toko tidak mempunyai endpoint pada kontrak A2. Tombol Ubah Foto menjelaskan keadaan ini; foto produk sudah fungsional.
+- Kamera native dan pemulihan lost data sesudah Android mematikan proses belum diuji. Build/signing/run iOS, flavor staging/prod, HP fisik dan performa produksi belum diuji. Emulator mengeluarkan diagnostik frame/IME sistem; tidak ada exception Flutter/overflow pada tes yang lulus.
+- Login Google akun nyata belum diuji, membutuhkan OAuth/signing. Logout menghapus sesi perangkat; revokasi refresh token server belum termasuk A1/A2.
+- Pesanan, pembayaran, laporan nyata, push notification, S3 dan customer belum dikerjakan. Tab Pesanan/Laporan menampilkan A3/A4.
 
-## Lingkungan yang ditinggalkan
+## Lingkungan dan kelanjutan
 
-- Container Compose project `grocery-a1` dan emulator pengujian sedang berjalan. PostgreSQL/HTTP hanya dibuka pada loopback host.
-- Kredensial uji acak disimpan sementara di `/tmp/grocery-a1-20261020-env.json` dengan mode 0600; tidak dicetak atau dikomit. Tidak membuat `.env` nyata di proyek.
-- Jika membuat environment pengembangan sendiri dengan password lain, hentikan container uji dan gunakan project/volume terpisah, misalnya `docker compose -p grocery-dev up --build -d`. Volume uji lama memiliki password awalnya sendiri; tidak menimpa/menghapusnya otomatis.
-- Dokumen/screenshot sumber milik pengguna tetap untracked sesuai keadaan awal. Commit tidak memasukkan dokumen sumber tersebut. Hasil A1 telah dipush ke GitHub `main` pada commit penggabungan `d913baf`; commit LICENSE awal remote ikut dipertahankan. Remote memakai HTTPS sesuai autentikasi GitHub CLI yang aktif.
+Compose project `grocery-a1` berjalan, PostgreSQL di loopback 55432 dan HTTP 8000. Emulator `pixel` memakai `emulator-5554`. SDK build berasal dari `/opt/android-sdk` sesuai `apps/seller/android/local.properties`. Kredensial uji acak berada di `/tmp/grocery-a1-20261020-env.json` mode 0600, tidak dikomit/dicetak. Gunakan project/volume terpisah untuk environment sendiri; jangan menimpa password volume yang sudah ada.
 
-## Berikutnya
+Remote memakai HTTPS sesuai autentikasi GitHub CLI aktif. Riwayat LICENSE remote dan hasil A1 dipertahankan saat merge. Lihat log Git untuk commit A2 dan status push terbaru.
 
-1. Review screenshot dan tutup selisih visual terhadap Figma sebelum menyebut UI final/pixel-identik.
-2. Lengkapi OAuth Google dan verifikasi dengan akun nyata; uji iOS pada macOS.
-3. Permintaan A2 sudah diterima, tetapi terpotong pada "Varian tutup: kalau stat". Draft dan keputusan yang belum disepakati ada di `A2_PLAN.md`. Kode fitur/migrasi A2 belum diterapkan. Beranda lengkap, produk, pembayaran, OTP dan customer belum dikerjakan.
-4. Gunakan task baru untuk fase berikutnya dengan merujuk file ini agar konteks tetap ringkas.
-
-Panduan menjalankan: `README.md`. Daftar endpoint dan curl: `A1_API.md`. Keputusan: `A1_PLAN.md`. Riwayat perbaikan kerja: `MISTAKES.md`.
+A3 berikutnya mengikuti `A3_PLAN.md` dan lampiran lengkap `9120f74a-43ea-43b4-9bc9-46104eab4915/pasted-text.txt`. Mulai task baru dengan file handoff ini agar konteks tetap ringkas. Jangan sentuh customer. Panduan run/test ada di `README.md`; curl ada di `A1_API.md` dan `A2_API.md`; keputusan A2 ada di `A2_PLAN.md`.

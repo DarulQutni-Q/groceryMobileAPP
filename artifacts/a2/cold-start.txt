@@ -1,0 +1,4 @@
+PASS: APK dev normal dibangun dari lib/main_dev.dart dan dipasang dengan install -r.
+PASS: proses com.daclanari.seller.dev dihentikan lalu dibuka kembali.
+PASS: Beranda langsung memuat Toko Uji A2 Baru, status Buka, stok menipis 1 dan produk tersimpan tanpa login ulang.
+Bukti visual: 15-cold-start.png.

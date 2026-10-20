@@ -1,6 +1,6 @@
 # Rancangan Fase A2
 
-Status: draft. Pesan A2 terpotong pada "Varian tutup: kalau stat". Belum ada kode fitur atau migrasi A2 yang diterapkan.
+Status: disetujui pengguna untuk dikerjakan lengkap sebelum A3. Detail pesan yang terpotong dilengkapi dari PRD dan screenshot yang tersedia. Implementasi dimulai dengan tes HTTP.
 
 ## Sumber yang sudah dibaca
 
@@ -24,16 +24,16 @@ Gunakan widget Material 3 yang disesuaikan dengan gambar. Token sampel: latar `#
 
 ## Pohon keputusan dan rekomendasi
 
-1. **Cakupan:** backend toko/produk, shared API/model, Beranda/Produk/Toko. Laporan/Pesanan placeholder. Detail UI dan acceptance yang terpotong masih menunggu kelanjutan pesan.
-2. **Siklus hidup toko:** rekomendasi satu toko per seller, `owner_id` unik. Migrasi membuat toko untuk seller A1 dari `nama_toko`; registrasi baru membuat User dan Toko dalam satu transaksi. Untuk seller Google tanpa nama toko, perlu menetapkan fallback dan data profil awal. Jangan mengarang kategori/pengiriman lama karena A1 tidak menyimpannya.
+1. **Cakupan:** backend toko/produk, shared API/model, Beranda/Produk/Toko. Laporan/Pesanan placeholder. Detail pesan yang terpotong dilengkapi dari PRD/screenshot sesuai persetujuan pengguna.
+2. **Siklus hidup toko:** satu toko per seller, `owner_id` unik. Migrasi membuat toko untuk seller A1 dari `nama_toko`; registrasi baru membuat User dan Toko dalam satu transaksi. Seller Google memakai fallback `Toko [nama pemilik]`, dibatasi 120 karakter. Data kategori/pengiriman lama tidak dikarang karena A1 tidak menyimpannya.
 3. **Kepemilikan:** seluruh query memakai seller dari JWT. Akses produk milik seller lain menghasilkan 404. `owner_id`/`toko_id` tidak diterima dari payload seller.
-4. **Form produk:** screenshot memakai harga textfield dan stok stepper, sedangkan PRD menyebut stepper harga. Rekomendasi ikuti screenshot. Backend mewajibkan kategori, tetapi screenshot tidak menampilkan inputnya; rekomendasi menambahkan pilihan kategori yang jelas, menunggu kesepakatan.
-5. **Beranda:** Penjualan/Pesanan/Produk Terjual nol pada A2; Stok Menipis dan Perlu Tindakan berasal dari produk toko sendiri. Banner "3 Pesan baru menunggu" mengikuti placeholder yang diminta, bukan jumlah pesanan nyata. Varian tutup pada screenshot hanya dua statistik; kelanjutan pesan diperlukan untuk menentukan perilakunya.
-6. **Jam buka:** tepat tujuh hari unik. Validasi jam hanya pada hari aktif; format/jam awal toko lama menunggu cakupan lengkap. Jadwal belum otomatis mengubah status toko kecuali diminta.
+4. **Form produk:** harga textfield dan stok stepper mengikuti screenshot. Field kategori ditambahkan karena wajib pada kontrak API; keputusan ini sudah disetujui.
+5. **Beranda:** Penjualan/Pesanan/Produk Terjual nol pada A2; Stok Menipis dan Perlu Tindakan berasal dari produk toko sendiri. Banner "3 Pesan baru menunggu" adalah placeholder yang diminta. Varian tutup tetap empat statistik sesuai kontrak A2 dan menambahkan banner tutup.
+6. **Jam buka:** tepat tujuh hari unik. Hari aktif memerlukan jam lokal tanpa offset dan buka sebelum tutup. Toko baru/hasil migrasi mengawali tujuh hari tutup. Jadwal tidak otomatis mengubah status toko.
 7. **Upload:** multipart, JPEG/PNG/WebP terverifikasi isi, batas 5 MB saat membaca, nama file UUID. Jangan memakai nama file klien sebagai path. File baru dibersihkan jika penyimpanan database gagal. Volume upload persisten dan writable oleh user non-root container; `foto_url` harus dapat dijangkau perangkat.
 8. **Sesi seller:** state toko/produk dibersihkan saat logout/pergantian akun. Hasil request dari akun lama tidak boleh masuk ke state akun baru.
 
-Butir di atas adalah rekomendasi, belum keputusan yang disetujui. Skill `grill-me` yang sudah dibaca mensyaratkan: "Do not act on the plan until the user confirms shared understanding."
+Keputusan disetujui melalui pesan "yes, kerjakan ... kerjakan yg A2 dulu baru nanti A3". Satu toko otomatis per seller; fallback nama Google `Toko [nama pemilik]`; profil yang belum ada kosong; status awal tutup; tujuh hari awal tutup sampai jadwal disimpan. Stepper untuk stok dan input kategori tambahan disetujui. Beranda tetap empat statistik sesuai kontrak A2, dengan banner tutup dari PRD. A3 belum dikerjakan.
 
 ## Dampak dan seam tes
 
@@ -48,7 +48,7 @@ Butir di atas adalah rekomendasi, belum keputusan yang disetujui. Skill `grill-m
 | Shell dan layar | AuthFlow authenticated | Lima tab, CRUD/toggle nyata, statistik konsisten, state akun terisolasi |
 | UI | M3, screenshot sumber | Viewport HP kecil/keyboard, offline/retry/empty/loading, screenshot tiap layar dan varian |
 
-## Urutan setelah cakupan lengkap disepakati
+## Urutan pelaksanaan
 
 1. Tes HTTP toko gagal lebih dulu, lalu model/migrasi/profil/jam/status. Uji migrasi PostgreSQL nyata secara terpisah dari SQLite fixture.
 2. Tes ownership dan validasi produk, lalu CRUD/search/filter/toggle.
@@ -57,10 +57,11 @@ Butir di atas adalah rekomendasi, belum keputusan yang disetujui. Skill `grill-m
 5. Shell lima tab dan satu alur lengkap tambah produk -> daftar -> toggle -> statistik, lalu profil/jam toko.
 6. Curl acceptance, seluruh tes A1+A2, analyzer/lint/build/import/Compose, run Android dan bukti screenshot. Review independen sebelum commit/push kecil berikutnya.
 
-## Yang masih dibutuhkan
+## Catatan keputusan A2
 
-- Kelanjutan prompt mulai "Varian tutup: kalau stat", termasuk detail Produk, Tambah Produk, Toko dan tes/deliverable A2.
-- Kesepakatan pembuatan/default toko akun lama dan fallback nama toko Google.
-- Penyelesaian perbedaan stepper/kategori pada form dan jumlah statistik varian tutup.
+- Data kategori/pengiriman A1 yang hanya lokal tidak dapat dipulihkan setelah proses berakhir. Toko mengawali daftar kosong dan dapat dilengkapi lewat menu Toko.
+- Foto produk wajib dipilih di UI sebelum simpan; backend tetap menerima produk tanpa foto karena upload terjadi sesudah create. UI menyimpan ID hasil create agar retry upload tidak menggandakan produk.
+- Status toko manual, tidak otomatis mengikuti jam buka. Penjualan/Pesanan/Produk Terjual nol karena model Pesanan menunggu A3.
+- Logo toko belum memiliki endpoint upload dalam kontrak A2. UI menampilkan logo/default; aksi ubah logo menjelaskan keterbatasan ini. Semua field profil lain, pengiriman, rekening dan jam disimpan ke backend.
 
 Customer, transaksi pesanan, pembayaran, laporan nyata, S3, dan perubahan auth di luar integrasi toko tidak ditambahkan pada fase ini.
