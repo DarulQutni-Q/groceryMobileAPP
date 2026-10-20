@@ -5,18 +5,19 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
 from app.models.user import now_utc
+from app.schemas.input import InputModel
 
 Status = Literal["baru", "diproses", "dikemas", "diantar", "selesai", "dibatalkan", "ditolak"]
 Biaya = Annotated[int, Field(strict=True, ge=0, le=2147483647)]
 
 
-class ItemTest(BaseModel):
+class ItemTest(InputModel):
     model_config = ConfigDict(extra="forbid")
     produk_id: UUID
     qty: int = Field(strict=True, gt=0, le=10000)
 
 
-class PesananTest(BaseModel):
+class PesananTest(InputModel):
     model_config = ConfigDict(extra="forbid")
     items: list[ItemTest] | None = Field(default=None, min_length=1, max_length=100)
     alamat_kirim: str = Field(default="Alamat pengujian dev", min_length=1, max_length=2000)
@@ -35,7 +36,7 @@ class PesananTest(BaseModel):
         return value.strip()
 
 
-class TolakRequest(BaseModel):
+class TolakRequest(InputModel):
     model_config = ConfigDict(extra="forbid")
     alasan: str = Field(min_length=1, max_length=1000)
 
@@ -47,7 +48,7 @@ class TolakRequest(BaseModel):
         return value.strip()
 
 
-class StatusRequest(BaseModel):
+class StatusRequest(InputModel):
     model_config = ConfigDict(extra="forbid")
     status: Status
 

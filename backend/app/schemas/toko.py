@@ -2,20 +2,29 @@ from datetime import datetime, time
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, RootModel, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    RootModel,
+    StrictBool,
+    field_validator,
+    model_validator,
+)
 
 from app.models.jam_buka import HARI
+from app.schemas.input import PHONE_PATTERN, InputModel
 
 KATEGORI = ("Sembako", "Sayur", "Daging dan Ikan", "Buah")
 PENGIRIMAN = ("Instant", "Kurir Marketplace", "Ambil di Toko")
 
 
-class TokoUpdate(BaseModel):
+class TokoUpdate(InputModel):
     model_config = ConfigDict(extra="forbid")
 
-    nama: str = Field(default="", max_length=120)
+    nama: str = Field(default="", min_length=1, max_length=120)
     alamat: str = Field(default="", max_length=2000)
-    telepon: str = Field(default="", max_length=32)
+    telepon: str = Field(default="", max_length=32, pattern=f"^(?:|{PHONE_PATTERN})$")
     deskripsi: str | None = Field(default=None, max_length=3000)
     kategori: list[str] = Field(default_factory=list, max_length=4)
     radius_km: int = Field(default=5, strict=True, ge=1, le=10)
@@ -38,17 +47,18 @@ class TokoUpdate(BaseModel):
         return value
 
 
-class StatusUpdate(BaseModel):
+class StatusUpdate(InputModel):
+    model_config = ConfigDict(extra="forbid")
     status: Literal["buka", "tutup"]
 
 
-class JamBukaDay(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+class JamBukaDay(InputModel):
+    model_config = ConfigDict(from_attributes=True, extra="forbid")
 
     hari: Literal["senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"]
     jam_buka: time | None = None
     jam_tutup: time | None = None
-    is_tutup: bool = False
+    is_tutup: StrictBool = False
 
     @model_validator(mode="after")
     def valid_hours(self):

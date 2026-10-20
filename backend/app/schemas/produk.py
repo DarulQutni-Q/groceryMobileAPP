@@ -2,14 +2,16 @@ from datetime import datetime
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import ConfigDict, Field, StrictBool, field_validator, model_validator
+
+from app.schemas.input import InputModel
 
 Harga = Annotated[int, Field(strict=True, gt=0, le=2147483647)]
 Stok = Annotated[int, Field(strict=True, ge=0, le=2147483647)]
 Satuan = Literal["kg", "pcs", "liter"]
 
 
-class ProdukCreate(BaseModel):
+class ProdukCreate(InputModel):
     model_config = ConfigDict(extra="forbid")
 
     nama: str = Field(min_length=1, max_length=160)
@@ -26,7 +28,7 @@ class ProdukCreate(BaseModel):
         return value.strip()
 
 
-class ProdukUpdate(BaseModel):
+class ProdukUpdate(InputModel):
     model_config = ConfigDict(extra="forbid")
 
     nama: str | None = Field(default=None, min_length=1, max_length=160)
@@ -34,7 +36,7 @@ class ProdukUpdate(BaseModel):
     stok: Stok | None = None
     satuan: Satuan | None = None
     kategori: str | None = Field(default=None, min_length=1, max_length=80)
-    is_tersedia: bool | None = None
+    is_tersedia: StrictBool | None = None
 
     @model_validator(mode="after")
     def non_null_fields(self):

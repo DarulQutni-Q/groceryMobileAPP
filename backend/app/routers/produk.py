@@ -31,8 +31,8 @@ def get_produk(
 
 @router.get("", response_model=list[ProdukResponse])
 def listing(
-    q: str = Query(default="", max_length=160),
-    kategori: str = Query(default="", max_length=80),
+    q: str = Query(default="", max_length=160, pattern=r"^[^\x00]*$"),
+    kategori: str = Query(default="", max_length=80, pattern=r"^[^\x00]*$"),
     toko: Toko = Depends(get_store),
     db: Session = Depends(get_db),
 ):

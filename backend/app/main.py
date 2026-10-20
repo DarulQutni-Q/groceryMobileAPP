@@ -15,6 +15,7 @@ from app.core.cors import ConfiguredCors
 from app.core.request_log import RequestLog
 from app.core.security import hash_password
 from app.core.upload_limit import UploadLimit
+from app.core.validation import validation_error
 from app.db.base import Base
 from app.db.session import get_db
 from app.routers.auth import router
@@ -59,27 +60,6 @@ def create_app() -> FastAPI:
     app.add_api_route("/health", health, methods=["GET"])
     app.add_api_route("/uploads/{filename}", photo_file, methods=["GET"], include_in_schema=False)
     return app
-
-
-async def validation_error(request: Request, exc: RequestValidationError):
-    messages = []
-    for error in exc.errors():
-        field = str(error["loc"][-1])
-        message = str(error["msg"]).removeprefix("Value error, ")
-        if field == "email":
-            message = "Alamat email tidak valid"
-        elif field in {"harga", "stok", "satuan"}:
-            message = {
-                "harga": "Harga harus lebih dari 0 dan berupa bilangan bulat",
-                "stok": "Stok harus 0 atau lebih dan berupa bilangan bulat",
-                "satuan": "Satuan harus kg, pcs, atau liter",
-            }[field]
-        elif error["type"] == "missing":
-            message = f"Kolom {field} wajib diisi"
-        elif error["type"] != "value_error":
-            message = f"Isian {field} tidak valid"
-        messages.append({"field": field, "message": message})
-    return JSONResponse(status_code=422, content={"detail": messages})
 
 
 def health(db: Session = Depends(get_db)):

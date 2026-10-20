@@ -2,13 +2,17 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
+from app.schemas.input import PHONE_PATTERN, InputModel
 
-class SellerRegisterRequest(BaseModel):
+
+class SellerRegisterRequest(InputModel):
     nama_pemilik: str = Field(min_length=1, max_length=120)
     nama_toko: str = Field(min_length=1, max_length=120)
-    email: EmailStr
-    password: str
-    phone: str | None = Field(default=None, min_length=6, max_length=32)
+    email: EmailStr = Field(max_length=254)
+    password: str = Field(min_length=8, max_length=20)
+    phone: str | None = Field(
+        default=None, min_length=6, max_length=32, pattern=f"^{PHONE_PATTERN}$"
+    )
 
     @field_validator("nama_pemilik", "nama_toko")
     @classmethod
@@ -31,21 +35,21 @@ class SellerRegisterRequest(BaseModel):
         return value
 
 
-class LoginRequest(BaseModel):
-    email: EmailStr
-    password: str = Field(max_length=256)
+class LoginRequest(InputModel):
+    email: EmailStr = Field(max_length=254)
+    password: str = Field(min_length=1, max_length=256)
 
 
-class GoogleLoginRequest(BaseModel):
-    id_token: str = Field(min_length=1, max_length=8192)
+class GoogleLoginRequest(InputModel):
+    id_token: str = Field(min_length=1, max_length=8192, pattern=r"^\S+$")
 
 
-class RefreshRequest(BaseModel):
-    refresh_token: str = Field(min_length=1, max_length=8192)
+class RefreshRequest(InputModel):
+    refresh_token: str = Field(min_length=1, max_length=8192, pattern=r"^\S+$")
 
 
-class FcmTokenRequest(BaseModel):
-    fcm_token: str = Field(min_length=1, max_length=4096)
+class FcmTokenRequest(InputModel):
+    fcm_token: str = Field(min_length=1, max_length=4096, pattern=r"^\S+$")
 
 
 class TokenResponse(BaseModel):
