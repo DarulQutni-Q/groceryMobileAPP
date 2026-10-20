@@ -4,6 +4,7 @@ from sqlalchemy import create_engine, pool
 from app.core.config import Settings
 from app.db.base import Base
 from app.models.jam_buka import JamBuka
+from app.models.pesanan import Pesanan, PesananItem
 from app.models.produk import Produk
 from app.models.toko import Toko
 from app.models.user import User
@@ -11,6 +12,7 @@ from app.models.user import User
 target_metadata = Base.metadata
 assert User.__table__.metadata is target_metadata
 assert all(model.__table__.metadata is target_metadata for model in (Toko, JamBuka, Produk))
+assert all(model.__table__.metadata is target_metadata for model in (Pesanan, PesananItem))
 
 
 def run_migrations():
