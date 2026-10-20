@@ -1,8 +1,5 @@
-import json
-import logging
 import secrets
 from contextlib import asynccontextmanager
-from uuid import uuid4
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
@@ -15,6 +12,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import Settings
 from app.core.cors import ConfiguredCors
+from app.core.request_log import RequestLog
 from app.core.security import hash_password
 from app.core.upload_limit import UploadLimit
 from app.db.base import Base
@@ -48,7 +46,7 @@ async def lifespan(app: FastAPI):
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Daclanari Grocery", lifespan=lifespan)
+    app = FastAPI(title="Daclanari Grocery", version="1.0.0", lifespan=lifespan)
     app.include_router(router)
     app.include_router(toko_router)
     app.include_router(produk_router)
@@ -57,7 +55,7 @@ def create_app() -> FastAPI:
     app.add_exception_handler(RequestValidationError, validation_error)
     app.add_middleware(ConfiguredCors)
     app.add_middleware(UploadLimit)
-    app.middleware("http")(request_context)
+    app.add_middleware(RequestLog)
     app.add_api_route("/health", health, methods=["GET"])
     app.add_api_route("/uploads/{filename}", photo_file, methods=["GET"], include_in_schema=False)
     return app
@@ -84,29 +82,15 @@ async def validation_error(request: Request, exc: RequestValidationError):
     return JSONResponse(status_code=422, content={"detail": messages})
 
 
-async def request_context(request: Request, call_next):
-    request_id = str(uuid4())
-    response = await call_next(request)
-    response.headers["X-Request-ID"] = request_id
-    logging.getLogger("grocery.requests").info(
-        json.dumps(
-            {
-                "request_id": request_id,
-                "method": request.method,
-                "path": request.url.path,
-                "status": response.status_code,
-            }
-        )
-    )
-    return response
-
-
 def health(db: Session = Depends(get_db)):
     try:
         db.execute(text("SELECT 1"))
-    except SQLAlchemyError as exc:
-        raise HTTPException(503, "Database belum dapat dihubungi") from exc
-    return {"status": "ok", "database": "ok"}
+    except SQLAlchemyError:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "error", "database": "error", "version": "1.0.0"},
+        )
+    return {"status": "ok", "database": "ok", "version": "1.0.0"}
 
 
 def photo_file(filename: str, request: Request):
