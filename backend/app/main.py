@@ -20,6 +20,7 @@ from app.core.upload_limit import UploadLimit
 from app.db.base import Base
 from app.db.session import get_db
 from app.routers.auth import router
+from app.routers.pesanan import router as pesanan_router
 from app.routers.produk import router as produk_router
 from app.routers.toko import router as toko_router
 from app.services.foto import FILE_PATTERN, FORMATS
@@ -50,6 +51,7 @@ def create_app() -> FastAPI:
     app.include_router(router)
     app.include_router(toko_router)
     app.include_router(produk_router)
+    app.include_router(pesanan_router)
     app.add_exception_handler(RequestValidationError, validation_error)
     app.add_middleware(ConfiguredCors)
     app.add_middleware(UploadLimit)

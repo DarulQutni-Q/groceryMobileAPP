@@ -14,3 +14,4 @@ class Settings(BaseSettings):
     auto_create_tables: bool = False
     rate_limit_storage_uri: str = "memory://"
     uploads_dir: Path = Path("uploads")
+    env: str = "prod"
