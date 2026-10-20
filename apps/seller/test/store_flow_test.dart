@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:grocery_shared/shared.dart';
 import 'package:seller/app.dart';
 import 'package:seller/core/seller_theme.dart';
+import 'package:seller/core/network.dart';
 import 'package:seller/features/auth/application/auth_provider.dart';
 import 'package:seller/features/store/presentation/seller_shell.dart';
 
@@ -38,6 +39,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          connectionStateProvider.overrideWith((ref) => Stream.value(true)),
           apiBaseUrlProvider.overrideWithValue(dio.options.baseUrl),
           apiClientProvider.overrideWithValue(api),
         ],
@@ -85,17 +87,56 @@ void main() {
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(find.text('Keluar'), 200);
     await tester.tap(find.text('Keluar'));
-    await tester.pump();
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Keluar'));
+    await tester.pumpAndSettle();
     expect(
       find.text('Sesi belum dapat dihapus. Silakan coba lagi.'),
       findsOneWidget,
     );
     expect(find.text('Keluar'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
+    await tester.drag(find.byType(SnackBar), const Offset(0, 300));
+    await tester.pumpAndSettle();
     failDelete = false;
     await tester.tap(find.text('Keluar'));
     await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Keluar'));
+    await tester.pumpAndSettle();
     expect(find.text('Login ke Toko'), findsOneWidget);
+  });
+
+  testWidgets('logout waits for confirmation and cancel keeps the session', (
+    tester,
+  ) async {
+    var deletions = 0;
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+          (call) async {
+            if (call.method == 'delete') deletions++;
+            return null;
+          },
+        );
+    await open(tester);
+    await tester.tap(find.byKey(const Key('nav-toko')));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text('Keluar'), 200);
+    await tester.tap(find.text('Keluar'));
+    await tester.pumpAndSettle();
+    expect(deletions, 0);
+    expect(find.byType(AlertDialog), findsOneWidget);
+    await tester.tap(find.widgetWithText(TextButton, 'Batal'));
+    await tester.pumpAndSettle();
+    expect(deletions, 0);
+    expect(find.byType(AlertDialog), findsNothing);
+    await tester.tap(find.text('Keluar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Keluar'));
+    await tester.pumpAndSettle();
+    expect(deletions, 1);
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('product search stays usable with keyboard on a 320x568 phone', (
@@ -153,7 +194,7 @@ void main() {
   });
 
   testWidgets(
-    'store status, products, search, availability and placeholders are reachable',
+    'store status, products, search, availability and reports are reachable',
     (tester) async {
       await open(tester);
       expect(find.text('Perlu Tindakan'), findsOneWidget);
@@ -175,7 +216,10 @@ void main() {
       expect(find.textContaining('belum ada di tokomu'), findsOneWidget);
       await tester.tap(find.byKey(const Key('nav-laporan')));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Tahap A4'), findsOneWidget);
+      expect(find.text('Belum ada data penjualan.'), findsOneWidget);
+      await tester.scrollUntilVisible(find.text('Lihat Pesanan'), 150);
+      await tester.pumpAndSettle();
+      expect(find.text('Lihat Pesanan'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

@@ -124,13 +124,58 @@ class TokoScreen extends ConsumerWidget {
       _menu(
         'Keluar',
         Icons.logout,
-        () => ref.read(authProvider.notifier).logout(),
+        () => _confirmLogout(context, ref),
         logout: true,
       ),
     ],
   );
   void _open(BuildContext context, Widget page) =>
       Navigator.push(context, MaterialPageRoute<void>(builder: (_) => page));
+
+  Future<void> _confirmLogout(BuildContext context, WidgetRef ref) {
+    var saving = false;
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => PopScope(
+          canPop: !saving,
+          child: AlertDialog(
+            title: const Text('Keluar dari toko?'),
+            content: const Text(
+              'Kamu perlu login kembali untuk mengelola toko.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: saving ? null : () => Navigator.pop(context),
+                child: const Text('Batal'),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(100, 48),
+                  backgroundColor: const Color(0xFFDC043A),
+                  foregroundColor: Colors.white,
+                  textStyle: const TextStyle(fontSize: 16),
+                ),
+                onPressed: saving
+                    ? null
+                    : () async {
+                        setState(() => saving = true);
+                        await ref.read(authProvider.notifier).logout();
+                        if (context.mounted &&
+                            (ModalRoute.of(context)?.isCurrent ?? false)) {
+                          Navigator.pop(context);
+                        }
+                      },
+                child: Text(saving ? 'Keluar...' : 'Keluar'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _menu(
     String label,
     IconData icon,

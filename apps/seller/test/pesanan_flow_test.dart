@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:grocery_shared/shared.dart';
 import 'package:seller/core/seller_theme.dart';
+import 'package:seller/core/network.dart';
 import 'package:seller/features/auth/application/auth_provider.dart';
 import 'package:seller/features/store/presentation/seller_shell.dart';
 
@@ -30,6 +31,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          connectionStateProvider.overrideWith((ref) => Stream.value(true)),
           apiBaseUrlProvider.overrideWithValue(dio.options.baseUrl),
           apiClientProvider.overrideWithValue(
             ApiClient(

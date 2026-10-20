@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:grocery_shared/shared.dart';
 
+import '../../../core/network.dart';
 import '../../auth/application/auth_provider.dart';
 
 class StoreState {
@@ -32,12 +33,24 @@ class StoreNotifier extends StateNotifier<StoreState> {
 
   Future<void> load() async {
     final operation = ++_load;
+    ++_search;
+    state = StoreState(
+      toko: state.toko,
+      products: state.products,
+      visible: state.visible,
+      busy: state.busy,
+      loading: true,
+    );
     try {
-      final toko = await tokoApi.getProfil();
-      final products = await produkApi.list();
+      final results = await Future.wait<Object>([
+        tokoApi.getProfil(),
+        produkApi.list(),
+      ]).timeout(sellerLoadLimit);
       if (!mounted || operation != _load) return;
+      ++_search;
+      final products = results[1] as List<Produk>;
       state = StoreState(
-        toko: toko,
+        toko: results[0] as Toko,
         products: products,
         visible: products,
         busy: state.busy,
@@ -61,7 +74,9 @@ class StoreNotifier extends StateNotifier<StoreState> {
     _kategori = kategori;
     final operation = ++_search;
     try {
-      final products = await produkApi.list(q: q, kategori: kategori);
+      final products = await produkApi
+          .list(q: q, kategori: kategori)
+          .timeout(sellerLoadLimit);
       if (mounted && operation == _search) {
         state = StoreState(
           toko: state.toko,

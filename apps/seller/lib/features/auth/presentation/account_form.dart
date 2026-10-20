@@ -37,6 +37,7 @@ class _AccountFormState extends ConsumerState<AccountForm> {
   }
 
   Future<void> _submit() async {
+    if (ref.read(authProvider).status == AuthStatus.loading) return;
     if (!_form.currentState!.validate()) return;
     final auth = ref.read(authProvider.notifier);
     final success = widget.register

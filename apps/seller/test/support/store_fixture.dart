@@ -77,6 +77,16 @@ class StoreFixture implements HttpClientAdapter {
         'role': 'seller',
         'nama_toko': 'Toko Uji',
       };
+    } else if (request.path == '/laporan/ringkasan') {
+      data = {
+        'total_penjualan': 0,
+        'jumlah_pesanan': 0,
+        'jumlah_produk_terjual': 0,
+        'perbandingan_minggu_lalu': 0,
+        'penjualan_per_hari': [],
+      };
+    } else if (request.path == '/laporan/produk-terlaris') {
+      data = <Object>[];
     } else if (request.path == '/toko/me/jam-buka') {
       if (request.method == 'PUT') {
         hours = List<Map<String, dynamic>>.from(request.data as List);

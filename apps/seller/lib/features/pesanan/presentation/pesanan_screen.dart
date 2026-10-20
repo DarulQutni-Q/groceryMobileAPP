@@ -22,6 +22,13 @@ class _PesananScreenState extends ConsumerState<PesananScreen> {
   String _tab = 'baru';
   @override
   Widget build(BuildContext context) {
+    ref.listen(pesananProvider(widget.userId), (previous, next) {
+      if (next.error != null &&
+          next.error != previous?.error &&
+          (ModalRoute.of(context)?.isCurrent ?? false)) {
+        storeMessage(context, 'Permintaan gagal: ${next.error!}', error: true);
+      }
+    });
     final state = ref.watch(pesananProvider(widget.userId));
     final orders = state.forTab(_tab);
     return Column(
@@ -132,12 +139,12 @@ class _PesananScreenState extends ConsumerState<PesananScreen> {
     ),
   );
   Widget _empty() => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 55, horizontal: 18),
+    padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 18),
     child: Column(
       children: [
         const Icon(
           Icons.inventory_2_outlined,
-          size: 110,
+          size: 90,
           color: Color(0xFF7EA895),
         ),
         const SizedBox(height: 24),
@@ -153,11 +160,17 @@ class _PesananScreenState extends ConsumerState<PesananScreen> {
         const SizedBox(height: 12),
         Text(
           _tab == 'baru'
-              ? 'Pesanan baru akan muncul di sini dan kamu akan dapat notifikasi.'
+              ? 'Pesanan baru akan muncul di sini.'
               : _tab == 'diproses'
               ? 'Pesanan yang diterima akan muncul di sini.'
               : 'Riwayat pesanan akan muncul di sini.',
           textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 20),
+        FilledButton(
+          onPressed: () =>
+              ref.read(pesananProvider(widget.userId).notifier).load(),
+          child: const Text('Perbarui Pesanan'),
         ),
       ],
     ),

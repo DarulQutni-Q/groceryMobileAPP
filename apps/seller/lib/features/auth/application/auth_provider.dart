@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:grocery_shared/shared.dart';
 
+import '../../../core/network.dart';
+
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
 
 class AuthState {
@@ -133,6 +135,7 @@ final Provider<ApiClient> apiClientProvider = Provider<ApiClient>((ref) {
     baseUrl: ref.watch(apiBaseUrlProvider),
     storage: ref.watch(storageProvider),
   );
+  configureSellerNetwork(client, ref.watch(connectionCheckProvider));
   client.onSessionExpired = () =>
       ref.read(authProvider.notifier).sessionExpired();
   ref.onDispose(() => client.dio.close());

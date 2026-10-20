@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/seller_theme.dart';
@@ -16,6 +17,9 @@ class SellerApp extends StatelessWidget {
     debugShowCheckedModeBanner: false,
     title: 'Daclanari Grocery',
     theme: sellerTheme(),
+    locale: const Locale('id', 'ID'),
+    supportedLocales: const [Locale('id', 'ID')],
+    localizationsDelegates: GlobalMaterialLocalizations.delegates,
     home: const AuthFlow(),
   );
 }

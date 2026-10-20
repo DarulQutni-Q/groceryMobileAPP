@@ -5,8 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grocery_shared/shared.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../core/network.dart';
+import '../../laporan/presentation/laporan_screen.dart';
 import '../application/store_provider.dart';
 import 'home_screen.dart';
+import 'offline_home.dart';
 import 'product_screen.dart';
 import 'product_editor.dart';
 import 'toko_screen.dart';
@@ -20,8 +23,10 @@ class SellerShell extends ConsumerStatefulWidget {
   ConsumerState<SellerShell> createState() => _SellerShellState();
 }
 
-class _SellerShellState extends ConsumerState<SellerShell> {
+class _SellerShellState extends ConsumerState<SellerShell>
+    with WidgetsBindingObserver {
   int _tab = 0;
+  bool _showOffline = false;
   static const labels = ['Beranda', 'Laporan', 'Produk', 'Pesanan', 'Toko'];
   static const icons = [
     Icons.home_outlined,
@@ -33,7 +38,32 @@ class _SellerShellState extends ConsumerState<SellerShell> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     Future.microtask(_recoverPhoto);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.invalidate(connectionStateProvider);
+    }
+  }
+
+  Future<void> _retry() async {
+    ref.invalidate(connectionStateProvider);
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    await ref.read(storeProvider(widget.user.id).notifier).load();
+    if (!mounted) return;
+    if (ref.read(storeProvider(widget.user.id)).error == null ||
+        ref.read(connectionStateProvider).asData?.value == true) {
+      setState(() => _showOffline = false);
+    }
   }
 
   Future<void> _recoverPhoto() async {
@@ -72,6 +102,22 @@ class _SellerShellState extends ConsumerState<SellerShell> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(storeProvider(widget.user.id));
+    final connection = ref.watch(connectionStateProvider);
+    ref.listen(connectionStateProvider, (previous, next) {
+      if (next.asData?.value == false) setState(() => _showOffline = true);
+      if (next.asData?.value == true && previous?.asData?.value == false) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      }
+    });
+    ref.listen(storeProvider(widget.user.id), (previous, next) {
+      if (next.error != null &&
+          next.error != previous?.error &&
+          (ModalRoute.of(context)?.isCurrent ?? false)) {
+        storeMessage(context, 'Permintaan gagal: ${next.error!}', error: true);
+      }
+    });
+    final offline =
+        _tab == 0 && (_showOffline || connection.asData?.value == false);
     final theme = Theme.of(context);
     return Theme(
       data: theme.copyWith(
@@ -96,11 +142,22 @@ class _SellerShellState extends ConsumerState<SellerShell> {
         body: StoreBackground(
           child: SafeArea(
             bottom: false,
-            child: state.loading
+            child: offline
+                ? OfflineHome(
+                    namaToko: state.toko?.nama ?? widget.user.namaToko ?? '',
+                    retry: _retry,
+                    loading: state.loading,
+                  )
+                : state.loading && state.toko == null
                 ? const Center(child: CircularProgressIndicator())
                 : Column(
                     children: [
-                      if (state.error != null) _error(state.error!),
+                      if (state.error != null)
+                        _error(state.error!)
+                      else if (state.loading)
+                        const LinearProgressIndicator()
+                      else
+                        const SizedBox.shrink(),
                       Expanded(child: _page(state)),
                     ],
                   ),
@@ -121,8 +178,7 @@ class _SellerShellState extends ConsumerState<SellerShell> {
             child: Text(message, style: const TextStyle(color: Colors.black)),
           ),
           TextButton(
-            onPressed: () =>
-                ref.read(storeProvider(widget.user.id).notifier).load(),
+            onPressed: _retry,
             child: const Text(
               'Coba lagi',
               style: TextStyle(color: Colors.black),
@@ -140,6 +196,11 @@ class _SellerShellState extends ConsumerState<SellerShell> {
       0 => HomeScreen(
         user: widget.user,
         state: state,
+        openOrders: () => setState(() => _tab = 3),
+      ),
+      1 => LaporanScreen(
+        userId: widget.user.id,
+        namaToko: state.toko!.nama,
         openOrders: () => setState(() => _tab = 3),
       ),
       2 => ProductScreen(userId: widget.user.id, state: state),

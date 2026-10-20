@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grocery_shared/shared.dart';
 
+import '../../../core/network.dart';
 import '../application/store_provider.dart';
 import 'store_widgets.dart';
 
@@ -23,8 +24,12 @@ class _HoursEditorState extends ConsumerState<HoursEditor> {
   }
 
   Future<void> _load() async {
+    setState(() => _error = null);
     try {
-      final days = await ref.read(tokoApiProvider).getJamBuka();
+      final days = await ref
+          .read(tokoApiProvider)
+          .getJamBuka()
+          .timeout(sellerLoadLimit);
       if (mounted) {
         setState(() {
           _days = days;
@@ -32,7 +37,10 @@ class _HoursEditorState extends ConsumerState<HoursEditor> {
         });
       }
     } catch (error) {
-      if (mounted) setState(() => _error = authErrorMessage(error));
+      if (mounted) {
+        setState(() => _error = authErrorMessage(error));
+        storeMessage(context, _error!, error: true);
+      }
     }
   }
 

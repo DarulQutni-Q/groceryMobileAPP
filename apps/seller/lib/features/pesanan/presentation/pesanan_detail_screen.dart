@@ -17,6 +17,16 @@ class PesananDetailScreen extends ConsumerWidget {
   final String userId, id;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(pesananDetailProvider((userId: userId, id: id)), (
+      previous,
+      next,
+    ) {
+      if (next.hasError &&
+          previous?.error != next.error &&
+          (ModalRoute.of(context)?.isCurrent ?? false)) {
+        storeMessage(context, authErrorMessage(next.error!), error: true);
+      }
+    });
     final detail = ref.watch(pesananDetailProvider((userId: userId, id: id)));
     return StorePage(
       title: detail.value?.kode ?? 'Detail Pesanan',

@@ -121,6 +121,7 @@ class _TerimaSheetState extends State<_TerimaSheet> {
         _busy = false;
         _error = error;
       });
+      storeMessage(context, error, error: true);
     }
   }
 
@@ -206,6 +207,11 @@ class _TolakSheetState extends ConsumerState<_TolakSheet> {
         _saving = false;
         _error = ref.read(pesananProvider(widget.userId)).error;
       });
+      storeMessage(
+        context,
+        _error ?? 'Pesanan belum dapat ditolak.',
+        error: true,
+      );
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:grocery_shared/shared.dart';
 
+import '../../../core/network.dart';
 import '../../auth/application/auth_provider.dart';
 
 const pesananTabs = ['baru', 'diproses', 'selesai'];
@@ -37,7 +38,7 @@ class PesananNotifier extends StateNotifier<PesananState> {
   Future<void> load() async {
     final revision = ++_revision;
     try {
-      final orders = await api.list();
+      final orders = await api.list().timeout(sellerLoadLimit);
       if (mounted && revision == _revision) {
         state = PesananState(orders: orders, busy: state.busy);
       }
@@ -97,5 +98,6 @@ final pesananProvider = StateNotifierProvider.autoDispose
 typedef PesananKey = ({String userId, String id});
 final pesananDetailProvider = FutureProvider.autoDispose
     .family<Pesanan, PesananKey>(
-      (ref, key) => ref.watch(pesananApiProvider).detail(key.id),
+      (ref, key) =>
+          ref.watch(pesananApiProvider).detail(key.id).timeout(sellerLoadLimit),
     );
