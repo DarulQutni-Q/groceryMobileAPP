@@ -1,0 +1,4 @@
+dc94203 sambungkan daftar detail dan aksi pesanan seller
+d019600 tambah model dan client pesanan di shared
+1ffd11c tambah alur pesanan seller dan pembatas dummy dev
+a9057e0 tambah migrasi pesanan dan snapshot barang

@@ -1,0 +1,12 @@
+docker compose config --quiet
+exit=0
+docker compose exec -T backend alembic current
+0003_pesanan (head)
+exit=0
+docker compose exec -T backend alembic check
+No new upgrade operations detected.
+exit=0
+docker compose exec -T backend python -c import app.main; print("PASS import app.main")
+PASS import app.main
+exit=0
+PASS SHA-256 seluruh source app Python container cocok dengan host.

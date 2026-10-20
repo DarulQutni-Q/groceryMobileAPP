@@ -1,12 +1,13 @@
 # Rancangan Fase A3
 
-Status: ditunda sesuai instruksi pengguna, selesaikan A2 lengkap dahulu. Belum ada implementasi A3. Pengguna sudah menyetujui rekomendasi sebelumnya; tidak perlu meminta persetujuan ulang atas keputusan yang sama.
+Status: fungsional A3 selesai dan terverifikasi 20 Oktober 2026. Pengguna meminta "continue A3" setelah A2 dipush ke main pada b876f2b. Batas kesamaan visual dicatat di bawah dan di handoff.
 
 ## Sumber dan keadaan aktual
 
 - Lampiran A3 `9120f74a-43ea-43b4-9bc9-46104eab4915/pasted-text.txt` sudah dibaca lengkap.
+- Lampiran terbaru `a191e541-deac-4103-bc42-e83cad9d577d/pasted-text.txt` dibaca pada awal pengerjaan A3; kontrak pesanan sama dan menjadi sumber aktif.
 - `prd.md` bagian 2.4: tab pesanan, detail, timeline Diterima/Dikemas/Diantar/Tiba, penolakan dan konfirmasi terima. `design.md` bagian 3-4: Pesanan dan snapshot item. `rules.md`, `AGENTS.md`, dan `CONTEXT.md` sudah dibaca.
-- Fondasi Toko/Produk, navigasi lima tab dan UI A2 sedang diselesaikan. Periksa `handoff.md` untuk hasil aktual sebelum memulai A3. Pesanan dan konfigurasi ENV untuk dummy A3 belum ada.
+- Fondasi Toko/Produk dan lima tab A2 sudah terverifikasi. Entry point backend `create_app`, metadata Alembic, shared Dio dan `SellerShell` menjadi titik integrasi. Laporan tetap placeholder.
 - Dokumen spesifikasi ada di root. `docs/ROADMAP_BERTAHAP.md` belum tersedia.
 
 ## Keputusan yang sudah disetujui
@@ -65,4 +66,15 @@ Filter tab: Baru hanya `baru`; Diproses mencakup `diproses/dikemas/diantar`; Sel
 
 Implementasi memakai siklus satu tes HTTP/widget gagal lalu kode minimum sampai lulus per perilaku. Setelah itu jalankan seluruh regresi A1, analyzer/lint/build/import/Compose, acceptance curl, run Android, dan screenshot tiga tab/detail/modal/sheet. Tes PostgreSQL nyata diperlukan karena SQLite tidak membuktikan row locking.
 
-Push notification, pembayaran, checkout/stok transaksional, laporan nyata dan customer app tetap di luar cakupan. Statistik/produk/profil A2 lengkap tidak dilaporkan selesai bila hanya fondasi yang dikerjakan.
+Push notification, pembayaran, checkout/stok transaksional, laporan nyata dan customer app tetap di luar cakupan. Tes lama tidak dilonggarkan untuk menutupi regresi. ENERGY 1 / RHYTHM 1 / MOTION 1 mengikuti referensi operasional: kartu berulang agar pesanan mudah dibandingkan; warna membedakan status; animasi hanya transisi Material.
+
+## Hasil pelaksanaan
+
+- Model, migrasi 0003, tujuh endpoint, shared API/model, Riverpod dan UI pesanan sudah terhubung melalui entry point produksi.
+- 41 tes backend, 10 shared dan 17 seller lulus; analyzer shared/seller bersih. Tes PostgreSQL nyata membuktikan snapshot setelah hapus produk, UTC dan konflik transisi. Retry kode, biaya invalid dan overflow diuji tanpa data parsial.
+- Acceptance curl membuat tiga dummy dan memeriksa skenario wajib. Guard ENV prod diperiksa melalui Uvicorn pada image yang sama: HTTP 404 dan jumlah pesanan tidak berubah.
+- Journey Android A3 lulus dan menghasilkan screenshot 01-12. APK normal dibangun/diinstall, force-stop dan buka ulang memulihkan sesi/riwayat, screenshot 13. Alembic head/check, import, ruff dan Compose lulus; source container cocok dengan host.
+- Review independen backend/seller tidak menyisakan P1/P2. Temuan refresh/lifecycle diperbaiki dengan tes regresi. Assertion placeholder A2 dipindahkan ke Laporan A4 mengikuti perubahan kontrak; Pesanan diuji terpisah.
+- UI belum pixel-identik dan beberapa gambar acuan belum tersedia. Build/run iOS, HP fisik, panggilan pembeli nyata dan APK staging/prod belum diuji.
+
+Rincian endpoint/curl ada di `A3_API.md`; bukti ada di `artifacts/a3/README.md`; kelanjutan ada di `handoff.md`.

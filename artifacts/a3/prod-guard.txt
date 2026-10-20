@@ -1,0 +1,6 @@
+Pemeriksaan 20 Oktober 2026 pada image backend A3 yang sama.
+Uvicorn sementara dijalankan dengan ENV=prod di port loopback 8001 dalam container.
+POST /pesanan/internal/test: HTTP 404.
+Jumlah pesanan PostgreSQL sebelum dan sesudah request sama.
+Proses sementara dihentikan; backend dev utama di port 8000 tetap berjalan.
+Tes HTTP otomatis juga memeriksa prod, staging, ENV kosong dan default prod.

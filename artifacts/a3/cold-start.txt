@@ -1,0 +1,10 @@
+APK normal, entry point lib/main_dev.dart, flavor dev.
+Build: flutter build apk --debug --flavor dev -t lib/main_dev.dart
+Install ulang: adb -s emulator-5554 install -r build/app/outputs/flutter-apk/app-dev-debug.apk -> Success
+Hentikan proses: adb -s emulator-5554 shell am force-stop com.daclanari.seller.dev
+Buka ulang: adb -s emulator-5554 shell am start -n com.daclanari.seller.dev/com.daclanari.seller.MainActivity
+Layout sesudah buka ulang: Toko Uji Pesanan A3, Pemilik A3, Beranda tanpa login ulang.
+Tab Pesanan: Baru kosong, Diproses 0, Selesai 3.
+Riwayat sama dengan journey integrasi: DG-86488 Ditolak, DG-90745 Selesai, DG-99074 Ditolak.
+Screenshot 13-cold-start.png diperiksa secara visual, termasuk navigasi lima tab.
+APK SHA-256: dd4f4f854350f29cabd5b2030bc019ea260dbb00bc00bae70e9664aa9eac2a8d

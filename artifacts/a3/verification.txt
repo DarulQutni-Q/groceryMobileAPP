@@ -1,0 +1,29 @@
+Verifikasi 20 Oktober 2026, A3 seller + shared + backend
+
+Backend pytest: 41 passed, tanpa skip, termasuk PostgreSQL nyata.
+Backend ruff check: All checks passed!
+Backend ruff format check: 8 files already formatted.
+Backend import app.main: PASS di image runtime.
+Shared flutter test: 10 passed.
+Shared flutter analyze: No issues found!
+Seller flutter test: 17 passed.
+Seller flutter analyze: No issues found!
+Total tes unit/widget/HTTP: 68 passed.
+Android flutter drive A3: All tests passed, 35 detik untuk journey.
+Android APK normal main_dev.dart: build dan adb install -r Success.
+Android cold start: am force-stop, am start, sesi langsung pulih ke Beranda.
+Tab Pesanan normal: Baru kosong, Selesai 3, riwayat tetap tersimpan.
+Compose config: valid.
+Alembic PostgreSQL: 0003_pesanan (head).
+Alembic check: No new upgrade operations detected.
+Hash source app Python container: sama dengan host.
+ENV prod guard: HTTP 404, jumlah pesanan sebelum/sesudah sama.
+Acceptance curl A3: tiga dummy, filter, terima, alasan 422/valid, lompatan 400, undo, ownership dan snapshot lulus.
+Reachability: create_app -> router pesanan; metadata Alembic -> model Pesanan/PesananItem;
+SellerShell tab 3 -> PesananScreen -> detail/actions -> provider -> shared PesananApi.
+Customer: tidak ada perubahan tracked.
+Review read-only: backend dan seller, tidak ada P1/P2 tersisa.
+
+iOS, panggilan telepon nyata, HP fisik, staging/prod APK dan pixel parity tidak diuji.
+Sumber gambar detail dan beberapa varian A3 belum tersedia.
+APK SHA-256: dd4f4f854350f29cabd5b2030bc019ea260dbb00bc00bae70e9664aa9eac2a8d

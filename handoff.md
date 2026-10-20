@@ -1,55 +1,57 @@
-# Handoff Fase A2
+# Handoff Fase A3
 
-## Keputusan dan cakupan
+## Cakupan dan keputusan
 
-Pengguna meminta A2 lengkap lebih dahulu, A3 nanti. Seller, shared dan backend sudah terhubung untuk Beranda, Produk dan Toko. Customer tidak diubah. Rekomendasi A2 dan pengecualian Urungkan A3 sudah disetujui; jangan meminta persetujuan ulang untuk hal yang sama. Rancangan A3 tetap di `A3_PLAN.md`, tanpa implementasi pesanan.
+A2 selesai dan dipush pada b876f2b. Pengguna kemudian meminta melanjutkan seluruh A3 melalui lampiran `a191e541-deac-4103-bc42-e83cad9d577d/pasted-text.txt`. Seller, shared dan backend kini terhubung untuk pesanan. Customer tidak diubah. Laporan tetap placeholder A4; pembayaran dan push belum dikerjakan. Jangan meminta persetujuan ulang untuk cakupan dan pengecualian Urungkan yang sudah disetujui.
 
-Dokumen sumber aktual ada di root: `prd.md`, `design.md`, `rules.md`, `plan.md`. `docs/ROADMAP_BERTAHAP.md` belum tersedia. Gambar A2 memakai nama `Pasted image (4)-(9), (12)-(14), (21)-(22).png` di `docs/screenshots/seller/`. Sumber milik pengguna tetap untracked seperti keadaan awal.
+Sumber aktual ada di root: `prd.md`, `design.md`, `rules.md`, `plan.md`. `docs/ROADMAP_BERTAHAP.md` belum tersedia. Sumber pengguna tetap untracked seperti keadaan awal. Acuan A3 tersedia sebagai `Pasted image (11).png` dan `Pasted image (17).png`; nama kanonis 05/06 serta referensi detail dan varian lainnya tidak tersedia.
 
 ## Yang sudah berjalan
 
-- Backend A1 tetap aktif. Akun seller baru dan Toko dibuat satu transaksi. Migrasi `0002_toko_produk` menambahkan Toko, tujuh JamBuka dan Produk, serta backfill akun A1. Toko satu per seller, awal tutup, radius 5 km; fallback Google `Toko [nama]` maksimal 120 karakter.
-- Dua belas endpoint toko/produk: profil, jam tujuh hari, status, CRUD, pencarian/filter, toggle dan foto. Seluruh akses dibatasi toko dari JWT. Validasi harga/stok/satuan/jam memakai pesan Indonesia. Lihat `A2_API.md`.
-- Upload memeriksa ekstensi/MIME/decode JPG/PNG/WebP, maksimal 5 MB dan 25 MP. Nama file UUID, rollback membersihkan file baru, penggantian/hapus membersihkan file lama. Row lock melindungi upload versus delete. Volume `uploads_data` mempertahankan file saat recreate container.
-- Shared menyediakan model Toko/JamBuka/Produk dan API toko/produk. Retry multipart setelah refresh 401 memakai FormData clone agar stream tidak dipakai ulang.
-- Seller mempunyai lima tab. Beranda menghitung stok <= 5 dari seluruh produk sendiri; transaksi tetap nol. Produk mendukung foto galeri/kamera, create/edit/delete, search, kategori dan toggle. Toko menyimpan profil, tujuh hari jam, pengiriman/radius dan rekening. Jadwal tidak otomatis mengubah status toko.
-- Registrasi A2 menyimpan kategori/pengiriman/radius ke backend. Pilihan A1 lama yang hanya lokal tidak dapat dipulihkan; dapat diisi ulang di Toko. State toko dipisahkan per User dan editor ditutup saat sesi berakhir.
-- Error logout tetap mempertahankan User agar bisa retry. Mutation yang sudah berhasil tetap dianggap sukses saat refresh gagal; error refresh tampil pada banner Coba lagi. Penghapusan gagal menampilkan pesan di editor.
+- Fondasi A1/A2 tetap berjalan: akun, Toko, tujuh JamBuka, Produk, foto lokal dan lima tab. Rincian kontrak ada di `A1_API.md`, `A2_API.md` dan bukti historis `artifacts/a2/`.
+- Migrasi `0003_pesanan` menambah Pesanan/PesananItem tanpa mengganti data A2. Kode DG lima digit unik memakai retry terbatas; nama/harga snapshot dan total dihitung server. Setelah produk dihapus, FK item null tetapi snapshot/riwayat tetap ada.
+- Tujuh endpoint pesanan mencakup list/filter/detail, terima, tolak wajib alasan, status, Urungkan dan dummy dev. Semua akses dibatasi Toko pemilik JWT. Transisi/deadline di bawah row lock PostgreSQL. Lompatan, mundur dan terminal menghasilkan 400. Alasan kosong/spasi menghasilkan 422.
+- Urungkan hanya dari Diproses sebelum 10 detik sejak terima menurut server. Response mengirim accepted_at, undo_until dan server_time UTC; UI mengurangi latensi request dari jendela tampilannya.
+- ENV backend default prod. Endpoint dummy hanya menerima ENV=dev, termasuk tetap wajib JWT. Guard prod/staging/kosong/default menghasilkan 404 tanpa menulis pesanan. Dummy memakai produk toko sendiri dan customer null; tidak menjalankan checkout/pemotongan stok.
+- Shared menyediakan Pesanan/PesananItem dan PesananApi dengan list/detail/terima/tolak/status/urungkan. Client tetap memakai refresh JWT A1.
+- Tab Pesanan mempunyai tiga tab, count, status, kartu, tanggal/jam, item/slot/total, empty dan error/retry. Detail menyediakan timeline, alamat, snapshot, rincian biaya, terima, tolak dan perubahan tahap sampai selesai. Customer null tampil `-` dan telepon nonaktif. Lainnya mewajibkan teks. Sheet terima hijau mempunyai countdown/Urungkan.
+- Riverpod terpisah per user dan detail per ID. Hasil request lama tidak mengganti state baru. Mutasi memperbarui list/count segera; refresh gagal dilaporkan. Tes regresi melindungi lifecycle saat undo selesai setelah route ditutup dan kegagalan refresh detail.
+- Statistik transaksi Beranda masih nol dan banner pesan tetap placeholder A2; tombolnya membuka Pesanan. Jadwal toko tetap manual. Upload logo, pembayaran, laporan dan push tidak ditambahkan.
 
-## Bukti verifikasi 20 Oktober 2026
+## Verifikasi 20 Oktober 2026
 
 | Pemeriksaan | Hasil |
 | --- | --- |
-| Backend pytest | 27 passed, termasuk konflik HTTP upload/delete pada PostgreSQL terisolasi |
-| Backend ruff dan import | Lulus |
-| Shared Flutter test / analyze | 9 passed / No issues found |
-| Seller Flutter test / analyze | 9 passed / No issues found |
-| Android integration A2 | Lulus: registrasi, tambah/foto/toggle/search produk, profil/jam/pengiriman/rekening, logout/login dan rekreasi sesi |
-| APK dev normal | Build dan install berhasil; force-stop lalu buka ulang langsung Beranda dengan data tersimpan |
-| Galeri Android native | Pemilih sistem berhasil mengembalikan gambar dan preview tampil pada form produk APK normal |
-| Acceptance curl A2 | Semua lulus; `artifacts/a2/backend-smoke.txt` |
+| Backend pytest | 41 passed, tanpa skip, termasuk PostgreSQL nyata |
+| Backend ruff / import | Lulus |
+| Shared test / analyze | 10 passed / No issues found |
+| Seller test / analyze | 17 passed / No issues found |
+| Android integration A3 | Lulus: tiga dummy, tolak, Lainnya, terima/undo, Dikemas/Diantar/Selesai, badge, empty dan sesi |
+| APK dev normal | Build/install berhasil; force-stop dan buka ulang memulihkan sesi serta tiga riwayat |
+| Acceptance curl A3 | Lulus seluruh skenario wajib, ownership dan snapshot |
+| ENV prod nyata | Uvicorn image sama dengan ENV=prod: POST dummy 404, jumlah pesanan tetap |
+| Migrasi PostgreSQL | 0003_pesanan head, check tanpa operasi tertunda |
+| Source container | SHA-256 semua file app Python sama dengan host |
 | Compose config | Valid |
-| Alembic pada PostgreSQL | `0002_toko_produk (head)`; check tanpa perubahan tertunda |
-| Source container | SHA-256 semua file app Python cocok dengan source host yang diuji |
-| Foto setelah recreate container | Hash tetap sama, URL tetap dapat dibaca |
-| Viewport kecil/keyboard | 320x568 lulus, tanpa overflow Flutter |
-| iOS picker config | Info.plist valid; build/run iOS belum diuji |
+| Layar kecil/keyboard | 320x568 lulus tanpa overflow |
+| Review independen | Backend dan seller, tidak ada P1/P2 tersisa |
 | Customer | Tidak ada perubahan tracked |
 
-Bukti ada di `artifacts/a2/README.md`, `verification.txt`, `storage-persistence.txt`, `cold-start.txt`, dan screenshot 01-16. Foto pada journey integrasi memakai fixture screenshot login; picker diganti pada tes, seluruh upload dan API berjalan nyata. Galeri native diperiksa terpisah pada APK normal. Tes A1 unit dan HTTP tetap lulus. Skrip perangkat `integration_test/auth_test.dart` masih menyimpan assertion Beranda placeholder A1 sebagai catatan fase; tidak diubah untuk memaksa lulus pada UI A2. Journey perangkat aktif adalah `integration_test/a2_test.dart`.
+Total 68 tes unit/widget/HTTP lulus, ditambah perjalanan Android nyata. Bukti ada di `artifacts/a3/README.md`, `verification.txt`, `runtime-checks.txt`, `prod-guard.txt`, `backend-smoke.txt`, `cold-start.txt`, dan screenshot 01-13. Contoh curl tujuh endpoint ada di `A3_API.md`.
 
-## Gap yang belum diverifikasi atau belum termasuk kontrak
+Tes widget placeholder A2 dipindahkan dari Pesanan ke Laporan A4 sesuai kontrak baru, bukan untuk menutupi kegagalan. Pesanan mempunyai delapan tes widget baru. Journey A1 `integration_test/auth_test.dart` tetap menyimpan assertion Beranda placeholder lama, belum diubah dan tidak dijalankan sebagai gate A3. Journey A2 tetap menjadi bukti historis auth/toko/produk; perjalanan perangkat yang diulang pada A3 adalah `integration_test/a3_test.dart`.
 
-- UI belum pixel-identik: font sumber tidak tersedia, dekorasi latar dan beberapa ikon/spacing masih berbeda. Field kategori produk ditambahkan sesuai persetujuan; varian tutup memakai empat statistik sesuai kontrak A2. Tidak ada URL/node Figma untuk mengukur token sumber lebih jauh.
-- Upload logo Toko tidak mempunyai endpoint pada kontrak A2. Tombol Ubah Foto menjelaskan keadaan ini; foto produk sudah fungsional.
-- Kamera native dan pemulihan lost data sesudah Android mematikan proses belum diuji. Build/signing/run iOS, flavor staging/prod, HP fisik dan performa produksi belum diuji. Emulator mengeluarkan diagnostik frame/IME sistem; tidak ada exception Flutter/overflow pada tes yang lulus.
-- Login Google akun nyata belum diuji, membutuhkan OAuth/signing. Logout menghapus sesi perangkat; revokasi refresh token server belum termasuk A1/A2.
-- Pesanan, pembayaran, laporan nyata, push notification, S3 dan customer belum dikerjakan. Tab Pesanan/Laporan menampilkan A3/A4.
+## Gap dan batas verifikasi
+
+- UI belum pixel-identik. Font sumber tidak tersedia, serta ikon, kurva dan spacing masih berbeda. Detail, Diproses/Selesai, empty dan sheet terima tidak mempunyai gambar sumber untuk diverifikasi persis. Tidak ada URL/node Figma.
+- Build/run/signing iOS, HP fisik, panggilan pembeli nyata, flavor staging/prod dan performa produksi belum diuji. Emulator mengeluarkan diagnostik frame/IME; tes lulus tanpa exception Flutter/overflow.
+- Batas A1/A2 tetap: Google akun nyata membutuhkan OAuth/signing; logout menghapus sesi perangkat tanpa revokasi server; kamera native/lost data belum diuji; upload logo belum memiliki endpoint. Bukti galeri native dan persistensi foto tetap di `artifacts/a2/`.
+- Belum ada customer, checkout, pengurangan stok transaksional, pembayaran, push, laporan nyata atau S3. Pesanan fase ini hanya dibuat melalui endpoint dev.
 
 ## Lingkungan dan kelanjutan
 
-Compose project `grocery-a1` berjalan, PostgreSQL di loopback 55432 dan HTTP 8000. Emulator `pixel` memakai `emulator-5554`. SDK build berasal dari `/opt/android-sdk` sesuai `apps/seller/android/local.properties`. Kredensial uji acak berada di `/tmp/grocery-a1-20261020-env.json` mode 0600, tidak dikomit/dicetak. Gunakan project/volume terpisah untuk environment sendiri; jangan menimpa password volume yang sudah ada.
+Compose project `grocery-a1` berjalan, PostgreSQL di loopback 55432, API di 8000, backend pengujian secara eksplisit ENV=dev. Emulator pixel memakai emulator-5554. SDK build `/opt/android-sdk` mengikuti `apps/seller/android/local.properties`. Kredensial acak berada di `/tmp/grocery-a1-20261020-env.json` mode 0600, tidak dikomit/dicetak. Jangan menimpa password volume lama. Untuk environment baru, isi contoh env sendiri; default prod menonaktifkan dummy.
 
-Remote memakai HTTPS sesuai autentikasi GitHub CLI aktif. Riwayat LICENSE remote dan hasil A1 dipertahankan saat merge. Lihat log Git untuk commit A2 dan status push terbaru.
+Remote HTTPS memakai autentikasi GitHub CLI yang aktif. Riwayat LICENSE dan A1/A2 dipertahankan. Status commit/push akhir lihat Git log dan remote. Aturan proyek meminta commit kecil dalam Bahasa Indonesia.
 
-A3 berikutnya mengikuti `A3_PLAN.md` dan lampiran lengkap `9120f74a-43ea-43b4-9bc9-46104eab4915/pasted-text.txt`. Mulai task baru dengan file handoff ini agar konteks tetap ringkas. Jangan sentuh customer. Panduan run/test ada di `README.md`; curl ada di `A1_API.md` dan `A2_API.md`; keputusan A2 ada di `A2_PLAN.md`.
+Jika melanjutkan A4, gunakan task baru dan file ini agar konteks ringkas. Baca lampiran A4 sebelum mengerjakan; jangan menganggap detail laporan sudah ditentukan oleh A3. Customer tetap di luar cakupan.
