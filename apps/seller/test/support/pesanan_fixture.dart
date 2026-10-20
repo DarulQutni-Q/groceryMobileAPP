@@ -21,6 +21,7 @@ Map<String, dynamic> orderFixture(String id, String code, String status) => {
   'total': 34500,
   'tolak_alasan': status == 'ditolak' ? 'Stok Habis' : null,
   'created_at': DateTime.now().toUtc().toIso8601String(),
+  'updated_at': DateTime.now().toUtc().toIso8601String(),
   'server_time': DateTime.now().toUtc().toIso8601String(),
   'undo_until': null,
   'nama_pembeli': null,

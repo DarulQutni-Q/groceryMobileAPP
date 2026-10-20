@@ -32,6 +32,7 @@ class Pesanan {
     required this.total,
     required this.items,
     required this.createdAt,
+    this.updatedAt,
     this.catatan,
     this.tolakAlasan,
     this.namaPembeli,
@@ -44,7 +45,7 @@ class Pesanan {
   final int subtotal, diskon, ongkir, biayaLayanan, total;
   final List<PesananItem> items;
   final DateTime createdAt;
-  final DateTime? serverTime, undoUntil;
+  final DateTime? serverTime, undoUntil, updatedAt;
 
   factory Pesanan.fromJson(Map<String, dynamic> json) => Pesanan(
     id: json['id'] as String,
@@ -66,6 +67,9 @@ class Pesanan {
         .map((item) => PesananItem.fromJson(item as Map<String, dynamic>))
         .toList(),
     createdAt: DateTime.parse(json['created_at'] as String),
+    updatedAt: json['updated_at'] == null
+        ? null
+        : DateTime.parse(json['updated_at'] as String),
     serverTime: json['server_time'] == null
         ? null
         : DateTime.parse(json['server_time'] as String),

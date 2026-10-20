@@ -77,6 +77,8 @@ class StoreFixture implements HttpClientAdapter {
         'role': 'seller',
         'nama_toko': 'Toko Uji',
       };
+    } else if (request.path == '/pesanan') {
+      data = <Object>[];
     } else if (request.path == '/laporan/ringkasan') {
       data = {
         'total_penjualan': 0,

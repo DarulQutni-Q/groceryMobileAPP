@@ -78,6 +78,7 @@ void main() {
       expect(items.single.items.single.hargaSnapshot, 15000);
       expect(items.single.total, 34500);
       expect(items.single.createdAt.isUtc, isTrue);
+      expect(items.single.updatedAt, DateTime.utc(2026, 10, 20, 8));
       expect(items.single.namaPembeli, isNull);
       await api.detail('o1');
       await api.terima('o1');

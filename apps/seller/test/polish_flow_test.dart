@@ -12,6 +12,7 @@ import 'package:seller/features/auth/application/auth_provider.dart';
 import 'package:seller/features/store/presentation/seller_shell.dart';
 
 import 'support/laporan_fixture.dart';
+import 'support/pesanan_fixture.dart';
 
 class PolishFixture extends LaporanFixture {
   Completer<void>? storeGate;
@@ -86,6 +87,37 @@ void main() {
     );
     if (settle) await tester.pumpAndSettle();
   }
+
+  testWidgets('home totals use completion day and exclude unfinished sales', (
+    tester,
+  ) async {
+    final fixture = PolishFixture();
+    fixture.orders.clear();
+    for (var i = 0; i < 3; i++) {
+      fixture.orders.add(
+        orderFixture('c$i', 'DG-0000$i', 'selesai')
+          ..['created_at'] = DateTime.now()
+              .toUtc()
+              .subtract(const Duration(days: 14))
+              .toIso8601String(),
+      );
+    }
+    fixture.orders.add(
+      orderFixture('old', 'DG-11112', 'selesai')
+        ..['updated_at'] = DateTime.now()
+            .toUtc()
+            .subtract(const Duration(days: 1))
+            .toIso8601String(),
+    );
+    fixture.orders.add(orderFixture('new', 'DG-11113', 'baru'));
+    await open(tester, fixture);
+    await tester.scrollUntilVisible(find.text('Produk Terjual'), 150);
+    await tester.pumpAndSettle();
+    expect(find.text('Rp 103.500'), findsOneWidget);
+    expect(find.text('5'), findsOneWidget);
+    expect(find.text('6'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('home shows offline and retry loads data after reconnecting', (
     tester,

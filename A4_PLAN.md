@@ -1,6 +1,6 @@
 # Rancangan Fase A4
 
-Status: aktif. Rekomendasi waktu/perbandingan disampaikan pada klarifikasi, lalu pengguna meminta continue. Implementasi mengikuti rekomendasi tersebut; perbaikan submit/konfirmasi sudah dimulai.
+Status: implementasi selesai, verifikasi APK normal dan dokumentasi akhir berjalan. Rekomendasi waktu/perbandingan disampaikan pada klarifikasi, lalu pengguna meminta continue. Implementasi mengikuti rekomendasi tersebut.
 
 ## Sumber dan batas cakupan
 
@@ -17,6 +17,7 @@ Sumber berada di root, bukan docs; roadmap bertahap belum tersedia. A3 sudah dip
 5. UI laporan: komponen Material 3 dan fl_chart. Ambil enam ranking, tampilkan lima; hasil keenam mengaktifkan Lihat semua dengan snackbar Segera hadir. Provider per user/range, hasil request lama tidak mengganti rentang atau akun baru.
 6. Koneksi dan loading: connectivity_plus di seller, cek sebelum request penting serta saat resume; jaringan tersedia tetap harus menangani kegagalan API. GET list/detail berhenti menampilkan spinner selambatnya tiga detik lalu error/retry. Submit menampilkan loading, mencegah Enter ganda dan menonaktifkan aksi saat request berlangsung. Jangan melakukan retry otomatis mutasi yang mungkin sudah berhasil di server.
 7. Polish: semua empty list punya ilustrasi, teks dan aksi. Pertahankan refresh Produk/Pesanan dan konfirmasi hapus; tambah konfirmasi Keluar. Seluruh error API menampilkan pesan Indonesia/snackbar merah serta retry pada screen load. Material locale Indonesia untuk label bawaan seperti time picker.
+8. Hasil review akhir menemukan angka Beranda masih hardcode A2. Beranda kini memakai GET /pesanan yang sudah ada: Penjualan hari ini dan Produk Terjual hanya dari status selesai dengan updated_at pada kalender WIB hari ini; Pesanan menghitung seluruh pesanan toko. Shared menampung updatedAt opsional untuk kompatibilitas. Loading/error memakai indikator dan .../-, bukan angka nol palsu. Refresh memuat ulang profil, produk dan pesanan. Tidak ada endpoint atau migrasi tambahan.
 
 ## Acuan visual
 

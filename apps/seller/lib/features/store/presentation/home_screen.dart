@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grocery_shared/shared.dart';
 
+import '../../pesanan/application/pesanan_provider.dart';
+import '../../pesanan/presentation/pesanan_widgets.dart';
 import '../application/store_provider.dart';
 import 'product_editor.dart';
 import 'store_widgets.dart';
@@ -19,9 +21,26 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final toko = state.toko!;
+    final orders = ref.watch(pesananProvider(user.id));
+    ref.listen(pesananProvider(user.id), (previous, next) {
+      if (next.error != null &&
+          next.error != previous?.error &&
+          (ModalRoute.of(context)?.isCurrent ?? false)) {
+        storeMessage(
+          context,
+          'Statistik belum dimuat: ${next.error!}',
+          error: true,
+        );
+      }
+    });
     final low = state.products.where((p) => p.stok <= 5).toList();
     return RefreshIndicator(
-      onRefresh: () => ref.read(storeProvider(user.id).notifier).load(),
+      onRefresh: () async {
+        await Future.wait([
+          ref.read(storeProvider(user.id).notifier).load(),
+          ref.read(pesananProvider(user.id).notifier).load(),
+        ]);
+      },
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         children: [
@@ -73,7 +92,13 @@ class HomeScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           _notice(context, ref, toko),
           const SizedBox(height: 8),
-          _statistics(low.length),
+          if (orders.loading) const LinearProgressIndicator(),
+          if (orders.error != null)
+            PesananError(
+              message: 'Statistik belum dapat dimuat.',
+              retry: () => ref.read(pesananProvider(user.id).notifier).load(),
+            ),
+          _statistics(low.length, orders),
           const SizedBox(height: 12),
           const Text(
             'Perlu Tindakan',
@@ -139,20 +164,61 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _statistics(int low) => GridView.count(
-    crossAxisCount: 2,
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    mainAxisSpacing: 7,
-    crossAxisSpacing: 7,
-    childAspectRatio: 1.46,
-    children: [
-      _stat('Penjualan hari ini', 'Rp 0', null, const Color(0xFFECE5D0)),
-      _stat('Pesanan', '0', null, const Color(0xFFB3CEDD)),
-      _stat('Produk Terjual', '0', null, const Color(0xFFFCE9E7)),
-      _stat('Stok Menipis', '$low', 'Perlu diisi', const Color(0xFFF8DA7A)),
-    ],
-  );
+  List<Pesanan> _completedToday(List<Pesanan> orders) {
+    final now = DateTime.now().toUtc().add(const Duration(hours: 7));
+    return orders.where((order) {
+      final day = order.updatedAt?.toUtc().add(const Duration(hours: 7));
+      return order.status == 'selesai' &&
+          day != null &&
+          day.year == now.year &&
+          day.month == now.month &&
+          day.day == now.day;
+    }).toList();
+  }
+
+  Widget _statistics(int low, PesananState orders) {
+    final completed = _completedToday(orders.orders);
+    final total = completed.fold(0, (sum, order) => sum + order.total);
+    final qty = completed.fold(
+      0,
+      (sum, order) => sum + order.items.fold(0, (qty, item) => qty + item.qty),
+    );
+    final pending = orders.loading
+        ? '...'
+        : orders.error != null
+        ? '-'
+        : null;
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      mainAxisSpacing: 7,
+      crossAxisSpacing: 7,
+      childAspectRatio: 1.46,
+      children: [
+        _stat(
+          'Penjualan hari ini',
+          pending ?? rupiah(total),
+          null,
+          const Color(0xFFECE5D0),
+        ),
+        _stat(
+          'Pesanan',
+          pending ?? '${orders.orders.length}',
+          null,
+          const Color(0xFFB3CEDD),
+        ),
+        _stat(
+          'Produk Terjual',
+          pending ?? '$qty',
+          null,
+          const Color(0xFFFCE9E7),
+        ),
+        _stat('Stok Menipis', '$low', 'Perlu diisi', const Color(0xFFF8DA7A)),
+      ],
+    );
+  }
+
   Widget _stat(String label, String value, String? hint, Color color) =>
       Card.filled(
         color: color,
@@ -163,11 +229,17 @@ class HomeScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(label, style: const TextStyle(fontSize: 13)),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 27,
-                  fontWeight: FontWeight.w600,
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 27,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
               if (hint != null)
