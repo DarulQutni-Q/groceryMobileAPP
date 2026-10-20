@@ -11,6 +11,7 @@ from app.core.security import (
 )
 from app.models.user import User
 from app.schemas.auth import SellerRegisterRequest, TokenResponse
+from app.services.toko import create_store
 
 
 def token_response(user: User, secret: str) -> TokenResponse:
@@ -33,6 +34,7 @@ def register_seller(data: SellerRegisterRequest, db: Session) -> User:
     )
     db.add(user)
     try:
+        create_store(user, db)
         db.commit()
     except IntegrityError as exc:
         db.rollback()
@@ -73,6 +75,7 @@ def google_seller(claims: dict, db: Session) -> User:
     )
     db.add(user)
     try:
+        create_store(user, db)
         db.commit()
     except IntegrityError as exc:
         db.rollback()

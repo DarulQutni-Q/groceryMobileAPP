@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -11,3 +13,4 @@ class Settings(BaseSettings):
     google_client_id: str = ""
     auto_create_tables: bool = False
     rate_limit_storage_uri: str = "memory://"
+    uploads_dir: Path = Path("uploads")

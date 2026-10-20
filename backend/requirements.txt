@@ -9,3 +9,5 @@ bcrypt>=4.2,<6
 alembic>=1.14,<2
 google-auth[requests]>=2.38,<3
 limits[redis]>=5,<6
+python-multipart>=0.0.20,<1
+Pillow>=11,<13
