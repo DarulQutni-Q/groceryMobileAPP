@@ -8,3 +8,5 @@ export 'src/api/toko_api.dart';
 export 'src/api/produk_api.dart';
 export 'src/api/pesanan_api.dart';
 export 'src/models/pesanan.dart';
+export 'src/models/laporan.dart';
+export 'src/api/laporan_api.dart';
