@@ -173,9 +173,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 400));
       await tester.pumpAndSettle();
       expect(find.textContaining('belum ada di tokomu'), findsOneWidget);
-      await tester.tap(find.byKey(const Key('nav-pesanan')));
+      await tester.tap(find.byKey(const Key('nav-laporan')));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Tahap A3'), findsOneWidget);
+      expect(find.textContaining('Tahap A4'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

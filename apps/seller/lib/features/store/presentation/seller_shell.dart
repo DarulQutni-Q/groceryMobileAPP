@@ -11,6 +11,7 @@ import 'product_screen.dart';
 import 'product_editor.dart';
 import 'toko_screen.dart';
 import 'store_widgets.dart';
+import '../../pesanan/presentation/pesanan_screen.dart';
 
 class SellerShell extends ConsumerStatefulWidget {
   const SellerShell({super.key, required this.user});
@@ -142,10 +143,11 @@ class _SellerShellState extends ConsumerState<SellerShell> {
         openOrders: () => setState(() => _tab = 3),
       ),
       2 => ProductScreen(userId: widget.user.id, state: state),
+      3 => PesananScreen(userId: widget.user.id, namaToko: state.toko!.nama),
       4 => TokoScreen(userId: widget.user.id, toko: state.toko!),
       _ => Center(
         child: Text(
-          '${labels[_tab]}\nTahap ${_tab == 3 ? 'A3' : 'A4'}',
+          '${labels[_tab]}\nTahap A4',
           textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 24),
         ),

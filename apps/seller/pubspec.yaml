@@ -15,6 +15,7 @@ dependencies:
   grocery_shared:
     path: ../../packages/shared
   image_picker: ^1.2.4
+  url_launcher: ^6.3.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
