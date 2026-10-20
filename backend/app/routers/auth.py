@@ -4,7 +4,7 @@ from google.auth.transport.requests import Request as GoogleRequest
 from google.oauth2 import id_token
 from sqlalchemy.orm import Session
 
-from app.core.rate_limit import check_login_limit
+from app.core.rate_limit import check_login_limit, check_register_limit, check_user_limit
 from app.core.security import decode_user_id, get_current_user
 from app.db.session import get_db
 from app.models.user import User
@@ -24,7 +24,9 @@ router = APIRouter(prefix="/auth", tags=["Auth seller"])
 
 @router.post("/register", response_model=TokenResponse)
 def register(data: SellerRegisterRequest, request: Request, db: Session = Depends(get_db)):
+    check_register_limit(request)
     user = register_seller(data, db)
+    request.state.user_id = str(user.id)
     return token_response(user, request.app.state.settings.jwt_secret.get_secret_value())
 
 
@@ -37,6 +39,7 @@ def me(user: User = Depends(get_current_user)):
 def login(data: LoginRequest, request: Request, db: Session = Depends(get_db)):
     check_login_limit(request)
     user = login_seller(data.email, data.password, db, request.app.state.dummy_hash)
+    request.state.user_id = str(user.id)
     return token_response(user, request.app.state.settings.jwt_secret.get_secret_value())
 
 
@@ -45,6 +48,7 @@ def refresh(data: RefreshRequest, request: Request, db: Session = Depends(get_db
     user = db.get(User, decode_user_id(data.refresh_token, request, "refresh"))
     if user is None or user.role != "seller":
         raise HTTPException(401, "Akun seller tidak ditemukan")
+    check_user_limit(request, user.id)
     return token_response(user, request.app.state.settings.jwt_secret.get_secret_value())
 
 
@@ -72,4 +76,5 @@ def google(data: GoogleLoginRequest, request: Request, db: Session = Depends(get
     except GoogleAuthError as exc:
         raise HTTPException(503, "Google belum dapat dihubungi. Coba lagi nanti.") from exc
     user = google_seller(claims, db)
+    request.state.user_id = str(user.id)
     return token_response(user, request.app.state.settings.jwt_secret.get_secret_value())

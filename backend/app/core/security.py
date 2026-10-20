@@ -7,6 +7,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
+from app.core.rate_limit import check_user_limit
 from app.db.session import get_db
 from app.models.user import User
 
@@ -72,5 +73,5 @@ def get_current_user(
     user = db.get(User, decode_user_id(credentials.credentials, request, "access"))
     if user is None or user.role != "seller":
         raise HTTPException(401, "Akun seller tidak ditemukan")
-    request.state.user_id = str(user.id)
+    check_user_limit(request, user.id)
     return user

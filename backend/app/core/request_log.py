@@ -9,6 +9,7 @@ from uuid import uuid4
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
+
 class StderrHandler(logging.StreamHandler):
     def emit(self, record):
         self.stream = sys.stderr

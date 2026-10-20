@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI):
     app.state.sessions = sessionmaker(engine, expire_on_commit=False)
     app.state.dummy_hash = hash_password(secrets.token_urlsafe(24))
     app.state.login_limiter = FixedWindowRateLimiter(
-        storage_from_string(settings.rate_limit_storage_uri)
+        storage_from_string(settings.rate_limit_storage_uri, wrap_exceptions=True)
     )
     if settings.auto_create_tables:
         Base.metadata.create_all(engine)
