@@ -1,0 +1,157 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:grocery_shared/shared.dart';
+
+import '../../auth/application/auth_provider.dart';
+import '../../../shared/auth_layout.dart';
+import 'toko_editor.dart';
+import 'hours_editor.dart';
+
+class TokoScreen extends ConsumerWidget {
+  const TokoScreen({super.key, required this.userId, required this.toko});
+  final String userId;
+  final Toko toko;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => ListView(
+    padding: const EdgeInsets.all(20),
+    children: [
+      const Text(
+        'Toko',
+        style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
+      ),
+      Text('Toko ${toko.nama}', style: const TextStyle(fontSize: 17)),
+      const SizedBox(height: 20),
+      Row(
+        children: [
+          const SizedBox(
+            width: 76,
+            height: 76,
+            child: ReferenceArtwork(
+              asset: 'splash.png',
+              rect: Rect.fromLTWH(81, 221, 307, 308),
+              width: 76,
+              semanticLabel: 'Logo toko',
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  toko.nama,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  toko.alamat.isEmpty ? 'Alamat belum diisi' : toko.alamat,
+                  style: const TextStyle(color: Colors.grey, fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 22),
+      Card.filled(
+        color: const Color(0xFFE4D9BB),
+        margin: EdgeInsets.zero,
+        child: ListTile(
+          title: const Text('Status toko'),
+          subtitle: Text(
+            toko.status == 'buka' ? 'Toko sedang buka' : 'Toko sedang tutup',
+          ),
+          trailing: Chip(
+            label: Text(toko.status == 'buka' ? 'Tersedia' : 'Tutup'),
+            backgroundColor: toko.status == 'buka'
+                ? const Color(0xFF3B6341)
+                : null,
+            labelStyle: TextStyle(
+              color: toko.status == 'buka' ? Colors.white : Colors.black,
+            ),
+          ),
+        ),
+      ),
+      const SizedBox(height: 24),
+      _menu(
+        'Info Toko',
+        Icons.home_outlined,
+        () => _open(context, TokoEditor(userId: userId, toko: toko)),
+      ),
+      _menu(
+        'Jam buka',
+        Icons.schedule,
+        () => _open(context, HoursEditor(userId: userId)),
+      ),
+      _menu(
+        'Pengiriman',
+        Icons.delivery_dining,
+        () => _open(
+          context,
+          TokoEditor(userId: userId, toko: toko, section: 'pengiriman'),
+        ),
+      ),
+      _menu(
+        'Rekening Pencairan',
+        Icons.account_balance_outlined,
+        () => _open(
+          context,
+          TokoEditor(userId: userId, toko: toko, section: 'rekening'),
+        ),
+        subtitle: toko.rekeningBank,
+      ),
+      _menu(
+        'Lihat Panduan Awal',
+        Icons.folder_outlined,
+        () => showDialog<void>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Panduan Awal'),
+            content: const Text(
+              'Lengkapi info toko dan jam buka, pilih pengiriman, lalu tambahkan produk. Buka toko saat kamu siap menerima pesanan.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Mengerti'),
+              ),
+            ],
+          ),
+        ),
+      ),
+      _menu(
+        'Keluar',
+        Icons.logout,
+        () => ref.read(authProvider.notifier).logout(),
+        logout: true,
+      ),
+    ],
+  );
+  void _open(BuildContext context, Widget page) =>
+      Navigator.push(context, MaterialPageRoute<void>(builder: (_) => page));
+  Widget _menu(
+    String label,
+    IconData icon,
+    VoidCallback action, {
+    String? subtitle,
+    bool logout = false,
+  }) => Card.outlined(
+    color: const Color(0xFFECE5D0),
+    margin: EdgeInsets.zero,
+    child: ListTile(
+      leading: Icon(icon, color: const Color(0xFF1F634D), size: 36),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontSize: 20,
+          color: logout ? const Color(0xFFDC043A) : Colors.black,
+        ),
+      ),
+      subtitle: subtitle == null || subtitle.isEmpty ? null : Text(subtitle),
+      trailing: const Icon(Icons.chevron_right, color: Color(0xFF1F634D)),
+      onTap: action,
+    ),
+  );
+}

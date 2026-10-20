@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:grocery_shared/shared.dart';
 
 import '../../../core/seller_theme.dart';
 import '../../../shared/auth_layout.dart';
 import '../application/auth_provider.dart';
+import '../../store/application/store_provider.dart';
 import 'account_form.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -24,6 +26,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _categories = <String>{};
   String _shipping = 'Instant';
   double _distance = 5;
+  bool _savingProfile = false;
+
+  Future<void> _finishRegistration() async {
+    if (_savingProfile) return;
+    setState(() => _savingProfile = true);
+    try {
+      await ref.read(tokoApiProvider).updateProfil({
+        'kategori': _categories.toList(),
+        'metode_kirim': [_shipping],
+        'radius_km': _distance.round(),
+      });
+      if (mounted) setState(() => _step = 4);
+    } catch (error) {
+      if (mounted) {
+        showAuthMessage(context, authErrorMessage(error), error: true);
+      }
+    } finally {
+      if (mounted) setState(() => _savingProfile = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) => AuthLayout(
@@ -146,8 +168,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ),
       const SizedBox(height: 32),
       FilledButton(
-        onPressed: () => setState(() => _step = 4),
-        child: const Text('Daftar'),
+        onPressed: _savingProfile ? null : _finishRegistration,
+        child: Text(_savingProfile ? 'Menyimpan...' : 'Daftar'),
       ),
     ],
   );

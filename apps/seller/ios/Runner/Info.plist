@@ -66,5 +66,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Pilih foto untuk produk tokomu.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Ambil foto untuk produk tokomu.</string>
 </dict>
 </plist>

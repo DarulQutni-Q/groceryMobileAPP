@@ -99,14 +99,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
-    _operation++;
+    final operation = ++_operation;
+    final user = state.user;
     try {
       await storage.clearSession();
-      if (mounted) state = const AuthState(AuthStatus.unauthenticated);
+      if (_current(operation)) {
+        state = const AuthState(AuthStatus.unauthenticated);
+      }
     } catch (_) {
-      if (mounted) {
-        state = const AuthState(
+      if (_current(operation)) {
+        state = AuthState(
           AuthStatus.error,
+          user: user,
           message: 'Sesi belum dapat dihapus. Silakan coba lagi.',
         );
       }

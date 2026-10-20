@@ -6,6 +6,7 @@ import 'features/auth/application/auth_provider.dart';
 import 'features/auth/presentation/account_form.dart';
 import 'features/auth/presentation/register_screen.dart';
 import 'shared/auth_layout.dart';
+import 'features/store/presentation/seller_shell.dart';
 
 class SellerApp extends StatelessWidget {
   const SellerApp({super.key});
@@ -89,6 +90,7 @@ class _AuthFlowState extends ConsumerState<AuthFlow> {
         setState(() => _page = 'home');
       }
       if (next.status == AuthStatus.unauthenticated && _page == 'home') {
+        Navigator.of(context).popUntil((route) => route.isFirst);
         setState(() => _page = 'login');
       }
     });
@@ -172,23 +174,8 @@ class _AuthFlowState extends ConsumerState<AuthFlow> {
 
   Widget _home() {
     final user = ref.watch(authProvider).user;
-    return AuthLayout(
-      title: 'Beranda',
-      child: Column(
-        children: [
-          const SizedBox(height: 80),
-          Text(
-            'Selamat datang, ${user?.namaToko ?? user?.nama ?? ''}',
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 36),
-          OutlinedButton(
-            onPressed: () => ref.read(authProvider.notifier).logout(),
-            child: const Text('Keluar'),
-          ),
-        ],
-      ),
-    );
+    return user == null
+        ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+        : SellerShell(key: ValueKey(user.id), user: user);
   }
 }
