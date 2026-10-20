@@ -33,7 +33,7 @@ class Pesanan(Base):
     kode: Mapped[str] = mapped_column(String(8), unique=True)
     customer_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
     toko_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("toko.id"), index=True)
-    status: Mapped[str] = mapped_column(String(12), default="baru")
+    status: Mapped[str] = mapped_column(String(12), default="baru", index=True)
     alamat_kirim: Mapped[str] = mapped_column(Text)
     catatan: Mapped[str | None] = mapped_column(Text)
     metode_kirim: Mapped[str] = mapped_column(String(80))

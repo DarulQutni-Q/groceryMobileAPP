@@ -23,7 +23,7 @@ class Produk(Base):
     harga: Mapped[int] = mapped_column(Integer)
     stok: Mapped[int] = mapped_column(Integer)
     satuan: Mapped[str] = mapped_column(String(10))
-    kategori: Mapped[str] = mapped_column(String(80))
+    kategori: Mapped[str] = mapped_column(String(80), index=True)
     is_tersedia: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
     updated_at: Mapped[datetime] = mapped_column(
