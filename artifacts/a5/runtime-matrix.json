@@ -1,0 +1,555 @@
+[
+  {
+    "method": "GET",
+    "endpoint": "/health",
+    "input": "DB aktif",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "GET",
+    "endpoint": "/docs",
+    "input": "ENV=prod",
+    "expected": 404,
+    "actual": 404
+  },
+  {
+    "method": "GET",
+    "endpoint": "/redoc",
+    "input": "ENV=prod",
+    "expected": 404,
+    "actual": 404
+  },
+  {
+    "method": "GET",
+    "endpoint": "/openapi.json",
+    "input": "ENV=prod",
+    "expected": 404,
+    "actual": 404
+  },
+  {
+    "method": "POST",
+    "endpoint": "/pesanan/internal/test",
+    "input": "ENV=prod tanpa JWT",
+    "expected": 404,
+    "actual": 404
+  },
+  {
+    "method": "GET",
+    "endpoint": "/produk",
+    "input": "tanpa JWT",
+    "expected": 401,
+    "actual": 401
+  },
+  {
+    "method": "POST",
+    "endpoint": "/auth/register",
+    "input": "registrasi pertama",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "POST",
+    "endpoint": "/auth/register",
+    "input": "email duplikat",
+    "expected": 400,
+    "actual": 400
+  },
+  {
+    "method": "POST",
+    "endpoint": "/auth/register",
+    "input": "email duplikat",
+    "expected": 400,
+    "actual": 400
+  },
+  {
+    "method": "POST",
+    "endpoint": "/auth/register",
+    "input": "registrasi keempat",
+    "expected": 429,
+    "actual": 429
+  },
+  {
+    "method": "POST",
+    "endpoint": "/auth/login",
+    "input": "login salah",
+    "expected": 401,
+    "actual": 401
+  },
+  {
+    "method": "POST",
+    "endpoint": "/auth/login",
+    "input": "login salah",
+    "expected": 401,
+    "actual": 401
+  },
+  {
+    "method": "POST",
+    "endpoint": "/auth/login",
+    "input": "login salah",
+    "expected": 401,
+    "actual": 401
+  },
+  {
+    "method": "POST",
+    "endpoint": "/auth/login",
+    "input": "login salah",
+    "expected": 401,
+    "actual": 401
+  },
+  {
+    "method": "POST",
+    "endpoint": "/auth/login",
+    "input": "login salah",
+    "expected": 401,
+    "actual": 401
+  },
+  {
+    "method": "POST",
+    "endpoint": "/auth/login",
+    "input": "login keenam",
+    "expected": 429,
+    "actual": 429
+  },
+  {
+    "method": "POST",
+    "endpoint": "/produk",
+    "input": "produk valid",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "GET",
+    "endpoint": "/produk",
+    "input": "per_page=200",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "kuota mutasi",
+    "expected": 200,
+    "actual": 200
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/toko/me/status",
+    "input": "mutasi ke-61",
+    "expected": 429,
+    "actual": 429
+  },
+  {
+    "method": "GET",
+    "endpoint": "/health",
+    "input": "koneksi PostgreSQL mati",
+    "expected": 503,
+    "actual": 503
+  }
+]
