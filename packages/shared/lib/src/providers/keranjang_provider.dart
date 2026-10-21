@@ -158,6 +158,17 @@ class KeranjangNotifier extends StateNotifier<Keranjang> {
     ];
   });
 
+  Future<bool> tambahQty(String id) => _change((items) {
+    final item = items.where((item) => item.produk.id == id).firstOrNull;
+    if (item == null) return items;
+    if (item.qty >= item.produk.stok)
+      throw ArgumentError('Jumlah melebihi stok tersedia');
+    return [
+      for (final item in items)
+        item.produk.id == id ? item.copyWith(qty: item.qty + 1) : item,
+    ];
+  });
+
   Future<bool> kurangItem(String id) => _change(
     (items) => [
       for (final item in items)

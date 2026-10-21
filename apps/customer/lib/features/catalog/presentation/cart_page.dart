@@ -377,7 +377,7 @@ class _CartRow extends StatelessWidget {
                         IconButton(
                           key: Key('cart-plus-${p.id}'),
                           onPressed: item.qty < p.stok
-                              ? () => notifier.ubahQty(p.id, item.qty + 1)
+                              ? () => notifier.tambahQty(p.id)
                               : null,
                           tooltip: 'Tambah ${p.nama}',
                           icon: const Icon(Icons.add, size: 16),

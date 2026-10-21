@@ -9,6 +9,7 @@ class CartStorage extends SecureStorage {
   bool gagal = false;
   Completer<void>? tahan;
   Completer<void>? dibaca;
+  Completer<void>? tahanSimpan;
   @override
   Future<String?> readKeranjang(String userId) async {
     final value = values[userId];
@@ -20,6 +21,7 @@ class CartStorage extends SecureStorage {
   @override
   Future<void> saveKeranjang(String userId, String value) async {
     if (gagal) throw StateError('storage unavailable');
+    await tahanSimpan?.future;
     values[userId] = value;
   }
 }
@@ -150,6 +152,28 @@ void main() {
         (jsonDecode(storage.values['u1']!)['items'] as List).single['qty'],
         2,
       );
+      cart.dispose();
+    },
+  );
+
+  test(
+    'queued increments use latest qty and keep selection when saving is slow',
+    () async {
+      final storage = CartStorage();
+      final cart = KeranjangNotifier(storage, 'u1');
+      await cart.tambahItem(product('p1', stok: 3));
+      await cart.pilihSemua(false);
+      storage.tahanSimpan = Completer<void>();
+      final first = cart.tambahQty('p1');
+      await Future<void>.delayed(Duration.zero);
+      final second = cart.tambahQty('p1');
+      storage.tahanSimpan!.complete();
+      expect(await first, isTrue);
+      expect(await second, isTrue);
+      expect(cart.state.totalItem, 3);
+      expect(cart.state.subtotal, 0);
+      expect(await cart.tambahQty('p1'), isFalse);
+      expect(cart.state.totalItem, 3);
       cart.dispose();
     },
   );
