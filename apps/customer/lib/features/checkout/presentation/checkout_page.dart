@@ -54,9 +54,11 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   };
 
   Future<void> load() async {
+    if (!mounted) return;
     setState(() {
       loading = true;
       error = null;
+      costs = null;
     });
     try {
       session ??= await CheckoutSession.restore(storage, userId);
@@ -133,6 +135,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
         costs!,
         address!,
       );
+      if (!mounted) return;
       ref.invalidate(pendingCheckoutProvider);
       final result = await ref
           .read(checkoutApiProvider)
@@ -190,7 +193,9 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
 
   Future<void> reset() async {
     await storage.clearCheckout(userId);
+    if (!mounted) return;
     session = null;
+    ref.invalidate(pendingCheckoutProvider);
     await load();
   }
 

@@ -91,6 +91,160 @@ Future<AuthFixture> openCheckout(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets('expired checkout clears the account resume entry', (
+    tester,
+  ) async {
+    final fixture = await openCheckout(tester);
+    final original =
+        fixture.api.client.dio.httpClientAdapter as CustomerAdapter;
+    fixture.api.client.dio.httpClientAdapter = CustomerAdapter((request) async {
+      if (request.path == '/pembayaran/b1/status') {
+        return response(
+          checkoutResult('qris', status: 'expired')['pembayaran']!,
+        );
+      }
+      return original.respond(request);
+    });
+    await tester.tap(find.byKey(const Key('checkout-pay')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Coba Lagi'));
+    await tester.pumpAndSettle();
+    expect(fixture.saved['customer_checkout_customer-id'], isNull);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Akun'));
+    await tester.pumpAndSettle();
+    expect(find.text('Lanjutkan Pembayaran'), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+  testWidgets(
+    'saved payment can resume from account even after cart is cleared',
+    (tester) async {
+      final fixture = await openCheckout(tester);
+      await tester.tap(find.byKey(const Key('checkout-pay')));
+      await tester.pumpAndSettle();
+      expect(find.text('Pembayaran Xendit'), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      await tapKey(tester, 'delete-selected');
+      expect(find.text('Keranjang masih kosong'), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Akun'));
+      await tester.pumpAndSettle();
+      expect(find.text('Lanjutkan Pembayaran'), findsOneWidget);
+      await tester.tap(find.text('Lanjutkan Pembayaran'));
+      await tester.pumpAndSettle();
+      expect(find.text('Jalan Melati'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('checkout-pay')));
+      await tester.pumpAndSettle();
+      final calls = fixture.calls.where((r) => r.path == '/checkout').toList();
+      expect(calls.length, 2);
+      expect(
+        calls[0].headers['Idempotency-Key'],
+        calls[1].headers['Idempotency-Key'],
+      );
+      expect(find.text('Pembayaran Xendit'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
+  testWidgets('QRIS polls every three seconds then stops after paid', (
+    tester,
+  ) async {
+    final fixture = AuthFixture()..installStorage();
+    var polls = 0, completed = 0, opened = 0;
+    fixture.api.client.dio.httpClientAdapter = CustomerAdapter((request) async {
+      polls++;
+      return response(
+        checkoutResult(
+          'qris',
+          status: polls >= 3 ? 'paid' : 'pending',
+        )['pembayaran']!,
+      );
+    });
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          checkoutApiProvider.overrideWithValue(
+            CheckoutApi(fixture.api.client),
+          ),
+          paymentLauncherProvider.overrideWithValue((url) async {
+            opened++;
+            return true;
+          }),
+        ],
+        child: MaterialApp(
+          home: PaymentPage(
+            result: HasilCheckout.fromJson(checkoutResult('qris')),
+            onPaid: () async {
+              completed++;
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(opened, 1);
+    expect(polls, 1);
+    expect(completed, 0);
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+    expect(polls, 2);
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+    expect(completed, 1);
+    await tester.pump(const Duration(minutes: 3));
+    await tester.pumpAndSettle();
+    expect(polls, 3);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('pending polling stops at two minutes and on dispose', (
+    tester,
+  ) async {
+    final fixture = AuthFixture()..installStorage();
+    var polls = 0;
+    fixture.api.client.dio.httpClientAdapter = CustomerAdapter((request) async {
+      polls++;
+      return response(checkoutResult('qris')['pembayaran']!);
+    });
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          checkoutApiProvider.overrideWithValue(
+            CheckoutApi(fixture.api.client),
+          ),
+          paymentLauncherProvider.overrideWithValue((_) async => true),
+        ],
+        child: MaterialApp(
+          home: PaymentPage(
+            result: HasilCheckout.fromJson(checkoutResult('qris')),
+            onPaid: () async {
+              fail('pending is not paid');
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    for (var i = 0; i < 41; i++) {
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pumpAndSettle();
+    }
+    final stopped = polls;
+    expect(stopped, inInclusiveRange(40, 41));
+    await tester.pump(const Duration(minutes: 3));
+    await tester.pumpAndSettle();
+    expect(polls, stopped);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump(const Duration(seconds: 3));
+    expect(polls, stopped);
+  });
   testWidgets(
     'cart checkout selects COD and clears purchased items after order succeeds',
     (tester) async {
