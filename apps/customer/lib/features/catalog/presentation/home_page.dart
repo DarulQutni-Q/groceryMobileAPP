@@ -411,7 +411,7 @@ class ProductCard extends ConsumerWidget {
                         color: Color(0xFF78906F),
                       ),
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 3),
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.centerLeft,
@@ -507,17 +507,14 @@ class _MemberCard extends StatelessWidget {
                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                   ),
                 ),
-                Chip(
+                Badge(
                   label: Text(
                     '★ GOLD TIER',
                     style: TextStyle(fontSize: 7, color: Color(0xFFF7D96B)),
                   ),
                   backgroundColor: gardenInk,
-                  side: BorderSide.none,
-                  visualDensity: VisualDensity.compact,
-                  padding: EdgeInsets.zero,
-                  labelPadding: EdgeInsets.symmetric(horizontal: 6),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  largeSize: 16,
+                  padding: EdgeInsets.symmetric(horizontal: 6),
                 ),
               ],
             ),
