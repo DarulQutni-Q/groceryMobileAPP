@@ -365,3 +365,60 @@ def test_invalid_provider_url_is_502_and_rolls_back(checkout, invoices, monkeypa
     response = http.post("/checkout", headers=buyer, json={**body, "metode_bayar": "qris"})
     assert response.status_code == 502
     assert_no_order(http, products)
+
+
+def test_database_failure_after_order_flush_rolls_back_everything(checkout, monkeypatch):
+    from sqlalchemy import event
+    from sqlalchemy.exc import OperationalError
+
+    from app.models.pembayaran import Pembayaran
+
+    http, _, buyer, _, products, body = checkout
+
+    def fail_payment(mapper, connection, target):
+        raise OperationalError("injected failure", None, Exception("test"))
+
+    event.listen(Pembayaran, "before_insert", fail_payment)
+    try:
+        result = http.post("/checkout", headers=buyer, json=body)
+    finally:
+        event.remove(Pembayaran, "before_insert", fail_payment)
+    assert result.status_code == 503
+    assert_no_order(http, products)
+
+
+def test_paid_callback_during_invoice_creation_cannot_be_downgraded(
+    checkout, invoices, monkeypatch
+):
+    http, _, buyer, _, _, body = checkout
+    if http.app.state.engine.dialect.name != "postgresql":
+        pytest.skip("Callback concurrent dengan transaksi diuji pada PostgreSQL")
+    token, _, _ = invoices
+    original = requests.request
+
+    def callback_before_response(method, url, **kwargs):
+        response = original(method, url, **kwargs)
+        if method == "POST":
+            result = http.post(
+                "/webhook/xendit",
+                headers={"X-CALLBACK-TOKEN": token},
+                json={**response.value, "status": "PAID", "paid_amount": 35000},
+            )
+            assert result.status_code == 409
+        return response
+
+    monkeypatch.setattr(requests, "request", callback_before_response)
+    result = http.post("/checkout", headers=buyer, json={**body, "metode_bayar": "qris"})
+    assert result.status_code == 201
+    assert result.json()["pembayaran"]["status"] == "paid"
+
+
+def test_checkout_rate_limit_and_request_id(checkout):
+    http, _, buyer, _, _, body = checkout
+    headers = {**buyer, "Idempotency-Key": "1720000000000-" + uuid4().hex}
+    for _ in range(10):
+        assert http.post("/checkout", headers=headers, json=body).status_code == 201
+    limited = http.post("/checkout", headers=headers, json=body)
+    assert limited.status_code == 429
+    assert "X-Request-ID" in limited.headers
+    assert 1 <= int(limited.headers["Retry-After"]) <= 60

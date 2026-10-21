@@ -5,7 +5,7 @@ import time
 
 from fastapi import HTTPException
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import selectinload
 
 from app.models.checkout_attempt import CheckoutAttempt
@@ -87,9 +87,13 @@ def prepare_attempt(db, user, data, key, gateway):
             raise HTTPException(409, "Kunci checkout sudah dipakai untuk permintaan lain")
         payment = db.scalar(select(Pembayaran).where(Pembayaran.external_id == attempt.external_id))
         return attempt, payment, False
-    costs = quote(db, user, data)[-1]
-    if data.metode_bayar != "cod":
-        gateway.available()
+    try:
+        costs = quote(db, user, data)[-1]
+        if data.metode_bayar != "cod":
+            gateway.available()
+    except HTTPException as exc:
+        exc.headers = {**(exc.headers or {}), "X-Checkout-Started": "false"}
+        raise
     attempt = CheckoutAttempt(
         request_key=key,
         user_id=user.id,
@@ -120,6 +124,11 @@ def invoice_for(attempt, user, data, gateway, fresh):
         event.external_id != attempt.external_id
         or event.amount != attempt.jumlah
         or event.status not in {"PENDING", "PAID", "SETTLED"}
+        or (
+            event.paid_amount is not None
+            and event.status in {"PAID", "SETTLED"}
+            and event.paid_amount < attempt.jumlah
+        )
     ):
         raise HTTPException(409, "Invoice perlu diperiksa sebelum membuat pesanan")
     return event, safe_payment_url(invoice.get("invoice_url"))
@@ -128,36 +137,28 @@ def invoice_for(attempt, user, data, gateway, fresh):
 def insert_order(db, user, data, address, store, items, costs):
     for _ in range(5):
         code = f"DG-{10000 + secrets.randbelow(90000):05}"
-        try:
-            with db.begin_nested():
-                order = Pesanan(
-                    kode=code,
-                    customer_id=user.id,
-                    customer=user,
-                    toko_id=store.id,
-                    alamat_kirim="\n".join(
-                        filter(
-                            None,
-                            [
-                                address.nama_penerima,
-                                address.no_hp,
-                                address.alamat_lengkap,
-                                address.patokan,
-                            ],
-                        )
-                    ),
-                    catatan=data.catatan,
-                    metode_kirim=data.metode_kirim,
-                    slot_waktu="Segera",
-                    items=[PesananItem(**item) for item in items],
-                    **costs,
+        if db.scalar(select(Pesanan.id).where(Pesanan.kode == code)):
+            continue
+        order = Pesanan(
+            kode=code,
+            customer_id=user.id,
+            customer=user,
+            toko_id=store.id,
+            alamat_kirim="\n".join(
+                filter(
+                    None,
+                    [address.nama_penerima, address.no_hp, address.alamat_lengkap, address.patokan],
                 )
-                db.add(order)
-                db.flush()
-            return order
-        except IntegrityError:
-            if not db.scalar(select(Pesanan.id).where(Pesanan.kode == code)):
-                raise
+            ),
+            catatan=data.catatan,
+            metode_kirim=data.metode_kirim,
+            slot_waktu="Segera",
+            items=[PesananItem(**item) for item in items],
+            **costs,
+        )
+        db.add(order)
+        db.flush()
+        return order
     raise HTTPException(503, "Kode pesanan belum dapat dibuat, coba lagi")
 
 

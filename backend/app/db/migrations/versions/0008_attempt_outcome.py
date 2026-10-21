@@ -10,17 +10,18 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column("checkout_attempt", sa.Column("xendit_id", sa.String(120)))
-    op.create_unique_constraint("uq_attempt_xendit", "checkout_attempt", ["xendit_id"])
-    op.add_column("checkout_attempt", sa.Column("remote_status", sa.String(12)))
-    op.add_column(
-        "checkout_attempt",
-        sa.Column("perlu_rekonsiliasi", sa.Boolean(), nullable=False, server_default=sa.false()),
-    )
+    with op.batch_alter_table("checkout_attempt") as batch:
+        batch.add_column(sa.Column("xendit_id", sa.String(120)))
+        batch.create_unique_constraint("uq_attempt_xendit", ["xendit_id"])
+        batch.add_column(sa.Column("remote_status", sa.String(12)))
+        batch.add_column(
+            sa.Column("perlu_rekonsiliasi", sa.Boolean(), nullable=False, server_default=sa.false())
+        )
 
 
 def downgrade():
-    op.drop_column("checkout_attempt", "perlu_rekonsiliasi")
-    op.drop_column("checkout_attempt", "remote_status")
-    op.drop_constraint("uq_attempt_xendit", "checkout_attempt", type_="unique")
-    op.drop_column("checkout_attempt", "xendit_id")
+    with op.batch_alter_table("checkout_attempt") as batch:
+        batch.drop_column("perlu_rekonsiliasi")
+        batch.drop_column("remote_status")
+        batch.drop_constraint("uq_attempt_xendit", type_="unique")
+        batch.drop_column("xendit_id")
