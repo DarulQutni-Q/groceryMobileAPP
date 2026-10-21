@@ -10,7 +10,7 @@ from app.core.security import (
     verify_password,
 )
 from app.models.user import User
-from app.schemas.auth import SellerRegisterRequest, TokenResponse
+from app.schemas.auth import RegisterRequest, TokenResponse
 from app.services.toko import create_store
 
 
@@ -21,20 +21,22 @@ def token_response(user: User, secret: str) -> TokenResponse:
     )
 
 
-def register_seller(data: SellerRegisterRequest, db: Session) -> User:
+def register_user(data: RegisterRequest, db: Session) -> User:
     email = str(data.email).lower()
     if db.scalar(select(User).where(User.email == email)):
         raise HTTPException(400, "Email sudah terdaftar")
     user = User(
-        nama=data.nama_pemilik,
-        nama_toko=data.nama_toko,
+        nama=data.nama_pemilik or email.split("@")[0][:120],
+        nama_toko=data.nama_toko if data.role == "seller" else None,
         email=email,
         phone=data.phone,
         password_hash=hash_password(data.password),
+        role=data.role,
     )
     db.add(user)
     try:
-        create_store(user, db)
+        if data.role == "seller":
+            create_store(user, db)
         db.commit()
     except IntegrityError as exc:
         db.rollback()
@@ -45,24 +47,34 @@ def register_seller(data: SellerRegisterRequest, db: Session) -> User:
     return user
 
 
-def login_seller(email: str, password: str, db: Session, dummy_hash: str) -> User:
-    user = db.scalar(select(User).where(User.email == email.lower()))
+def password_user(query, password: str, db: Session, dummy_hash: str, message: str) -> User:
+    user = db.scalar(query)
     stored_hash = user.password_hash if user and user.password_hash else dummy_hash
     valid = verify_password(password, stored_hash)
-    if not user or not valid or user.role != "seller" or not user.password_hash:
-        raise HTTPException(401, "Email atau kata sandi salah")
+    if not user or not valid or not user.password_hash:
+        raise HTTPException(401, message)
     return user
 
 
-def google_seller(claims: dict, db: Session) -> User:
+def login_user(email: str, password: str, db: Session, dummy_hash: str, role="seller") -> User:
+    query = select(User).where(User.email == email.lower(), User.role == role)
+    return password_user(query, password, db, dummy_hash, "Email atau kata sandi salah")
+
+
+def login_customer_phone(phone: str, password: str, db: Session, dummy_hash: str) -> User:
+    query = select(User).where(User.phone == phone, User.role == "customer")
+    return password_user(query, password, db, dummy_hash, "Nomor handphone atau kata sandi salah")
+
+
+def google_user(claims: dict, db: Session, role: str = "seller") -> User:
     subject = claims.get("sub")
     email = claims.get("email", "").lower()
     if not subject or not email or claims.get("email_verified") is not True:
         raise HTTPException(401, "Akun Google belum terverifikasi")
     user = db.scalar(select(User).where(User.google_subject == subject))
     if user:
-        if user.role != "seller":
-            raise HTTPException(401, "Akun seller tidak ditemukan")
+        if user.role != role:
+            raise HTTPException(401, "Gunakan aplikasi yang sesuai dengan peran akun")
         return user
     if db.scalar(select(User).where(User.email == email)):
         raise HTTPException(400, "Email sudah terdaftar. Gunakan metode login semula.")
@@ -71,11 +83,12 @@ def google_seller(claims: dict, db: Session) -> User:
         email=email,
         auth_provider="google",
         google_subject=subject,
-        role="seller",
+        role=role,
     )
     db.add(user)
     try:
-        create_store(user, db)
+        if role == "seller":
+            create_store(user, db)
         db.commit()
     except IntegrityError as exc:
         db.rollback()

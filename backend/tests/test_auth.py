@@ -242,6 +242,8 @@ def test_unverified_google_email_is_rejected(client, monkeypatch):
 
 def test_phone_is_unique_and_public_registration_cannot_choose_admin(client, account):
     account.update(phone="+628123456789", role="admin")
+    assert client.post("/auth/register", json=account).status_code == 422
+    account.pop("role")
     first = client.post("/auth/register", json=account)
     assert first.status_code == 200
     assert (

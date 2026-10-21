@@ -5,40 +5,55 @@ from google.oauth2 import id_token
 from sqlalchemy.orm import Session
 
 from app.core.rate_limit import check_login_limit, check_register_limit, check_user_limit
-from app.core.security import decode_user_id, get_current_user
+from app.core.security import decode_user_id, get_authenticated_user
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.auth import (
     FcmTokenRequest,
     GoogleLoginRequest,
     LoginRequest,
+    PhoneLoginRequest,
     RefreshRequest,
-    SellerRegisterRequest,
+    RegisterRequest,
     TokenResponse,
     UserResponse,
 )
-from app.services.auth import google_seller, login_seller, register_seller, token_response
+from app.services.auth import (
+    google_user,
+    login_customer_phone,
+    login_user,
+    register_user,
+    token_response,
+)
 
-router = APIRouter(prefix="/auth", tags=["Auth seller"])
+router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @router.post("/register", response_model=TokenResponse)
-def register(data: SellerRegisterRequest, request: Request, db: Session = Depends(get_db)):
+def register(data: RegisterRequest, request: Request, db: Session = Depends(get_db)):
     check_register_limit(request)
-    user = register_seller(data, db)
+    user = register_user(data, db)
     request.state.user_id = str(user.id)
     return token_response(user, request.app.state.settings.jwt_secret.get_secret_value())
 
 
 @router.get("/me", response_model=UserResponse)
-def me(user: User = Depends(get_current_user)):
+def me(user: User = Depends(get_authenticated_user)):
     return user
 
 
 @router.post("/login", response_model=TokenResponse)
 def login(data: LoginRequest, request: Request, db: Session = Depends(get_db)):
     check_login_limit(request)
-    user = login_seller(data.email, data.password, db, request.app.state.dummy_hash)
+    user = login_user(data.email, data.password, db, request.app.state.dummy_hash, data.role)
+    request.state.user_id = str(user.id)
+    return token_response(user, request.app.state.settings.jwt_secret.get_secret_value())
+
+
+@router.post("/login/phone", response_model=TokenResponse)
+def login_phone(data: PhoneLoginRequest, request: Request, db: Session = Depends(get_db)):
+    check_login_limit(request)
+    user = login_customer_phone(data.phone, data.password, db, request.app.state.dummy_hash)
     request.state.user_id = str(user.id)
     return token_response(user, request.app.state.settings.jwt_secret.get_secret_value())
 
@@ -46,8 +61,8 @@ def login(data: LoginRequest, request: Request, db: Session = Depends(get_db)):
 @router.post("/refresh", response_model=TokenResponse)
 def refresh(data: RefreshRequest, request: Request, db: Session = Depends(get_db)):
     user = db.get(User, decode_user_id(data.refresh_token, request, "refresh"))
-    if user is None or user.role != "seller":
-        raise HTTPException(401, "Akun seller tidak ditemukan")
+    if user is None or user.role not in {"seller", "customer"}:
+        raise HTTPException(401, "Akun tidak ditemukan")
     check_user_limit(request, user.id)
     return token_response(user, request.app.state.settings.jwt_secret.get_secret_value())
 
@@ -55,7 +70,7 @@ def refresh(data: RefreshRequest, request: Request, db: Session = Depends(get_db
 @router.patch("/fcm-token")
 def update_fcm(
     data: FcmTokenRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
 ):
     user.fcm_token = data.fcm_token
@@ -75,6 +90,6 @@ def google(data: GoogleLoginRequest, request: Request, db: Session = Depends(get
         raise HTTPException(401, "Login Google gagal. Silakan coba lagi.") from exc
     except GoogleAuthError as exc:
         raise HTTPException(503, "Google belum dapat dihubungi. Coba lagi nanti.") from exc
-    user = google_seller(claims, db)
+    user = google_user(claims, db, data.role)
     request.state.user_id = str(user.id)
     return token_response(user, request.app.state.settings.jwt_secret.get_secret_value())

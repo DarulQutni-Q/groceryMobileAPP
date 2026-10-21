@@ -1,13 +1,24 @@
+import re
+from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, model_validator
 
 from app.schemas.input import PHONE_PATTERN, InputModel
 
 
-class SellerRegisterRequest(InputModel):
-    nama_pemilik: str = Field(min_length=1, max_length=120)
-    nama_toko: str = Field(min_length=1, max_length=120)
+def customer_phone(value: str) -> str:
+    digits = re.sub(r"[ ()-]", "", value).removeprefix("+")
+    national = digits[2:] if digits.startswith("62") else digits.removeprefix("0")
+    if not re.fullmatch(r"8[0-9]{8,11}", national):
+        raise ValueError("Nomor handphone Indonesia harus berisi 9-12 angka setelah +62")
+    return "+62" + national
+
+
+class RegisterRequest(InputModel):
+    role: Literal["seller", "customer"] = "seller"
+    nama_pemilik: str | None = Field(default=None, min_length=1, max_length=120)
+    nama_toko: str | None = Field(default=None, min_length=1, max_length=120)
     email: EmailStr = Field(max_length=254)
     password: str = Field(min_length=8, max_length=20)
     phone: str | None = Field(
@@ -17,9 +28,22 @@ class SellerRegisterRequest(InputModel):
     @field_validator("nama_pemilik", "nama_toko")
     @classmethod
     def required_name(cls, value):
+        if value is None:
+            return value
         if not value.strip():
             raise ValueError("Nama wajib diisi")
         return value.strip()
+
+    @model_validator(mode="after")
+    def seller_names(self):
+        if self.role == "seller" and (not self.nama_pemilik or not self.nama_toko):
+            raise ValueError("Nama pemilik dan nama toko wajib diisi untuk akun seller")
+        return self
+
+    @field_validator("phone")
+    @classmethod
+    def normalize_customer_phone(cls, value, info):
+        return customer_phone(value) if value and info.data.get("role") == "customer" else value
 
     @field_validator("password")
     @classmethod
@@ -36,11 +60,23 @@ class SellerRegisterRequest(InputModel):
 
 
 class LoginRequest(InputModel):
+    role: Literal["seller", "customer"] = "seller"
     email: EmailStr = Field(max_length=254)
     password: str = Field(min_length=1, max_length=256)
 
 
+class PhoneLoginRequest(InputModel):
+    phone: str = Field(min_length=6, max_length=32, pattern=f"^{PHONE_PATTERN}$")
+    password: str = Field(min_length=1, max_length=256)
+
+    @field_validator("phone")
+    @classmethod
+    def normalized_phone(cls, value):
+        return customer_phone(value)
+
+
 class GoogleLoginRequest(InputModel):
+    role: Literal["seller", "customer"] = "seller"
     id_token: str = Field(min_length=1, max_length=8192, pattern=r"^\S+$")
 
 

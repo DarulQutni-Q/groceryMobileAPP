@@ -63,7 +63,7 @@ def decode_user_id(token: str, request: Request, kind: str) -> UUID:
         raise HTTPException(401, "Sesi tidak valid atau sudah berakhir") from exc
 
 
-def get_current_user(
+def get_authenticated_user(
     request: Request,
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer),
     db: Session = Depends(get_db),
@@ -75,7 +75,13 @@ def get_current_user(
         decode_user_id(credentials.credentials, request, "access"),
         options=[joinedload(User.toko)],
     )
-    if user is None or user.role != "seller":
-        raise HTTPException(401, "Akun seller tidak ditemukan")
+    if user is None or user.role not in {"seller", "customer"}:
+        raise HTTPException(401, "Akun tidak ditemukan")
     check_user_limit(request, user.id)
+    return user
+
+
+def get_current_user(user: User = Depends(get_authenticated_user)) -> User:
+    if user.role != "seller":
+        raise HTTPException(403, "Fitur ini khusus akun seller")
     return user
