@@ -9,10 +9,22 @@ import 'cart_page.dart';
 import 'catalog_widgets.dart';
 import 'product_page.dart';
 
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  final search = TextEditingController();
+  @override
+  void dispose() {
+    search.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final user = ref.watch(authProvider).user!;
     final cart = ref.watch(keranjangProvider(user.id));
     final stores = ref.watch(tokoProvider);
@@ -99,16 +111,33 @@ class HomePage extends ConsumerWidget {
             const SizedBox(height: 10),
             TextField(
               key: const Key('catalog-search'),
+              controller: search,
               onChanged: ref.read(produkProvider.notifier).cari,
               style: const TextStyle(fontSize: 12),
               textInputAction: TextInputAction.search,
               decoration: InputDecoration(
                 hintText: 'Cari promo sembako, susu, snack...',
                 prefixIcon: const Icon(Icons.search, size: 19),
-                suffixIcon: IconButton(
-                  onPressed: () => segera(context),
-                  tooltip: 'Scan produk',
-                  icon: const Icon(Icons.qr_code_scanner, size: 18),
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (search.text.isNotEmpty)
+                      IconButton(
+                        key: const Key('clear-search'),
+                        tooltip: 'Hapus pencarian',
+                        onPressed: () {
+                          search.clear();
+                          ref.read(produkProvider.notifier).cari('');
+                          FocusManager.instance.primaryFocus?.unfocus();
+                        },
+                        icon: const Icon(Icons.close, size: 18),
+                      ),
+                    IconButton(
+                      onPressed: () => segera(context),
+                      tooltip: 'Scan produk',
+                      icon: const Icon(Icons.qr_code_scanner, size: 18),
+                    ),
+                  ],
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -357,7 +386,7 @@ class ProductCard extends ConsumerWidget {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(9, 8, 9, 0),
+                padding: const EdgeInsets.fromLTRB(9, 6, 9, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -405,6 +434,7 @@ class ProductCard extends ConsumerWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 10,
+                        height: 1.1,
                         color: produk.stok <= 5
                             ? Colors.red.shade700
                             : const Color(0xFF78906F),

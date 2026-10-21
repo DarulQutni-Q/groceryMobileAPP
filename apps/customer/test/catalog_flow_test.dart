@@ -122,6 +122,37 @@ Future<void> tapKey(WidgetTester tester, String key) async {
 }
 
 void main() {
+  testWidgets(
+    'clear search empties the field and reloads unfiltered products',
+    (tester) async {
+      final fixture = await openCatalog(tester);
+      await tester.enterText(
+        find.byKey(const Key('catalog-search')),
+        'indomie',
+      );
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+      await tapKey(tester, 'clear-search');
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<EditableText>(find.byType(EditableText)).controller.text,
+        '',
+      );
+      expect(
+        fixture.calls
+            .lastWhere((r) => r.path == '/produk')
+            .queryParameters
+            .containsKey('q'),
+        isFalse,
+      );
+      expect(find.byKey(const Key('product-p2')), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
   testWidgets('system Back returns from detail and cart to home', (
     tester,
   ) async {
