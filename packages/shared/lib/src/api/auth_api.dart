@@ -44,8 +44,42 @@ class AuthApi {
   Future<Tokens> login(String email, String password) =>
       _session('/auth/login', {'email': email, 'password': password});
 
-  Future<Tokens> loginWithGoogle(String idToken) =>
-      _session('/auth/google', {'id_token': idToken});
+  Future<Tokens> registerCustomer({
+    required String email,
+    required String password,
+    String? phone,
+  }) => _session('/auth/register', {
+    'role': 'customer',
+    'email': email,
+    'password': password,
+    'phone': ?phone,
+  });
+
+  Future<Tokens> loginCustomer(String identity, String password) =>
+      identity.contains('@')
+      ? _session('/auth/login', {
+          'email': identity.trim(),
+          'password': password,
+          'role': 'customer',
+        })
+      : _session('/auth/login/phone', {
+          'phone': identity.trim(),
+          'password': password,
+        });
+
+  Future<Tokens> loginWithGoogle(String idToken, {String role = 'seller'}) =>
+      _session('/auth/google', {
+        'id_token': idToken,
+        if (role != 'seller') 'role': role,
+      });
+
+  Future<void> requestPasswordReset(String email) async {
+    await client.dio.post<void>(
+      '/auth/forgot-password',
+      data: {'email': email},
+      options: Options(extra: {'skipAuth': true}),
+    );
+  }
 
   Future<Tokens> refreshToken(String token) =>
       _session('/auth/refresh', {'refresh_token': token});

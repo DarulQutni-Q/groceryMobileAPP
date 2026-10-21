@@ -57,4 +57,11 @@ class SecureStorage {
 
   Future<void> markOnboardingSeen() =>
       _storage.write(key: 'seller_onboarding_seen', value: 'true');
+
+  Future<bool> shouldRestoreSession() async =>
+      await _storage.read(key: 'remember_session') != 'false';
+
+  Future<void> setRememberSession(bool value) => _write(
+    () => _storage.write(key: 'remember_session', value: value.toString()),
+  );
 }
