@@ -209,9 +209,14 @@ def finalize_order(db, user, data, attempt, gateway, fresh):
     payment = db.scalar(select(Pembayaran).where(Pembayaran.external_id == attempt.external_id))
     if payment:
         return checkout_result(db, payment)
-    address, store, products, items, costs = quote(db, user, data)
-    if costs["total"] != attempt.jumlah:
-        raise HTTPException(409, "Harga berubah, invoice lama perlu diperiksa")
+    try:
+        address, store, products, items, costs = quote(db, user, data)
+        if costs["total"] != attempt.jumlah:
+            raise HTTPException(409, "Harga berubah, invoice lama perlu diperiksa")
+    except HTTPException as exc:
+        if fresh:
+            exc.headers = {**(exc.headers or {}), "X-Checkout-Started": "false"}
+        raise
     invoice = merge_invoice(db, attempt, invoice_for(attempt, user, data, gateway, fresh))
     order = insert_order(db, user, data, address, store, items, costs)
     payment = reserve_payment(db, order, data, attempt, invoice, products)

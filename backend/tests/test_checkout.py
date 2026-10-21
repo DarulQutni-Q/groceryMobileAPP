@@ -328,6 +328,7 @@ def test_store_closed_between_attempt_and_order_is_rechecked(checkout, monkeypat
     monkeypatch.setattr(session_class, "commit", close_after_commit)
     response = http.post("/checkout", headers=buyer, json=body)
     assert response.status_code == 400
+    assert response.headers["X-Checkout-Started"] == "false"
     assert_no_order(http, products)
 
 
