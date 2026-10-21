@@ -73,6 +73,7 @@ def test_address_crud_primary_and_owner_isolation(addresses):
         {"label": " "},
         {"nama_penerima": ""},
         {"no_hp": "abc"},
+        {"no_hp": "abc081234567890xyz"},
         {"alamat_lengkap": " "},
         {"latitude": 91, "longitude": 0},
         {"latitude": 1},

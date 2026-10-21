@@ -216,6 +216,20 @@ def test_qris_signed_webhook_duplicate_and_no_status_downgrade(checkout, invoice
     )
     with http.app.state.sessions() as db:
         assert all(p.stok == 8 for p in db.scalars(select(Produk)))
+    assert (
+        http.patch(
+            f"/pesanan/{value['pesanan']['id']}/status",
+            headers=seller,
+            json={"status": "dibatalkan"},
+        ).status_code
+        == 200
+    )
+    cancelled = http.get(f"/pembayaran/{value['pembayaran']['id']}/status", headers=buyer).json()
+    assert cancelled["status"] == "paid"
+    assert cancelled["perlu_rekonsiliasi"] is True
+    assert http.post("/webhook/xendit", headers=headers, json=event).status_code == 409
+    with http.app.state.sessions() as db:
+        assert all(p.stok == 10 for p in db.scalars(select(Produk)))
 
 
 def test_expired_invoice_releases_stock_once(checkout, invoices):
@@ -422,3 +436,60 @@ def test_checkout_rate_limit_and_request_id(checkout):
     assert limited.status_code == 429
     assert "X-Request-ID" in limited.headers
     assert 1 <= int(limited.headers["Retry-After"]) <= 60
+
+
+def test_postgres_two_customers_cannot_buy_the_same_last_stock(checkout):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+
+    http, _, buyer, other, _, body = checkout
+    if http.app.state.engine.dialect.name != "postgresql":
+        pytest.skip("Penguncian stok concurrent diuji pada PostgreSQL")
+    address = http.post(
+        "/alamat",
+        headers=other,
+        json={
+            "label": "Kantor",
+            "nama_penerima": "Pembeli lain",
+            "no_hp": "081234567899",
+            "alamat_lengkap": "Jalan lain",
+        },
+    ).json()
+    items = [{**item, "qty": 10} for item in body["items"]]
+    barrier = Barrier(2)
+
+    def buy(headers, address_id):
+        barrier.wait(timeout=5)
+        return http.post(
+            "/checkout", headers=headers, json={**body, "alamat_id": address_id, "items": items}
+        ).status_code
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        first = pool.submit(buy, buyer, body["alamat_id"])
+        second = pool.submit(buy, other, address["id"])
+        assert sorted([first.result(timeout=20), second.result(timeout=20)]) == [201, 400]
+    with http.app.state.sessions() as db:
+        assert db.scalar(select(func.count()).select_from(Pesanan)) == 1
+        assert all(p.stok == 0 for p in db.scalars(select(Produk)))
+
+
+def test_provider_integral_numeric_amount_accepts_float_but_not_fraction(
+    checkout, invoices, monkeypatch
+):
+    http, _, buyer, _, products, body = checkout
+    original = requests.request
+
+    def numeric_amount(method, url, **kwargs):
+        response = original(method, url, **kwargs)
+        response.value["amount"] = float(response.value["amount"])
+        return response
+
+    monkeypatch.setattr(requests, "request", numeric_amount)
+    result = http.post("/checkout", headers=buyer, json={**body, "metode_bayar": "qris"})
+    assert result.status_code == 201
+    token = invoices[0]
+    event = {**invoices[1][0], "amount": 35000.5, "status": "PAID"}
+    assert (
+        http.post("/webhook/xendit", headers={"X-CALLBACK-TOKEN": token}, json=event).status_code
+        == 422
+    )

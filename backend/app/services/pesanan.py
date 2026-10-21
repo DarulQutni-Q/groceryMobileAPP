@@ -107,6 +107,8 @@ def transition(db, pesanan, action, reason=None):
         raise HTTPException(400, "Urutan status pesanan tidak valid")
     if payment and pesanan.status in {"ditolak", "dibatalkan"}:
         release_stock(db, pesanan, payment)
+        if payment.status == "paid":
+            payment.perlu_rekonsiliasi = True
         if payment.status == "pending":
             payment.status = "failed"
     db.commit()

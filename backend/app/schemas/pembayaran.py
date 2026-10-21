@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.schemas.input import InputModel
 from app.schemas.pesanan import ItemTest, PesananResponse
@@ -53,3 +53,10 @@ class InvoiceEvent(InputModel):
     currency: Literal["IDR"] = "IDR"
     paid_amount: int | None = Field(default=None, strict=True, ge=0, le=2147483647)
     paid_at: datetime | None = None
+
+    @field_validator("amount", "paid_amount", mode="before")
+    @classmethod
+    def whole_rupiah(cls, value):
+        if type(value) is float and value.is_integer():
+            return int(value)
+        return value

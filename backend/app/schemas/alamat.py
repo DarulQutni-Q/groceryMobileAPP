@@ -10,7 +10,7 @@ class AlamatInput(InputModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     label: str = Field(min_length=1, max_length=40)
     nama_penerima: str = Field(min_length=1, max_length=120)
-    no_hp: str = Field(min_length=7, max_length=32, pattern=PHONE_PATTERN)
+    no_hp: str = Field(min_length=7, max_length=32, pattern=f"^{PHONE_PATTERN}$")
     alamat_lengkap: str = Field(min_length=1, max_length=2000)
     patokan: str | None = Field(default=None, max_length=500)
     latitude: float | None = Field(default=None, ge=-90, le=90, allow_inf_nan=False)
