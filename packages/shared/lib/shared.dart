@@ -15,3 +15,7 @@ export 'src/models/promo.dart';
 export 'src/models/halaman.dart';
 export 'src/models/keranjang.dart';
 export 'src/providers/keranjang_provider.dart';
+export 'src/models/alamat.dart';
+export 'src/models/pembayaran.dart';
+export 'src/api/alamat_api.dart';
+export 'src/api/checkout_api.dart';
