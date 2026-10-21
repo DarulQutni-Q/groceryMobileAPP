@@ -33,12 +33,13 @@ pagination, countdown menuju23:59 lokal dan state gagal/loading/empty diuji.
 2. Shared: tambah metode katalog berhalaman tanpa mengubah ProdukApi.list seller.
    Toko yang sudah ada ditambah metadata jam opsional; data seller tetap utuh.
    Keranjang per akun disimpan lokal, tanpa endpoint cart/checkout.
-3. Keranjang: pertanyaan satu toko atau banyak toko telah dikirim. Rekomendasi
-   satu toko, dengan konfirmasi sebelum mengganti isi. Implementasi keputusan
-   ini menunggu jawaban pengguna.
+3. Keranjang: pertanyaan satu toko atau banyak toko telah dikirim. Asumsi kerja
+   satu toko, dengan konfirmasi sebelum mengganti isi, sudah disampaikan.
+   Jawaban pengguna masih terbuka dan dapat mengubah pilihan ini.
 4. Harga coret/deskripsi belum ada pada model produk. Pertanyaan cakupan telah
    dikirim: rekomendasi gunakan data asli dan sembunyikan diskon tanpa sumber;
-   pilihan lain menambah kolom backend sekarang. Keputusan ini menunggu jawaban.
+   pilihan lain menambah kolom backend sekarang. Asumsi kerja sudah disampaikan:
+   gunakan harga asli, tanpa diskon buatan; jawaban pengguna masih terbuka.
 
 ## Dampak dan seam
 
@@ -57,7 +58,7 @@ pagination, countdown menuju23:59 lokal dan state gagal/loading/empty diuji.
 
 1. Tes HTTP katalog merah, lalu layanan/schema/endpoint minimum; verifikasi
    auth, filter, pagination, query count, privasi dan kompatibilitas seller.
-2. Shared API/model dan seam tests. Setelah keputusan keranjang diterima,
+2. Shared API/model dan seam tests. Dengan asumsi keranjang di atas,
    bangun state+persistensi cart dengan tes stok, pilihan, qty dan isolasi akun.
 3. Provider katalog: debounce, kategori, pagination, race, retry. Layar Home
    mengikuti acuan, detail produk dan keranjang yang menghitung data nyata.

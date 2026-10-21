@@ -3,11 +3,36 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 
 import '../models/produk.dart';
+import '../models/halaman.dart';
 import 'api_client.dart';
 
 class ProdukApi {
   ProdukApi(this.client);
   final ApiClient client;
+
+  Future<Halaman<Produk>> listHalaman({
+    String q = '',
+    String kategori = '',
+    String? tokoId,
+    int page = 1,
+    int perPage = 20,
+  }) async => Halaman.fromJson(
+    (await client.dio.get<Map<String, dynamic>>(
+      '/produk',
+      queryParameters: {
+        if (q.isNotEmpty) 'q': q,
+        if (kategori.isNotEmpty) 'kategori': kategori,
+        if (tokoId != null) 'toko_id': tokoId,
+        'page': page,
+        'per_page': perPage,
+      },
+    )).data!,
+    Produk.fromJson,
+  );
+
+  Future<List<String>> kategori() async => List<String>.from(
+    (await client.dio.get<List<dynamic>>('/kategori')).data!,
+  );
 
   Future<List<Produk>> list({String q = '', String kategori = ''}) async {
     final data = (await client.dio.get<List<dynamic>>(

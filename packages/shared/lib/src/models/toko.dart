@@ -11,10 +11,13 @@ class Toko {
     this.logoUrl,
     this.deskripsi,
     this.rekeningBank,
+    this.jamBuka,
+    this.jamTutup,
   });
 
   final String id, nama, alamat, telepon, status;
   final String? logoUrl, deskripsi, rekeningBank;
+  final String? jamBuka, jamTutup;
   final List<String> kategori, metodeKirim;
   final int radiusKm;
 
@@ -26,6 +29,8 @@ class Toko {
     logoUrl: json['logo_url'] as String?,
     deskripsi: json['deskripsi'] as String?,
     rekeningBank: json['rekening_bank'] as String?,
+    jamBuka: json['jam_buka'] as String?,
+    jamTutup: json['jam_tutup'] as String?,
     kategori: List<String>.from(json['kategori'] as List),
     radiusKm: json['radius_km'] as int,
     status: json['status'] as String,
