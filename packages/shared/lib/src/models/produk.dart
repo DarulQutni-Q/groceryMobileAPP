@@ -15,6 +15,18 @@ class Produk {
   final int harga, stok;
   final bool isTersedia;
 
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'toko_id': tokoId,
+    'nama': nama,
+    'foto_url': fotoUrl,
+    'harga': harga,
+    'stok': stok,
+    'satuan': satuan,
+    'kategori': kategori,
+    'is_tersedia': isTersedia,
+  };
+
   factory Produk.fromJson(Map<String, dynamic> json) => Produk(
     id: json['id'] as String,
     tokoId: json['toko_id'] as String,

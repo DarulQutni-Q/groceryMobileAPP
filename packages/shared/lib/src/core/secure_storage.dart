@@ -64,4 +64,12 @@ class SecureStorage {
   Future<void> setRememberSession(bool value) => _write(
     () => _storage.write(key: 'remember_session', value: value.toString()),
   );
+
+  Future<String?> readKeranjang(String userId) async {
+    await _writes;
+    return _storage.read(key: 'customer_cart_$userId');
+  }
+
+  Future<void> saveKeranjang(String userId, String value) =>
+      _write(() => _storage.write(key: 'customer_cart_$userId', value: value));
 }

@@ -84,7 +84,7 @@ void main() {
       dio.httpClientAdapter = TestAdapter((request) async {
         calls.add(request.path);
         if (request.path == '/kategori') return jsonBody(['Beras', 'Mie'], 200);
-        if (request.path == '/promo')
+        if (request.path == '/promo') {
           return jsonBody([
             {
               'id': 'demo',
@@ -94,6 +94,7 @@ void main() {
               'is_demo': true,
             },
           ], 200);
+        }
         expect(request.queryParameters, {'page': 1, 'per_page': 20});
         return jsonBody({
           'data': [product],

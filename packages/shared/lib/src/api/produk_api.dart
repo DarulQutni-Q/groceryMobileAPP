@@ -22,7 +22,7 @@ class ProdukApi {
       queryParameters: {
         if (q.isNotEmpty) 'q': q,
         if (kategori.isNotEmpty) 'kategori': kategori,
-        if (tokoId != null) 'toko_id': tokoId,
+        'toko_id': ?tokoId,
         'page': page,
         'per_page': perPage,
       },
