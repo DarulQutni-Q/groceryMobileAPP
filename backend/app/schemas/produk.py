@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Annotated, Literal
 from uuid import UUID
 
@@ -58,3 +58,8 @@ class ProdukResponse(ProdukCreate):
     is_tersedia: bool
     created_at: datetime
     updated_at: datetime
+
+    @field_validator("created_at", "updated_at")
+    @classmethod
+    def utc_timestamp(cls, value):
+        return value.replace(tzinfo=UTC) if value.tzinfo is None else value.astimezone(UTC)

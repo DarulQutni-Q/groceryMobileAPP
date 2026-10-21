@@ -48,12 +48,14 @@ def test_customer_registration_session_refresh_and_no_store(customer_client):
     for route in [
         "/toko/me",
         "/toko/me/jam-buka",
-        "/produk",
         "/pesanan",
         "/laporan/ringkasan",
         "/laporan/produk-terlaris",
     ]:
         assert client.get(route, headers=headers).status_code == 403
+    catalog = client.get("/produk", headers=headers)
+    assert catalog.status_code == 200
+    assert catalog.json()["data"] == []
 
 
 def test_admin_role_is_rejected_before_account_creation(customer_client):

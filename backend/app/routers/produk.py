@@ -5,11 +5,14 @@ from sqlalchemy import func, select, update
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from app.core.security import get_authenticated_user
 from app.db.session import get_db
 from app.models.produk import Produk
 from app.models.toko import Toko
+from app.models.user import User
 from app.schemas.pagination import Page
 from app.schemas.produk import ProdukCreate, ProdukResponse, ProdukUpdate
+from app.services.catalog import visible_products
 from app.services.foto import read_photo, remove_photo, save_photo
 from app.services.pagination import Pagination, list_response, pagination_params
 from app.services.toko import get_store
@@ -35,15 +38,24 @@ def get_produk(
 def listing(
     q: str = Query(default="", max_length=160, pattern=r"^[^\x00]*$"),
     kategori: str = Query(default="", max_length=80, pattern=r"^[^\x00]*$"),
+    toko_id: UUID | None = None,
     pagination: Pagination | None = Depends(pagination_params),
-    toko: Toko = Depends(get_store),
+    user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
 ):
-    query = select(Produk).where(Produk.toko_id == toko.id)
+    query = (
+        visible_products()
+        if user.role == "customer"
+        else select(Produk).where(Produk.toko_id == get_store(user).id)
+    )
+    if toko_id is not None:
+        query = query.where(Produk.toko_id == toko_id)
     if q.strip():
         query = query.where(func.lower(Produk.nama).contains(q.strip().lower(), autoescape=True))
     if kategori:
         query = query.where(Produk.kategori == kategori)
+    if user.role == "customer" and pagination is None:
+        pagination = Pagination(1, 20)
     return list_response(db, query.order_by(Produk.created_at.desc(), Produk.id), pagination)
 
 
@@ -56,7 +68,14 @@ def create(data: ProdukCreate, toko: Toko = Depends(get_store), db: Session = De
 
 
 @router.get("/{produk_id}", response_model=ProdukResponse)
-def detail(produk: Produk = Depends(get_produk)):
+def detail(
+    produk_id: UUID, user: User = Depends(get_authenticated_user), db: Session = Depends(get_db)
+):
+    if user.role == "seller":
+        return get_produk(produk_id, get_store(user), db)
+    produk = db.scalar(visible_products().where(Produk.id == produk_id))
+    if produk is None:
+        raise HTTPException(404, "Produk tidak ditemukan")
     return produk
 
 

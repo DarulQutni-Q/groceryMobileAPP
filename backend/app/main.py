@@ -19,6 +19,7 @@ from app.core.validation import check_json_depth, validation_error
 from app.db.base import Base
 from app.db.session import get_db
 from app.routers.auth import router
+from app.routers.catalog import router as catalog_router
 from app.routers.laporan import router as laporan_router
 from app.routers.pesanan import router as pesanan_router
 from app.routers.produk import router as produk_router
@@ -56,6 +57,7 @@ def create_app() -> FastAPI:
     app.include_router(router)
     app.include_router(toko_router)
     app.include_router(produk_router)
+    app.include_router(catalog_router)
     app.include_router(pesanan_router)
     app.include_router(laporan_router)
     app.add_exception_handler(RequestValidationError, validation_error)
