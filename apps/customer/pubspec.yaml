@@ -18,6 +18,7 @@ dependencies:
   grocery_shared:
     path: ../../packages/shared
   url_launcher: ^6.3.3
+  cached_network_image: ^4.0.4
 
 dev_dependencies:
   flutter_test:
