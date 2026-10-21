@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:grocery_shared/shared.dart';
 
 import 'core/theme.dart';
 import 'features/auth/application/auth_provider.dart';
 import 'features/auth/presentation/auth_page.dart';
 import 'features/auth/presentation/reset_pages.dart';
 import 'features/auth/presentation/splash_page.dart';
+import 'features/catalog/presentation/customer_shell.dart';
 
 class CustomerApp extends ConsumerStatefulWidget {
   const CustomerApp({super.key});
@@ -52,25 +54,16 @@ class _CustomerAppState extends ConsumerState<CustomerApp> {
         '/email-sent': (_) => const ResetPage(sent: true),
       },
       builder: (context, child) => auth.status == AuthStatus.authenticated
-          ? Scaffold(
-              body: SafeArea(
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Selamat pagi, ${auth.user!.nama}',
-                        style: Theme.of(context).textTheme.headlineSmall,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 24),
-                      FilledButton(
-                        onPressed: () =>
-                            ref.read(authProvider.notifier).logout(),
-                        child: const Text('Keluar'),
-                      ),
-                    ],
-                  ),
+          ? ProviderScope(
+              key: ValueKey(auth.user!.id),
+              overrides: [
+                keranjangStorageProvider.overrideWithValue(
+                  ref.watch(storageProvider),
+                ),
+              ],
+              child: Navigator(
+                onGenerateRoute: (_) => MaterialPageRoute<void>(
+                  builder: (_) => const CustomerShell(),
                 ),
               ),
             )

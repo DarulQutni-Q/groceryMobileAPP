@@ -14,6 +14,7 @@ final keranjangProvider = StateNotifierProvider.autoDispose
     .family<KeranjangNotifier, Keranjang, String>(
       (ref, userId) =>
           KeranjangNotifier(ref.watch(keranjangStorageProvider), userId),
+      dependencies: [keranjangStorageProvider],
     );
 
 class KeranjangNotifier extends StateNotifier<Keranjang> {
