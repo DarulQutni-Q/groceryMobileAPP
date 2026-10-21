@@ -494,3 +494,13 @@ def test_provider_integral_numeric_amount_accepts_float_but_not_fraction(
         http.post("/webhook/xendit", headers={"X-CALLBACK-TOKEN": token}, json=event).status_code
         == 422
     )
+
+
+def test_gateway_requires_webhook_configuration_before_invoice(checkout, invoices):
+    http, _, buyer, _, products, body = checkout
+    http.app.state.settings.xendit_webhook_token = SecretStr("")
+    result = http.post("/checkout", headers=buyer, json={**body, "metode_bayar": "qris"})
+    assert result.status_code == 503
+    assert result.headers["X-Checkout-Started"] == "false"
+    assert invoices[2] == []
+    assert_no_order(http, products)

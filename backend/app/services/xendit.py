@@ -35,10 +35,11 @@ def safe_payment_url(value):
 class Xendit:
     def __init__(self, settings, metode):
         self.key = settings.xendit_api_key.get_secret_value()
+        self.webhook_configured = bool(settings.xendit_webhook_token.get_secret_value())
         self.channel = CHANNELS.get(metode)
 
     def available(self):
-        if not self.key.startswith("xnd_development"):
+        if not self.key.startswith("xnd_development") or not self.webhook_configured:
             raise HTTPException(503, "Pembayaran Xendit sandbox belum dikonfigurasi")
 
     def request(self, method, path, **kwargs):
