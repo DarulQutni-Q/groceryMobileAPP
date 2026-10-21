@@ -4,6 +4,7 @@ import 'package:grocery_shared/shared.dart';
 
 import '../../../core/theme.dart';
 import '../../auth/application/auth_provider.dart';
+import '../../checkout/presentation/checkout_page.dart';
 import '../application/produk_provider.dart';
 import 'catalog_widgets.dart';
 
@@ -535,7 +536,16 @@ class _PaymentBar extends StatelessWidget {
             ],
           );
           final checkout = FilledButton(
-            onPressed: cart.jumlahDipilih == 0 ? null : () => segera(context),
+            onPressed: cart.jumlahDipilih == 0
+                ? null
+                : () => Navigator.push<void>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CheckoutPage(
+                        items: cart.items.where((i) => i.dipilih).toList(),
+                      ),
+                    ),
+                  ),
             child: Text(
               'Checkout (${cart.jumlahDipilih} Barang)',
               textAlign: TextAlign.center,

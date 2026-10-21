@@ -11,6 +11,8 @@ class Alamat {
   final String id, label, namaPenerima, noHp, alamatLengkap;
   final String? patokan;
   final bool isUtama;
+  Map<String, dynamic> toJson() => {'id': id, 'label': label, 'nama_penerima': namaPenerima,
+    'no_hp': noHp, 'alamat_lengkap': alamatLengkap, 'patokan': patokan, 'is_utama': isUtama};
 
   factory Alamat.fromJson(Map<String, dynamic> json) => Alamat(
     id: json['id'] as String,
