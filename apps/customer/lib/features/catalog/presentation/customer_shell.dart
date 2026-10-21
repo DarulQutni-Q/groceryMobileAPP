@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme.dart';
 import '../../auth/application/auth_provider.dart';
+import '../../checkout/presentation/alamat_page.dart';
 import 'catalog_widgets.dart';
 import 'home_page.dart';
 
@@ -42,6 +43,14 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
                   ),
                 ),
                 const SizedBox(height: 20),
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.push<void>(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AlamatPage()),
+                  ),
+                  icon: const Icon(Icons.location_on_outlined),
+                  label: const Text('Alamat Pengiriman'),
+                ),
                 FilledButton(
                   onPressed: ref.read(authProvider.notifier).logout,
                   child: const Text('Keluar'),
