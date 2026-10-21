@@ -18,6 +18,7 @@ from app.core.upload_limit import UploadLimit
 from app.core.validation import check_json_depth, validation_error
 from app.db.base import Base
 from app.db.session import get_db
+from app.routers.alamat import router as alamat_router
 from app.routers.auth import router
 from app.routers.catalog import router as catalog_router
 from app.routers.laporan import router as laporan_router
@@ -55,6 +56,7 @@ def create_app() -> FastAPI:
         dependencies=[Depends(check_json_depth)],
     )
     app.include_router(router)
+    app.include_router(alamat_router)
     app.include_router(toko_router)
     app.include_router(produk_router)
     app.include_router(catalog_router)
