@@ -32,12 +32,12 @@ class FotoProduk extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Widget fallback({bool error = false}) => ColoredBox(
-      color: const Color(0xFFF0F5EB),
+      color: error ? const Color(0xFFF0F5EB) : catalogGreen,
       child: Center(
         child: Icon(
           error ? Icons.broken_image_outlined : Icons.shopping_bag_outlined,
           size: 36,
-          color: const Color(0xFF75946A),
+          color: error ? const Color(0xFF75946A) : Colors.white,
         ),
       ),
     );
@@ -55,7 +55,12 @@ class FotoProduk extends ConsumerWidget {
 }
 
 class SaleCountdown extends StatefulWidget {
-  const SaleCountdown({super.key, this.now = DateTime.now});
+  const SaleCountdown({
+    super.key,
+    this.now = DateTime.now,
+    this.compact = false,
+  });
+  final bool compact;
   final DateTime Function() now;
   @override
   State<SaleCountdown> createState() => _SaleCountdownState();
@@ -81,14 +86,25 @@ class _SaleCountdownState extends State<SaleCountdown> {
     final end = DateTime(now.year, now.month, now.day, 23, 59);
     final seconds = end.difference(now).inSeconds.clamp(0, 86400);
     String two(int n) => n.toString().padLeft(2, '0');
-    return Text(
+    final text = Text(
       'BERAKHIR: ${two(seconds ~/ 3600)}:${two(seconds ~/ 60 % 60)}:${two(seconds % 60)}',
-      style: const TextStyle(
-        fontSize: 10,
+      style: TextStyle(
+        fontSize: widget.compact ? 8 : 10,
         fontWeight: FontWeight.w600,
-        color: Color(0xFF7A3C2E),
+        color: widget.compact ? Colors.white : const Color(0xFF7A3C2E),
       ),
     );
+    return widget.compact
+        ? Chip(
+            label: text,
+            backgroundColor: const Color(0xFFB22E32),
+            side: BorderSide.none,
+            visualDensity: VisualDensity.compact,
+            padding: EdgeInsets.zero,
+            labelPadding: const EdgeInsets.symmetric(horizontal: 6),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          )
+        : text;
   }
 }
 

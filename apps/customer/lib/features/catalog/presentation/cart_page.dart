@@ -352,38 +352,87 @@ class _CartRow extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 7),
-                  Text(
-                    rupiah(p.harga),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          key: Key('cart-minus-${p.id}'),
-                          onPressed: () => notifier.kurangItem(p.id),
-                          tooltip: 'Kurangi ${p.nama}',
-                          icon: const Icon(Icons.remove, size: 16),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final price = Text(
+                        rupiah(p.harga),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
                         ),
-                        Text(
-                          '${item.qty}',
-                          style: const TextStyle(fontWeight: FontWeight.w700),
+                      );
+                      final stepper = DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF4F8EF),
+                          border: Border.all(color: gardenBorder),
+                          borderRadius: BorderRadius.circular(24),
                         ),
-                        IconButton(
-                          key: Key('cart-plus-${p.id}'),
-                          onPressed: item.qty < p.stok
-                              ? () => notifier.tambahQty(p.id)
-                              : null,
-                          tooltip: 'Tambah ${p.nama}',
-                          icon: const Icon(Icons.add, size: 16),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              key: Key('cart-minus-${p.id}'),
+                              onPressed: () => notifier.kurangItem(p.id),
+                              tooltip: 'Kurangi ${p.nama}',
+                              icon: const Icon(
+                                Icons.remove_circle_outline,
+                                size: 21,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: 44,
+                                minHeight: 44,
+                              ),
+                            ),
+                            Text(
+                              '${item.qty}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            IconButton(
+                              key: Key('cart-plus-${p.id}'),
+                              onPressed: item.qty < p.stok
+                                  ? () => notifier.tambahQty(p.id)
+                                  : null,
+                              tooltip: 'Tambah ${p.nama}',
+                              icon: const Icon(Icons.add_circle, size: 21),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: 44,
+                                minHeight: 44,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      );
+                      if (constraints.maxWidth >= 210 &&
+                          MediaQuery.textScalerOf(context).scale(10) <= 12) {
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: price,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            stepper,
+                          ],
+                        );
+                      }
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          price,
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: stepper,
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),

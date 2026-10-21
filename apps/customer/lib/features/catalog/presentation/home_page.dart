@@ -163,11 +163,14 @@ class HomePage extends ConsumerWidget {
                               values.first.deskripsi,
                               style: const TextStyle(fontSize: 11),
                             ),
-                            TextButton(
+                            FilledButton(
                               onPressed: () => segera(context),
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                foregroundColor: gardenInk,
+                              style: FilledButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                ),
+                                foregroundColor: Colors.white,
+                                backgroundColor: gardenInk,
                                 minimumSize: const Size(0, 44),
                               ),
                               child: Row(
@@ -228,20 +231,21 @@ class HomePage extends ConsumerWidget {
             _CategoryGrid(categories: categories.asData?.value ?? const []),
             const SizedBox(height: 10),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Text(
-                        'Kilat Murah Hari Ini',
+                        '⚡ Kilat Murah Hari Ini',
                         style: TextStyle(
-                          fontSize: 17,
+                          fontSize: 14,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
-                      SaleCountdown(),
+                      SaleCountdown(compact: true),
                     ],
                   ),
                 ),
@@ -254,39 +258,10 @@ class HomePage extends ConsumerWidget {
                   ),
                   child: const Text(
                     'Lihat Semua ›',
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
                   ),
                 ),
               ],
-            ),
-            categories.when(
-              data: (values) => SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (final value in ['', ...values])
-                      Padding(
-                        padding: const EdgeInsets.only(right: 6),
-                        child: FilterChip(
-                          key: Key('category-${value.isEmpty ? 'all' : value}'),
-                          label: Text(
-                            value.isEmpty ? 'Semua' : value,
-                            style: const TextStyle(fontSize: 11),
-                          ),
-                          selected: products.kategori == value,
-                          onSelected: (_) => ref
-                              .read(produkProvider.notifier)
-                              .filterKategori(value),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              error: (_, _) => TextButton(
-                onPressed: () => ref.invalidate(kategoriProvider),
-                child: const Text('Kategori belum dapat dimuat. Coba lagi'),
-              ),
-              loading: () => const SizedBox(height: 4),
             ),
             if (products.memuat)
               const SizedBox(
@@ -313,7 +288,7 @@ class HomePage extends ConsumerWidget {
             else
               SizedBox(
                 height:
-                    242 + (MediaQuery.textScalerOf(context).scale(100) - 100),
+                    220 + (MediaQuery.textScalerOf(context).scale(100) - 100),
                 child: NotificationListener<ScrollNotification>(
                   onNotification: (notification) {
                     if (notification.metrics.extentAfter < 180) {
@@ -376,7 +351,7 @@ class ProductCard extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 84,
+              height: 72,
               width: double.infinity,
               child: FotoProduk(produk),
             ),
@@ -391,9 +366,9 @@ class ProductCard extends ConsumerWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        height: 1.2,
+                        height: 1.1,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -402,7 +377,8 @@ class ProductCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 10,
+                        fontSize: 9,
+                        height: 1.1,
                         color: Color(0xFF78906F),
                       ),
                     ),
@@ -442,12 +418,13 @@ class ProductCard extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
               child: SizedBox(
                 width: double.infinity,
-                child: TextButton(
+                child: FilledButton(
                   onPressed: produk.stok < 1
                       ? null
                       : () => tambahKeKeranjang(context, ref, produk),
-                  style: TextButton.styleFrom(
-                    foregroundColor: gardenInk,
+                  style: FilledButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: gardenInk,
                     minimumSize: const Size(0, 44),
                     padding: EdgeInsets.zero,
                   ),
@@ -471,138 +448,179 @@ class _MemberCard extends StatelessWidget {
   Widget build(BuildContext context) => Card(
     margin: EdgeInsets.zero,
     elevation: 0,
-    color: const Color(0xFFF8FCF4),
-    shape: RoundedRectangleBorder(
-      side: const BorderSide(color: Color(0xFFDAE7CE)),
-      borderRadius: BorderRadius.circular(26),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(15),
-      child: Column(
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+    clipBehavior: Clip.antiAlias,
+    child: DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFD5EEC0), Color(0xFF79C549)],
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          children: [
+            const Row(
+              children: [
+                CircleAvatar(
+                  radius: 10,
+                  backgroundColor: gardenInk,
+                  child: Text(
+                    'IP',
+                    style: TextStyle(fontSize: 8, color: catalogGreen),
+                  ),
+                ),
+                SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    'Poinku Member',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                  ),
+                ),
+                Chip(
+                  label: Text(
+                    '★ GOLD TIER',
+                    style: TextStyle(fontSize: 7, color: Color(0xFFF7D96B)),
+                  ),
+                  backgroundColor: gardenInk,
+                  side: BorderSide.none,
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  labelPadding: EdgeInsets.symmetric(horizontal: 6),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'POINKU AKTIF',
+                        style: TextStyle(fontSize: 7, color: Color(0xFF526A42)),
+                      ),
+                      Text(
+                        '0 Poin',
+                        style: TextStyle(
+                          fontSize: 21,
+                          height: 1.15,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Text(
+                        '+250 poin baru',
+                        style: TextStyle(fontSize: 7, color: Color(0xFF466B2B)),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      const Text(
+                        'STEMPEL BELANJA   8/10',
+                        style: TextStyle(fontSize: 7),
+                      ),
+                      const SizedBox(height: 4),
+                      Wrap(
+                        spacing: 2,
+                        runSpacing: 3,
+                        alignment: WrapAlignment.end,
+                        children: [
+                          for (var n = 0; n < 10; n++)
+                            CircleAvatar(
+                              radius: 7,
+                              backgroundColor: n < 8 ? gardenInk : Colors.white,
+                              child: n < 8
+                                  ? const Icon(
+                                      Icons.check,
+                                      size: 9,
+                                      color: Colors.white,
+                                    )
+                                  : Text(
+                                      '${n + 1}',
+                                      style: const TextStyle(
+                                        fontSize: 6,
+                                        color: gardenInk,
+                                      ),
+                                    ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 3),
+                      const Text(
+                        'Min. 50rb = 1 stamp • 2 lagi dapat Kupon',
+                        style: TextStyle(fontSize: 6, color: Color(0xFF50693C)),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Material(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                child: Row(
                   children: [
-                    Text(
-                      'Poinku Member',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
+                    Expanded(
+                      child: Row(
+                        children: [
+                          for (var n = 0; n < 35; n++)
+                            Flexible(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 1,
+                                ),
+                                child: ColoredBox(
+                                  color: gardenInk,
+                                  child: SizedBox(
+                                    width: n % 3 == 0 ? 3 : 1,
+                                    height: 23,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 3),
-                    Text(
-                      'POINKU AKTIF',
-                      style: TextStyle(
-                        fontSize: 8,
-                        letterSpacing: 1,
-                        color: Color(0xFF75916A),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '9825 0180 1224',
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            'Tunjukkan ke Kasir',
+                            style: TextStyle(
+                              fontSize: 7,
+                              color: Color(0xFF6B7F60),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(height: 7),
-                    Text(
-                      '0 Poin',
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w800,
-                        height: 1,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      '+250 poin baru',
-                      style: TextStyle(fontSize: 9, color: Color(0xFF5B872C)),
                     ),
                   ],
                 ),
               ),
-              Expanded(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(9),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            for (var n = 0; n < 33; n++)
-                              Flexible(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 1,
-                                  ),
-                                  child: ColoredBox(
-                                    color: gardenInk,
-                                    child: SizedBox(
-                                      width: n % 3 == 0 ? 3 : 1,
-                                      height: 36,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          '9825 0180 1224',
-                          style: TextStyle(fontSize: 8, letterSpacing: 1.5),
-                        ),
-                        const Text(
-                          'Tunjukkan ke Kasir',
-                          style: TextStyle(fontSize: 8),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              const Text(
-                'STEMPEL BELANJA',
-                style: TextStyle(fontSize: 8, fontWeight: FontWeight.w700),
-              ),
-              SizedBox(
-                width: 60,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: const LinearProgressIndicator(
-                    value: .8,
-                    minHeight: 6,
-                    color: catalogGreen,
-                    backgroundColor: Color(0xFFE3ECD8),
-                  ),
-                ),
-              ),
-              const Text(
-                '8/10',
-                style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700),
-              ),
-              const Text(
-                'GOLD TIER',
-                style: TextStyle(
-                  fontSize: 8,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF8B753A),
-                ),
-              ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     ),
   );
@@ -623,6 +641,21 @@ class _CategoryGrid extends ConsumerWidget {
       ('Beli 1 Gratis 1', Icons.redeem, Color(0xFFC16E5E)),
       ('Lacak Kurir', Icons.local_shipping, Color(0xFF6093AF)),
     ];
+    String? categoryFor(int i) {
+      final candidates = i == 2
+          ? ['Beras', 'Minyak']
+          : i == 4
+          ? ['Sayur', 'Buah', 'Fresh']
+          : <String>[];
+      return categories
+          .where(
+            (value) => candidates.any(
+              (term) => value.toLowerCase().contains(term.toLowerCase()),
+            ),
+          )
+          .firstOrNull;
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) => Wrap(
         spacing: 4,
@@ -632,6 +665,7 @@ class _CategoryGrid extends ConsumerWidget {
             SizedBox(
               width: (constraints.maxWidth - 12) / 4,
               child: InkWell(
+                key: Key('category-${categoryFor(i) ?? 'soon-$i'}'),
                 borderRadius: BorderRadius.circular(16),
                 onTap: () {
                   final candidates = i == 2
@@ -696,6 +730,8 @@ class CatalogPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(produkProvider);
+    final categories = ref.watch(kategoriProvider);
+    final products = state;
     return Scaffold(
       appBar: AppBar(title: const Text('Semua Produk')),
       body: NotificationListener<ScrollNotification>(
@@ -709,6 +745,44 @@ class CatalogPage extends ConsumerWidget {
             ? const Center(child: CircularProgressIndicator())
             : CustomScrollView(
                 slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: categories.when(
+                        data: (values) => SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              for (final value in ['', ...values])
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 6),
+                                  child: FilterChip(
+                                    key: Key(
+                                      'category-${value.isEmpty ? 'all' : value}',
+                                    ),
+                                    label: Text(
+                                      value.isEmpty ? 'Semua' : value,
+                                      style: const TextStyle(fontSize: 11),
+                                    ),
+                                    selected: products.kategori == value,
+                                    onSelected: (_) => ref
+                                        .read(produkProvider.notifier)
+                                        .filterKategori(value),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        error: (_, _) => TextButton(
+                          onPressed: () => ref.invalidate(kategoriProvider),
+                          child: const Text(
+                            'Kategori belum dapat dimuat. Coba lagi',
+                          ),
+                        ),
+                        loading: () => const SizedBox(height: 4),
+                      ),
+                    ),
+                  ),
                   SliverPadding(
                     padding: const EdgeInsets.all(16),
                     sliver: SliverGrid.builder(
