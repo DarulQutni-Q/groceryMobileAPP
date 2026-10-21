@@ -50,3 +50,12 @@
 - Penyebab: pemeriksaan diff sebelum staging tidak mencakup file baru. Lisensi vendor dan keluaran analyze memiliki whitespace bawaan yang baru terlihat saat di-stage.
 - Dampak: tiga pemeriksaan commit tertahan, dua pada lisensi dan satu pada log. Tidak ada assertion tes atau pesan diagnostik yang diubah.
 - Perbaikan: normalisasi whitespace log dengan assertion seluruh kata tetap sama dan periksa seluruh batch staged sekaligus. Aturan pemeriksaan file vendor/log baru dicatat permanen di AGENTS.md.
+
+## 21 Oktober 2026: navigasi dan antrean keranjang B2
+
+- Penyebab: builder MaterialApp mengganti Navigator bawaannya. Panah UI bekerja tetapi system Back tidak menjangkau stack customer. Shell kini menjadi route home pada Navigator root; tes handlePopRoute membuktikan detail/cart kembali ke Home.
+- Penyebab storage: fake CartStorage melewati antrean SecureStorage asli. Gagal save cart meracuni pembacaan token berikutnya; reload juga sempat berjalan di luar antrean mutasi. Tes regresi merah memakai MethodChannel asli dan read yang ditahan, kemudian perbaikan memisahkan hasil operasi dari queue-tail serta mengantrekan reload.
+- Penyebab hitungan: tombol plus mengirim qty absolut dari render lama. Increment kini dihitung dalam antrean dan menjaga pilihan/stok; tes menahan save sambil menambah dua kali.
+- Dampak: shared auth/cart dan navigasi customer. Review perbaikan read-only menutup tiga temuan state; assertion lama tidak dilemahkan.
+- Interaksi pengujian Android yang mengosongkan input tepat sebelum melepas fokus masih meninggalkan query lama pada layar. Tombol hapus eksplisit menyinkronkan controller dan query; tes widget melindungi pengosongan field serta request tanpa q.
+- Pola-pola ini memiliki akar masalah berbeda; tidak menambah aturan permanen tiga kejadian.

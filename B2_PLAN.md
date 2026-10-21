@@ -50,7 +50,8 @@ pagination, countdown menuju23:59 lokal dan state gagal/loading/empty diuji.
 - Shared KeranjangNotifier -> customer shell, detail, cart dan badge. Simpan per
   user agar keranjang akun berbeda tidak tercampur; hindari hasil restore lama.
 - CustomerApp.builder saat ini mengganti Navigator dengan Home placeholder.
-  Shell customer membutuhkan Navigator untuk detail/cart, terpisah per sesi.
+  Shell customer memakai route home pada Navigator root untuk detail/cart dan
+  system Back, terpisah per sesi.
 - Tidak mengedit apps/seller atau perubahan pengguna yang sudah ada pada A3/root.
   Snapshot patch pengguna ada di /tmp/b2-preserved-user.patch untuk perbandingan.
 

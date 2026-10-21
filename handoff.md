@@ -1,3 +1,42 @@
+# Handoff B2 customer, 21 Oktober 2026
+
+B2 selesai lokal: browse/search/filter/pagination, detail produk, keranjang
+per akun, qty/pilihan/hapus/subtotal, penyimpanan terenkripsi dan lima tab.
+Baca B2_API.md untuk endpoint/curl/per-file/batas; B2_PLAN.md untuk ADR;
+artifacts/b2/ untuk hasil246tes,49HTTP tanpa500, journey Android dan4screenshot.
+
+Backend164, shared32, customer18 dan seller32 tes lulus. Analyze tiga paket
+bersih. List produk/toko maksimal3query termasuk JWT. Seller legacy tetap
+array tanpa pagination dan semua mutasi customer403. Tidak ada migrasi B2.
+Review state menutup tiga P2 lewat tes merah-hijau: write cart gagal tidak
+meracuni pembacaan token, reload masuk antrean, plus menghitung qty terbaru.
+Navigator root menggantikan nested navigator pada builder; system Back diuji.
+Tombol hapus search menyinkronkan controller dan query serta diuji Android.
+APK dev normal dibuild/install dan login HP lewat UI. Pemeriksaan pemulihan
+setelah force-stop/start proses baru masih berlangsung.
+
+Keranjang satu toko dengan konfirmasi pergantian; key customer_cart_{user_id}.
+Subtotal/Checkout hanya pilihan, badge seluruh qty. Beli Sekarang hanya tambah
+lalu cart. Foto kosong memakai fallback, harga coret/diskon tersembunyi karena
+belum ada metadata backend, deskripsi -. Poin/barcode/stempel/promo/voucher
+hanya demo. Header toko pertama API, bukan hasil GPS. B3 harus validasi ulang
+stok/harga di server dan implementasi checkout; belum ada reservasi/payment.
+
+Tidak ada perubahan apps/seller dari task B2. Jangan stage diff pengguna pada
+A3_API/A3_PLAN/CONTEXT/README/artifacts/a3/seller_shell.dart atau root specs/docs.
+Diff awal tersimpan privat /tmp/b2-preserved-user.patch. Pengguna mengizinkan
+commit kecil langsung setelah verifikasi; pesan natural Bahasa Indonesia.
+
+Compose dev API8000/PostgreSQL55432; emulatorpixel5554. Password/JWT pengujian
+berada dalam file privat /tmp, jangan dicetak/disalin ke repo. HTTP seed hanya
+untuk lokal. PostgreSQL tes memakai schema acak terpisah dari public aplikasi.
+Build iOS, perangkat fisik dan deploy staging/prod belum diuji. Acuan visual
+tersedia sebagai Pasted image(5)/(6)/(8), bukan nama yang disebut attachment;
+roadmap bertahap tidak ditemukan. Tidak mengklaim pixel-identik.
+Mulai task baru untuk B3 agar konteks fase berikutnya terpisah.
+
+---
+
 # Handoff B1 customer, 21 Oktober 2026
 
 B1 sudah berjalan lokal, termasuk penambahan field HP pada Daftar yang dipilih
