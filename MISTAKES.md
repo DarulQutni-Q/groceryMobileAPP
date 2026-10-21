@@ -1,5 +1,14 @@
 # Catatan perbaikan kerja
 
+## 21 Oktober 2026: resolusi path dan batas transaksi B3
+
+- Penyebab kerja: beberapa pembacaan menebak lokasi dependency/schema/migrasi, lalu satu script menggandakan prefiks backend ketika cwd sudah backend.
+- Dampak: perintah baca/script gagal sebelum mengubah sumber. Tidak ada data hilang atau assertion yang dilonggarkan.
+- Pola tebakan path terjadi setidaknya tiga kali. Perbaikan permanen di AGENTS.md: temukan path dengan rg --files dan cocokkan dengan cwd sebelum membuka atau menulis file.
+- Penyebab transaksi: savepoint pertama SQLite dapat menjadi transaksi fisik terluar; RELEASE menyimpan order sebelum pembayaran gagal. Tes failure setelah flush membuktikan order tertinggal. Checkout kini memakai satu transaksi tulis tanpa savepoint awal; SQLite/PostgreSQL membuktikan rollback order/items/stok.
+- Penyebab pembayaran: kegagalan finalisasi cart setelah paid sempat kembali melalui jalur expired. Retry lokal kini mempertahankan key, dan tes widget memastikan tidak menawarkan pembayaran baru.
+- Callback dapat datang sebelum respons invoice atau setelah order dibatalkan. Status digabung tanpa menurunkan paid, bukti dana disimpan dengan penanda rekonsiliasi, dan reservasi hanya dipulihkan sekali. Tiap pola transaksi ini memiliki akar masalah berbeda; tidak dihitung sebagai tiga kejadian yang sama.
+
 ## 20 Oktober 2026: lokasi SDK saat diagnosis build
 
 - Penyebab: memeriksa `~/Android/Sdk` sebelum membaca `apps/seller/android/local.properties`. Build ternyata menggunakan `/opt/android-sdk`; NDK telah terpasang di sana.
