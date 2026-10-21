@@ -67,12 +67,13 @@ class KeranjangNotifier extends StateNotifier<Keranjang> {
     }
   }
 
-  Future<void> muatUlang() async {
-    await siap;
-    await _operations;
-    if (!mounted) return;
-    state = Keranjang(items: state.items, memuat: true);
-    await _restore();
+  Future<void> muatUlang() {
+    return _operations = _operations.then((_) async {
+      await siap;
+      if (!mounted) return;
+      state = Keranjang(items: state.items, memuat: true);
+      await _restore();
+    });
   }
 
   Future<bool> _change(

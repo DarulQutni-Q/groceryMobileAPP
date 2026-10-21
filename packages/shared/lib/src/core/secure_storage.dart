@@ -22,10 +22,12 @@ class SecureStorage {
       (await _session())['refresh_token'];
 
   Future<void> _write(Future<void> Function() operation) {
-    return _writes = _writes.then(
-      (_) => operation(),
-      onError: (Object error, StackTrace stack) => operation(),
+    final result = _writes.then((_) => operation());
+    _writes = result.then<void>(
+      (_) {},
+      onError: (Object error, StackTrace stack) {},
     );
+    return result;
   }
 
   Future<void> saveSession(

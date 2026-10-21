@@ -8,10 +8,13 @@ class CartStorage extends SecureStorage {
   final values = <String, String>{};
   bool gagal = false;
   Completer<void>? tahan;
+  Completer<void>? dibaca;
   @override
   Future<String?> readKeranjang(String userId) async {
+    final value = values[userId];
+    dibaca?.complete();
     await tahan?.future;
-    return values[userId];
+    return value;
   }
 
   @override
@@ -124,6 +127,30 @@ void main() {
       expect(restored.state.totalItem, 2);
       cart.dispose();
       restored.dispose();
+    },
+  );
+
+  test(
+    'reload serializes with mutations and cannot restore a stale quantity',
+    () async {
+      final storage = CartStorage();
+      final cart = KeranjangNotifier(storage, 'u1');
+      await cart.tambahItem(product('p1'));
+      storage.tahan = Completer<void>();
+      storage.dibaca = Completer<void>();
+      final reload = cart.muatUlang();
+      await storage.dibaca!.future;
+      final addition = cart.tambahItem(product('p1'));
+      await Future<void>.delayed(Duration.zero);
+      storage.tahan!.complete();
+      await reload;
+      expect(await addition, isTrue);
+      expect(cart.state.totalItem, 2);
+      expect(
+        (jsonDecode(storage.values['u1']!)['items'] as List).single['qty'],
+        2,
+      );
+      cart.dispose();
     },
   );
 

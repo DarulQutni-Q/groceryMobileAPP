@@ -228,6 +228,24 @@ void main() {
     },
   );
 
+  test(
+    'failed cart write does not block reading tokens or the previous cart',
+    () async {
+      await storage.saveSession('access', 'refresh');
+      await storage.saveKeranjang('u1', 'previous');
+      failWrite = true;
+      await expectLater(
+        storage.saveKeranjang('u1', 'next'),
+        throwsA(isA<PlatformException>()),
+      );
+      failWrite = false;
+      expect(await storage.readAccessToken(), 'access');
+      expect(await storage.readKeranjang('u1'), 'previous');
+      await storage.saveKeranjang('u1', 'recovered');
+      expect(await storage.readKeranjang('u1'), 'recovered');
+    },
+  );
+
   test('storage can retry after a failed write', () async {
     failWrite = true;
     await expectLater(
