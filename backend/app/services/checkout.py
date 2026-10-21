@@ -13,6 +13,7 @@ from app.models.pembayaran import Pembayaran
 from app.models.pesanan import Pesanan, PesananItem
 from app.models.produk import Produk
 from app.models.toko import Toko
+from app.models.user import now_utc
 from app.schemas.pembayaran import CheckoutResponse, InvoiceEvent
 from app.services.alamat import lock_customer, owned_address
 from app.services.xendit import safe_payment_url
@@ -24,7 +25,12 @@ def quote(db, user, data):
     store_ids = set(db.scalars(select(Produk.toko_id).where(Produk.id.in_(ids))))
     if len(store_ids) != 1:
         raise HTTPException(400, "Produk harus tersedia dan berasal dari satu toko")
-    store = db.scalar(select(Toko).where(Toko.id.in_(store_ids)).with_for_update())
+    store = db.scalar(
+        select(Toko)
+        .where(Toko.id.in_(store_ids))
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
     if store is None or store.status != "buka":
         raise HTTPException(400, "Toko sedang tutup")
     products = {
@@ -113,7 +119,7 @@ def invoice_for(attempt, user, data, gateway, fresh):
     if (
         event.external_id != attempt.external_id
         or event.amount != attempt.jumlah
-        or event.status != "PENDING"
+        or event.status not in {"PENDING", "PAID", "SETTLED"}
     ):
         raise HTTPException(409, "Invoice perlu diperiksa sebelum membuat pesanan")
     return event, safe_payment_url(invoice.get("invoice_url"))
@@ -169,6 +175,18 @@ def perform_checkout(db, user, data, key, gateway):
         if costs["total"] != attempt.jumlah:
             raise HTTPException(409, "Harga berubah, invoice lama perlu diperiksa")
         invoice = invoice_for(attempt, user, data, gateway, fresh)
+        attempt = db.scalar(
+            select(CheckoutAttempt)
+            .where(CheckoutAttempt.id == attempt.id)
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        )
+        if invoice and attempt.xendit_id and attempt.xendit_id != invoice[0].id:
+            raise HTTPException(409, "Identitas invoice berubah, pembayaran perlu diperiksa")
+        if invoice and attempt.remote_status in {"EXPIRED", "FAILED"}:
+            raise HTTPException(409, "Invoice sudah berakhir, pembayaran perlu diperiksa")
+        if invoice and attempt.remote_status in {"PAID", "SETTLED"}:
+            invoice = (invoice[0].model_copy(update={"status": attempt.remote_status}), invoice[1])
         order = insert_order(db, user, data, address, store, items, costs)
         payment = Pembayaran(
             pesanan_id=order.id,
@@ -178,6 +196,12 @@ def perform_checkout(db, user, data, key, gateway):
             xendit_id=invoice[0].id if invoice else None,
             payment_url=invoice[1] if invoice else None,
         )
+        if invoice:
+            attempt.xendit_id, attempt.remote_status = invoice[0].id, invoice[0].status
+            attempt.perlu_rekonsiliasi = False
+            if invoice[0].status in {"PAID", "SETTLED"}:
+                payment.status = "paid"
+                payment.paid_at = invoice[0].paid_at or now_utc()
         db.add(payment)
         for item in data.items:
             products[item.produk_id].stok -= item.qty

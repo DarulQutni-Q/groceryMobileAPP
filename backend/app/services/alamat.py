@@ -20,7 +20,7 @@ def lock_customer(db: Session, user: User):
 
 
 def owned_address(db: Session, user: User, address_id: UUID) -> Alamat:
-    address = db.get(Alamat, address_id)
+    address = db.get(Alamat, address_id, populate_existing=True)
     if address is None:
         raise HTTPException(404, "Alamat tidak ditemukan")
     if address.user_id != user.id:

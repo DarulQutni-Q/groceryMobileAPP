@@ -35,6 +35,7 @@ class PembayaranResponse(BaseModel):
     jumlah: int
     payment_url: str | None
     paid_at: datetime | None
+    perlu_rekonsiliasi: bool
 
 
 class CheckoutResponse(BaseModel):

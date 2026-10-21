@@ -26,6 +26,7 @@ class Pembayaran(Base):
     payment_url: Mapped[str | None] = mapped_column(String(2048))
     paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     stok_direservasi: Mapped[bool] = mapped_column(Boolean, default=True)
+    perlu_rekonsiliasi: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=now_utc, onupdate=now_utc

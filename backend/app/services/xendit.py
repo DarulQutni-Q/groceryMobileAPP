@@ -16,13 +16,17 @@ CHANNELS = {
 def safe_payment_url(value):
     if not isinstance(value, str) or len(value) > 2048:
         raise HTTPException(502, "Tautan pembayaran tidak valid")
-    url = urlsplit(value)
+    try:
+        url = urlsplit(value)
+        hostname = url.hostname
+    except ValueError:
+        raise HTTPException(502, "Tautan pembayaran tidak valid") from None
     if (
         url.scheme != "https"
-        or not url.hostname
+        or not hostname
         or url.username
         or url.password
-        or not (url.hostname == "xendit.co" or url.hostname.endswith(".xendit.co"))
+        or not (hostname == "xendit.co" or hostname.endswith(".xendit.co"))
     ):
         raise HTTPException(502, "Tautan pembayaran tidak valid")
     return value

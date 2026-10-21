@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Uuid
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -17,4 +17,7 @@ class CheckoutAttempt(Base):
     fingerprint: Mapped[str] = mapped_column(String(64))
     external_id: Mapped[str] = mapped_column(String(80), unique=True)
     jumlah: Mapped[int] = mapped_column(Integer)
+    xendit_id: Mapped[str | None] = mapped_column(String(120), unique=True)
+    remote_status: Mapped[str | None] = mapped_column(String(12))
+    perlu_rekonsiliasi: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
