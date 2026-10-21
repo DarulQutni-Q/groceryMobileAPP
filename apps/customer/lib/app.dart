@@ -39,35 +39,28 @@ class _CustomerAppState extends ConsumerState<CustomerApp> {
         );
       }
     });
-    return MaterialApp(
-      title: 'GardenMart',
-      debugShowCheckedModeBanner: false,
-      scaffoldMessengerKey: messenger,
-      theme: customerTheme(),
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      supportedLocales: const [Locale('id'), Locale('en')],
-      routes: {
-        '/': (_) => const SplashPage(),
-        '/login': (_) => const AuthPage(),
-        '/register': (_) => const AuthPage(register: true),
-        '/forgot-password': (_) => const ResetPage(),
-        '/email-sent': (_) => const ResetPage(sent: true),
-      },
-      builder: (context, child) => auth.status == AuthStatus.authenticated
-          ? ProviderScope(
-              key: ValueKey(auth.user!.id),
-              overrides: [
-                keranjangStorageProvider.overrideWithValue(
-                  ref.watch(storageProvider),
-                ),
-              ],
-              child: Navigator(
-                onGenerateRoute: (_) => MaterialPageRoute<void>(
-                  builder: (_) => const CustomerShell(),
-                ),
-              ),
-            )
-          : child!,
+    return ProviderScope(
+      key: ValueKey(auth.user?.id ?? 'guest'),
+      overrides: [
+        keranjangStorageProvider.overrideWithValue(ref.watch(storageProvider)),
+      ],
+      child: MaterialApp(
+        title: 'GardenMart',
+        debugShowCheckedModeBanner: false,
+        scaffoldMessengerKey: messenger,
+        theme: customerTheme(),
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        supportedLocales: const [Locale('id'), Locale('en')],
+        routes: {
+          '/login': (_) => const AuthPage(),
+          '/register': (_) => const AuthPage(register: true),
+          '/forgot-password': (_) => const ResetPage(),
+          '/email-sent': (_) => const ResetPage(sent: true),
+        },
+        home: auth.status == AuthStatus.authenticated
+            ? const CustomerShell()
+            : const SplashPage(),
+      ),
     );
   }
 }

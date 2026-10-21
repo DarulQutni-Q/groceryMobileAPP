@@ -122,6 +122,25 @@ Future<void> tapKey(WidgetTester tester, String key) async {
 }
 
 void main() {
+  testWidgets('system Back returns from detail and cart to home', (
+    tester,
+  ) async {
+    await openCatalog(tester);
+    await tapKey(tester, 'product-p1');
+    expect(find.text('Detail Produk'), findsOneWidget);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text('Klaim Semua Voucher'), findsOneWidget);
+    expect(find.text('Detail Produk'), findsNothing);
+    await tapKey(tester, 'open-cart');
+    expect(find.text('Keranjang Belanja'), findsOneWidget);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text('Klaim Semua Voucher'), findsOneWidget);
+    expect(find.text('Keranjang Belanja'), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets(
     'home detail cart badge qty selections deletion and persisted restore',
     (tester) async {
