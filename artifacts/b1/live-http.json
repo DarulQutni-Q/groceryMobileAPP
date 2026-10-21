@@ -1,0 +1,135 @@
+[
+  {
+    "endpoint": "GET /health",
+    "input": "valid",
+    "expected": 200,
+    "actual": 200,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/register",
+    "input": "role admin",
+    "expected": 422,
+    "actual": 422,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/register",
+    "input": "HP invalid",
+    "expected": 422,
+    "actual": 422,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/register",
+    "input": "password invalid",
+    "expected": 422,
+    "actual": 422,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/register",
+    "input": "customer + HP",
+    "expected": 200,
+    "actual": 200,
+    "request_id": true
+  },
+  {
+    "endpoint": "GET /auth/me",
+    "input": "valid",
+    "expected": 200,
+    "actual": 200,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/register",
+    "input": "duplicate canonical phone",
+    "expected": 400,
+    "actual": 400,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/refresh",
+    "input": "customer refresh",
+    "expected": 200,
+    "actual": 200,
+    "request_id": true
+  },
+  {
+    "endpoint": "PATCH /auth/fcm-token",
+    "input": "valid",
+    "expected": 200,
+    "actual": 200,
+    "request_id": true
+  },
+  {
+    "endpoint": "GET /toko/me",
+    "input": "customer cannot access seller",
+    "expected": 403,
+    "actual": 403,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/google",
+    "input": "role admin",
+    "expected": 422,
+    "actual": 422,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/login/phone",
+    "input": "registered HP",
+    "expected": 200,
+    "actual": 200,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/login",
+    "input": "customer email explicit role",
+    "expected": 200,
+    "actual": 200,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/login/phone",
+    "input": "wrong password",
+    "expected": 401,
+    "actual": 401,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/login",
+    "input": "legacy default seller",
+    "expected": 401,
+    "actual": 401,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/login/phone",
+    "input": "unknown phone",
+    "expected": 401,
+    "actual": 401,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/login/phone",
+    "input": "sixth shared login attempt",
+    "expected": 429,
+    "actual": 429,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/register",
+    "input": "malformed JSON",
+    "expected": 422,
+    "actual": 422,
+    "request_id": true
+  },
+  {
+    "endpoint": "POST /auth/forgot-password",
+    "input": "endpoint absent, UI shows soon",
+    "expected": 404,
+    "actual": 404,
+    "request_id": true
+  }
+]

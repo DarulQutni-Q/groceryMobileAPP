@@ -1,0 +1,3 @@
+APK normal dev: login HP lulus.
+Proses lama 12437 dihentikan; pidof tidak menemukan proses.
+Proses baru 12754 membuka Home customer tanpa mengisi ulang login.

@@ -1,0 +1,17 @@
+21 Oktober 2026, B1 customer
+Backend pytest:150 passed, SQLite dan PostgreSQL, tanpa skip (backend-tests.txt).
+Customer flutter analyze: No issues found.
+Customer flutter test:11 passed.
+Shared flutter analyze: No issues found; flutter test20 passed (shared-checks.txt).
+Seller flutter analyze: No issues found; flutter test32 passed (seller-checks.txt).
+APK dev: build/install/run lulus.
+Android integration: satu journey bisnis lulus, screenshot01-08.
+Normal APK: UI login HP dan force-stop/restart lulus (cold-start.txt, screenshot09).
+HTTP Docker:19 kasus expected=actual tanpa500 (live-http.json).
+Backend source:45 file app Python identik dengan image (runtime-checks.txt).
+Compose config: valid.
+UI:320x568 dengan skala teks1.3 lulus, form scrollable tanpa overflow.
+Screenshot05: preview route email-sent; endpoint reset nyata404 menampilkan Segera hadir.
+Google akun nyata, email app native, perangkat fisik, iOS dan staging/prod belum diuji.
+Pengguna telah mengizinkan commit B1 dan commit langsung tiap perubahan kecil.
+Backend/shared/fondasi/UI dikomit terpisah; git-log.txt snapshot sebelum commit bukti.

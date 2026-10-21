@@ -1,0 +1,25 @@
+Analyzing shared...
+No issues found! (ran in 2.8s)
+
+00:00 +0: loading /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart
+00:00 +0: /home/darulqutni/groceryMobileAPP/packages/shared/test/error_message_test.dart: offline and timeout failures have specific Indonesian messages
+00:00 +1: /home/darulqutni/groceryMobileAPP/packages/shared/test/store_api_test.dart: multipart upload is replayed once after token refresh
+00:00 +2: /home/darulqutni/groceryMobileAPP/packages/shared/test/store_api_test.dart: multipart upload is replayed once after token refresh
+00:00 +3: /home/darulqutni/groceryMobileAPP/packages/shared/test/pesanan_api_test.dart: order API preserves snapshots, tab filter and transition payloads
+00:00 +4: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: concurrent unauthorized requests share one refresh
+00:00 +5: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: concurrent unauthorized requests share one refresh
+00:00 +6: /home/darulqutni/groceryMobileAPP/packages/shared/test/customer_auth_api_test.dart: customer registration reuses session endpoint with real email and phone
+00:00 +7: /home/darulqutni/groceryMobileAPP/packages/shared/test/laporan_api_test.dart: report API parses totals, calendar dates and deleted products
+00:00 +8: /home/darulqutni/groceryMobileAPP/packages/shared/test/laporan_api_test.dart: report API parses totals, calendar dates and deleted products
+00:00 +9: /home/darulqutni/groceryMobileAPP/packages/shared/test/laporan_api_test.dart: report API parses totals, calendar dates and deleted products
+00:00 +10: /home/darulqutni/groceryMobileAPP/packages/shared/test/laporan_api_test.dart: report API parses totals, calendar dates and deleted products
+00:00 +11: /home/darulqutni/groceryMobileAPP/packages/shared/test/laporan_api_test.dart: report API parses totals, calendar dates and deleted products
+00:00 +12: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: temporary 503 during refresh preserves the session for retry
+00:00 +13: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: temporary 503 during refresh preserves the session for retry
+00:00 +14: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: temporary replay-offline during refresh preserves the session for retry
+00:00 +15: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: expired cleanup does not cancel a newer login during slow deletion
+00:00 +16: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: storage can retry after a failed write
+00:00 +17: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: an invalid refresh clears the session and calls logout once
+00:00 +18: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: failed secure deletion completes the request with an error
+00:00 +19: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: a request from the previous account is never replayed as the new account
+00:00 +20: All tests passed!

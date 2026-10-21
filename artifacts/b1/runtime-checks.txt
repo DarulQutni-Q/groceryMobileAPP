@@ -1,0 +1,3 @@
+Container app hashes match host: 45 Python files
+Structured request logs: 2683
+HTTP 500 in this container run: 0

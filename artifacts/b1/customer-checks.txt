@@ -1,0 +1,6 @@
+Analyzing customer...
+No issues found! (ran in 2.5s)
+
+Formatted 18 files (0 changed) in 0.04 seconds.
+
+flutter test:11 passed; lihat verification.txt.

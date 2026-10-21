@@ -34,3 +34,19 @@
 - Penyebab observabilitas: fallback error dikirim di luar CORS dan access log Uvicorn tetap mencetak query meskipun logger JSON sudah menghilangkannya.
 - Dampak: browser kehilangan akses ke pesan 503/ID dan query rahasia berpotensi masuk log kedua. Fallback kini melewati CORS; entry point menonaktifkan access log bawaan dan diuji memakai marker buatan.
 - Kejadian: satu audit A5 dengan tiga akar masalah berbeda. Belum menjadi aturan permanen tiga kejadian.
+
+## 21 Oktober 2026: fixture async dan ilustrasi B1
+
+- Penyebab: fixture SecureStorage dibuat di setUp di luar zona FakeAsync widget; antrean Future tidak selesai ketika pumpAndSettle memutar waktu virtual.
+- Dampak: tes form berhenti pada status loading meskipun state test lulus. Fixture dipindah ke awal callback testWidgets; seluruh assertion perilaku dipertahankan.
+- Penyebab visual: potongan dekorasi acuan masih memuat sudut card dan teks lama.
+- Perbaikan: gunakan potongan dekorasi bersih yang sudah tersedia dengan transform Flutter. Aset berisi teks lama dihapus; screenshot APK normal diperiksa kembali.
+- Kejadian: dua pola berbeda, masing-masing satu akar masalah, belum memenuhi tiga kejadian untuk aturan permanen.
+
+- Pemeriksaan staging B1 menemukan whitespace bawaan pada lisensi font. Hanya whitespace yang dinormalisasi, dengan assertion bahwa seluruh kata lisensi tetap sama; pemeriksaan commit kemudian lulus.
+
+## 21 Oktober 2026: whitespace file baru saat commit B1
+
+- Penyebab: pemeriksaan diff sebelum staging tidak mencakup file baru. Lisensi vendor dan keluaran analyze memiliki whitespace bawaan yang baru terlihat saat di-stage.
+- Dampak: tiga pemeriksaan commit tertahan, dua pada lisensi dan satu pada log. Tidak ada assertion tes atau pesan diagnostik yang diubah.
+- Perbaikan: normalisasi whitespace log dengan assertion seluruh kata tetap sama dan periksa seluruh batch staged sekaligus. Aturan pemeriksaan file vendor/log baru dicatat permanen di AGENTS.md.

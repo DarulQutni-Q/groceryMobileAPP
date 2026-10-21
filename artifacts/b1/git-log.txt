@@ -1,0 +1,20 @@
+5527bc5 tambah layar auth customer dan field HP saat daftar
+f8d5816 siapkan project customer dan sesi tersimpan
+1dc33e8 tambahkan auth customer ke paket shared
+bc8df8a dukung akun customer dan login pakai nomor HP
+14a9ffc catat aturan commit setiap perubahan kecil
+680db8d catat hasil verifikasi dan handoff backend fase A5
+ee37141 hindari query rahasia pada access log server
+fc2c6dd uji pagination pesanan dengan beberapa barang
+cef5012 pertahankan CORS saat error dan tutup route internal
+e20982b tolak input bertingkat dan integer JSON berlebihan
+1dc14e1 tambah pagination tanpa memutus kontrak aplikasi lama
+687bb9c tambah index filter pesanan dan kategori produk
+7a92a15 muat relasi toko dan pesanan tanpa query tambahan
+70e59fc batasi CORS dan sembunyikan dokumentasi di produksi
+ae328ab perketat input dan jelaskan kesalahan dalam bahasa Indonesia
+81c2b83 batasi registrasi dan mutasi per pengguna
+7d18a88 lengkapi health dan log JSON setiap permintaan
+f133e6e simpan pengujian perangkat dan handoff fase A4
+b3ea6e6 hubungkan statistik beranda ke pesanan toko
+a63f029 rapikan kondisi offline dan alur submit seller

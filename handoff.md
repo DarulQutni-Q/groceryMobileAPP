@@ -1,3 +1,57 @@
+# Handoff B1 customer, 21 Oktober 2026
+
+B1 sudah berjalan lokal, termasuk penambahan field HP pada Daftar yang dipilih
+pengguna. Keputusan dan perubahan per file ada di B1_API.md; rencana/ADR ada
+di B1_PLAN.md; bukti di artifacts/b1/. Baca bagian ini sebelum catatan A5/A4 lama.
+
+## Kontrak customer
+
+Login memakai User.phone nyata melalui POST /auth/login/phone. Nomor customer
+normal +62; email asli tetap disimpan, tidak membuat email sintetis. Daftar UI
+mewajibkan email/HP/password/konfirmasi. Backend default role seller tetap
+kompatibel, menerima customer dan menolak admin422. Customer tidak membuat toko;
+me/refresh/fcm menerima sesi customer dan seluruh fitur toko tetap seller-only.
+Tidak ada migrasi atau perubahan model. Jangan mengedit apps/seller untuk B1.
+
+Customer memiliki splash, login, daftar, forgot dan email-sent, Riverpod, Google
+SDK, remember, encrypted storage, logout dan Home placeholder. Api URL memakai
+env/dart-define per flavor; staging/prod wajib HTTPS dan belum diisi. Android
+HTTP hanya dev; iOS mempunyai tiga scheme yang belum dibuild di macOS.
+
+## Bukti terbaru
+
+Backend150, customer11, shared20 dan seller32 tes lulus, analyze tiga package
+No issues found. Total213 tes dan satu journey Android nyata lulus. API Docker
+19 kasus expected=actual tanpa500, termasuk role admin422, duplicate HP400,
+customer tidak bisa toko403 dan login keenam429. Image45 file Python cocok
+hash host. Compose valid. Full backend log, tabel HTTP dan screenshot ada di
+artifacts/b1. APK dev normal juga dibuild/install ulang, login HP melalui UI,
+force-stop PID lama dan proses baru langsung Home; lihat cold-start.txt dan09.
+
+## Batas dan kelanjutan
+
+Forgot endpoint belum ada: UI menampilkan Segera hadir pada404. Screenshot05
+adalah preview route dan tes reset sukses memakai adapter, bukan email sungguhan.
+Apple/OTP belum diimplementasikan. Google akun nyata, email app native, perangkat
+fisik, build/signing iOS dan deploy staging/prod belum diuji. Tidak mengklaim
+pixel-identik karena acuan email-sent/font asli tidak tersedia. Acuan tersedia
+bernama Pasted image.png dan (2),(3),(4), berbeda dari nama di attachment.
+
+Review auth read-only melaporkan tidak ada P1/P2; percobaan review lanjutan agen
+berakhir karena kuota workspace. Visual diperiksa langsung oleh agent utama.
+Pengguna kini sudah mengizinkan commit B1 dan commit langsung setiap perubahan
+kecil setelah diverifikasi, tanpa menunggu perubahan besar atau konfirmasi lagi.
+Aturan tersimpan di AGENTS.md. Pesan commit harus natural Bahasa Indonesia.
+Backend/shared/fondasi/UI dikomit terpisah. Jangan stage perubahan pengguna:
+root specs/docs, A3/README/CONTEXT dan seller_shell.dart sudah berubah sebelum B1.
+artifacts/b1/git-log.txt adalah snapshot sebelum commit bukti pengujian.
+
+Backend Compose lokal ENV=dev, API8000, PostgreSQL55432, emulatorpixel5554.
+Kredensial tetap di file privat /tmp yang dirujuk bagian A5, jangan dicetak atau
+diganti. Task berikutnya B2 sebaiknya dimulai pada task baru dengan handoff ini.
+
+---
+
 # Handoff Fase A5
 
 ## Hasil dan kontrak
