@@ -5,9 +5,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload, selectinload
 
+from app.core.security import get_authenticated_user
 from app.db.session import get_db
 from app.models.pesanan import TAB_STATUS, Pesanan
 from app.models.toko import Toko
+from app.models.user import User
 from app.schemas.pagination import Page
 from app.schemas.pesanan import PesananResponse, PesananTest, StatusRequest, TolakRequest
 from app.services.pagination import Pagination, list_response, pagination_params
@@ -48,10 +50,15 @@ def test_order(
 def listing(
     status: Literal["baru", "diproses", "selesai"] | None = None,
     pagination: Pagination | None = Depends(pagination_params),
-    toko: Toko = Depends(get_store),
+    user: User = Depends(get_authenticated_user),
     db: Session = Depends(get_db),
 ):
-    query = select(Pesanan).where(Pesanan.toko_id == toko.id)
+    if user.role == "customer":
+        query = select(Pesanan).where(Pesanan.customer_id == user.id)
+        pagination = pagination or Pagination(1, 20)
+    else:
+        toko = get_store(user)
+        query = select(Pesanan).where(Pesanan.toko_id == toko.id)
     if status is not None:
         query = query.where(Pesanan.status.in_(TAB_STATUS[status]))
     query = query.options(joinedload(Pesanan.items), joinedload(Pesanan.customer)).order_by(
@@ -61,8 +68,19 @@ def listing(
 
 
 @router.get("/{pesanan_id}", response_model=PesananResponse)
-def detail(pesanan: Pesanan = Depends(get_pesanan)):
-    return pesanan
+def detail(
+    pesanan_id: UUID, user: User = Depends(get_authenticated_user), db: Session = Depends(get_db)
+):
+    if user.role == "seller":
+        return get_pesanan(pesanan_id, get_store(user), db)
+    order = db.scalar(
+        select(Pesanan)
+        .where(Pesanan.id == pesanan_id, Pesanan.customer_id == user.id)
+        .options(selectinload(Pesanan.items), selectinload(Pesanan.customer))
+    )
+    if order is None:
+        raise HTTPException(404, "Pesanan tidak ditemukan")
+    return order
 
 
 @router.patch("/{pesanan_id}/terima", response_model=PesananResponse)

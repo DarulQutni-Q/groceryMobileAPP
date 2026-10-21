@@ -4,10 +4,12 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
+from app.models.pembayaran import Pembayaran
 from app.models.pesanan import Pesanan, PesananItem
 from app.models.produk import Produk
 from app.models.user import now_utc
 from app.schemas.pesanan import ItemTest
+from app.services.pembayaran import release_stock
 
 
 def snapshot_items(db, toko_id, requested):
@@ -67,6 +69,19 @@ def create_test_order(db, toko_id, data):
 
 
 def transition(db, pesanan, action, reason=None):
+    payment = db.scalar(
+        select(Pembayaran)
+        .where(Pembayaran.pesanan_id == pesanan.id)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
+    if (
+        payment
+        and payment.metode != "cod"
+        and payment.status != "paid"
+        and action not in {"ditolak", "dibatalkan"}
+    ):
+        raise HTTPException(400, "Pesanan belum dibayar")
     status = pesanan.status
     terminal = status in ("selesai", "dibatalkan", "ditolak")
     next_status = {
@@ -90,5 +105,9 @@ def transition(db, pesanan, action, reason=None):
             pesanan.accepted_at = now
     else:
         raise HTTPException(400, "Urutan status pesanan tidak valid")
+    if payment and pesanan.status in {"ditolak", "dibatalkan"}:
+        release_stock(db, pesanan, payment)
+        if payment.status == "pending":
+            payment.status = "failed"
     db.commit()
     return pesanan

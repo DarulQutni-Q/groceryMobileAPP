@@ -22,6 +22,7 @@ from app.routers.alamat import router as alamat_router
 from app.routers.auth import router
 from app.routers.catalog import router as catalog_router
 from app.routers.laporan import router as laporan_router
+from app.routers.pembayaran import router as pembayaran_router
 from app.routers.pesanan import router as pesanan_router
 from app.routers.produk import router as produk_router
 from app.routers.toko import router as toko_router
@@ -57,6 +58,7 @@ def create_app() -> FastAPI:
     )
     app.include_router(router)
     app.include_router(alamat_router)
+    app.include_router(pembayaran_router)
     app.include_router(toko_router)
     app.include_router(produk_router)
     app.include_router(catalog_router)

@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     jwt_secret: SecretStr = Field(min_length=32)
     cors_origins: list[str] = []
     google_client_id: str = ""
+    xendit_api_key: SecretStr = SecretStr("")
+    xendit_webhook_token: SecretStr = SecretStr("")
     auto_create_tables: bool = False
     rate_limit_storage_uri: str = "memory://"
     uploads_dir: Path = Path("uploads")
@@ -19,6 +21,9 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def valid_origins(self):
+        key = self.xendit_api_key.get_secret_value()
+        if key and not key.startswith("xnd_development"):
+            raise ValueError("Fase B3 hanya menerima Xendit test key")
         for origin in self.cors_origins:
             if origin == "*" and self.env == "dev":
                 continue

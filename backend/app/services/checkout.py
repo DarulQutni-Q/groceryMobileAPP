@@ -1,0 +1,193 @@
+import hashlib
+import json
+import secrets
+import time
+
+from fastapi import HTTPException
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.orm import selectinload
+
+from app.models.checkout_attempt import CheckoutAttempt
+from app.models.pembayaran import Pembayaran
+from app.models.pesanan import Pesanan, PesananItem
+from app.models.produk import Produk
+from app.models.toko import Toko
+from app.schemas.pembayaran import CheckoutResponse, InvoiceEvent
+from app.services.alamat import lock_customer, owned_address
+from app.services.xendit import safe_payment_url
+
+
+def quote(db, user, data):
+    address = owned_address(db, user, data.alamat_id)
+    ids = [item.produk_id for item in data.items]
+    store_ids = set(db.scalars(select(Produk.toko_id).where(Produk.id.in_(ids))))
+    if len(store_ids) != 1:
+        raise HTTPException(400, "Produk harus tersedia dan berasal dari satu toko")
+    store = db.scalar(select(Toko).where(Toko.id.in_(store_ids)).with_for_update())
+    if store is None or store.status != "buka":
+        raise HTTPException(400, "Toko sedang tutup")
+    products = {
+        p.id: p
+        for p in db.scalars(
+            select(Produk)
+            .where(Produk.id.in_(ids))
+            .order_by(Produk.id)
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        )
+    }
+    items = []
+    for item in data.items:
+        product = products.get(item.produk_id)
+        if product is None or not product.is_tersedia:
+            raise HTTPException(400, "Produk tidak ditemukan atau tidak tersedia")
+        if item.qty > product.stok:
+            raise HTTPException(400, f"Stok {product.nama} tidak cukup, sisa {product.stok}")
+        items.append(
+            dict(
+                produk_id=product.id,
+                nama_snapshot=product.nama,
+                harga_snapshot=product.harga,
+                qty=item.qty,
+            )
+        )
+    subtotal = sum(i["harga_snapshot"] * i["qty"] for i in items)
+    if subtotal + 1000 > 2147483647:
+        raise HTTPException(422, "Total tagihan melebihi batas pembayaran")
+    costs = dict(subtotal=subtotal, diskon=0, ongkir=0, biaya_layanan=1000, total=subtotal + 1000)
+    if data.total_dikonfirmasi is not None and data.total_dikonfirmasi != costs["total"]:
+        raise HTTPException(409, "Harga berubah. Periksa rincian biaya sebelum membayar")
+    return address, store, products, items, costs
+
+
+def checkout_result(db, payment):
+    order = db.scalar(
+        select(Pesanan)
+        .where(Pesanan.id == payment.pesanan_id)
+        .options(selectinload(Pesanan.items), selectinload(Pesanan.customer))
+    )
+    return CheckoutResponse(pesanan=order, pembayaran=payment, payment_url=payment.payment_url)
+
+
+def prepare_attempt(db, user, data, key, gateway):
+    lock_customer(db, user)
+    fingerprint = hashlib.sha256(
+        json.dumps(data.model_dump(mode="json"), sort_keys=True).encode()
+    ).hexdigest()
+    attempt = db.scalar(select(CheckoutAttempt).where(CheckoutAttempt.request_key == key))
+    if attempt:
+        if attempt.user_id != user.id or attempt.fingerprint != fingerprint:
+            raise HTTPException(409, "Kunci checkout sudah dipakai untuk permintaan lain")
+        payment = db.scalar(select(Pembayaran).where(Pembayaran.external_id == attempt.external_id))
+        return attempt, payment, False
+    costs = quote(db, user, data)[-1]
+    if data.metode_bayar != "cod":
+        gateway.available()
+    attempt = CheckoutAttempt(
+        request_key=key,
+        user_id=user.id,
+        fingerprint=fingerprint,
+        external_id="GM-" + key,
+        jumlah=costs["total"],
+    )
+    db.add(attempt)
+    db.commit()
+    return attempt, None, True
+
+
+def invoice_for(attempt, user, data, gateway, fresh):
+    if data.metode_bayar == "cod":
+        return None
+    invoice = (
+        gateway.create_invoice(
+            attempt.external_id, attempt.jumlah, user.email, "Belanja GardenMart"
+        )
+        if fresh
+        else gateway.find_invoice(attempt.external_id)
+    )
+    try:
+        event = InvoiceEvent.model_validate(invoice)
+    except ValueError:
+        raise HTTPException(502, "Respons invoice Xendit tidak valid") from None
+    if (
+        event.external_id != attempt.external_id
+        or event.amount != attempt.jumlah
+        or event.status != "PENDING"
+    ):
+        raise HTTPException(409, "Invoice perlu diperiksa sebelum membuat pesanan")
+    return event, safe_payment_url(invoice.get("invoice_url"))
+
+
+def insert_order(db, user, data, address, store, items, costs):
+    for _ in range(5):
+        code = f"DG-{10000 + secrets.randbelow(90000):05}"
+        try:
+            with db.begin_nested():
+                order = Pesanan(
+                    kode=code,
+                    customer_id=user.id,
+                    customer=user,
+                    toko_id=store.id,
+                    alamat_kirim="\n".join(
+                        filter(
+                            None,
+                            [
+                                address.nama_penerima,
+                                address.no_hp,
+                                address.alamat_lengkap,
+                                address.patokan,
+                            ],
+                        )
+                    ),
+                    catatan=data.catatan,
+                    metode_kirim=data.metode_kirim,
+                    slot_waktu="Segera",
+                    items=[PesananItem(**item) for item in items],
+                    **costs,
+                )
+                db.add(order)
+                db.flush()
+            return order
+        except IntegrityError:
+            if not db.scalar(select(Pesanan.id).where(Pesanan.kode == code)):
+                raise
+    raise HTTPException(503, "Kode pesanan belum dapat dibuat, coba lagi")
+
+
+def perform_checkout(db, user, data, key, gateway):
+    key = key or f"{int(time.time() * 1000)}-{secrets.token_hex(16)}"
+    try:
+        attempt, payment, fresh = prepare_attempt(db, user, data, key, gateway)
+        if payment:
+            return checkout_result(db, payment)
+        lock_customer(db, user)
+        payment = db.scalar(select(Pembayaran).where(Pembayaran.external_id == attempt.external_id))
+        if payment:
+            return checkout_result(db, payment)
+        address, store, products, items, costs = quote(db, user, data)
+        if costs["total"] != attempt.jumlah:
+            raise HTTPException(409, "Harga berubah, invoice lama perlu diperiksa")
+        invoice = invoice_for(attempt, user, data, gateway, fresh)
+        order = insert_order(db, user, data, address, store, items, costs)
+        payment = Pembayaran(
+            pesanan_id=order.id,
+            external_id=attempt.external_id,
+            metode=data.metode_bayar,
+            jumlah=costs["total"],
+            xendit_id=invoice[0].id if invoice else None,
+            payment_url=invoice[1] if invoice else None,
+        )
+        db.add(payment)
+        for item in data.items:
+            products[item.produk_id].stok -= item.qty
+        db.commit()
+        return checkout_result(db, payment)
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(
+            503, "Checkout belum dapat disimpan, periksa lagi dengan kunci yang sama"
+        ) from None
+    except Exception:
+        db.rollback()
+        raise

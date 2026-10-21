@@ -48,7 +48,6 @@ def test_customer_registration_session_refresh_and_no_store(customer_client):
     for route in [
         "/toko/me",
         "/toko/me/jam-buka",
-        "/pesanan",
         "/laporan/ringkasan",
         "/laporan/produk-terlaris",
     ]:
@@ -56,6 +55,9 @@ def test_customer_registration_session_refresh_and_no_store(customer_client):
     catalog = client.get("/produk", headers=headers)
     assert catalog.status_code == 200
     assert catalog.json()["data"] == []
+    orders = client.get("/pesanan", headers=headers)
+    assert orders.status_code == 200
+    assert orders.json()["data"] == []
 
 
 def test_admin_role_is_rejected_before_account_creation(customer_client):

@@ -4,7 +4,9 @@ from sqlalchemy import create_engine, pool
 from app.core.config import Settings
 from app.db.base import Base
 from app.models.alamat import Alamat  # noqa: F401
+from app.models.checkout_attempt import CheckoutAttempt  # noqa: F401
 from app.models.jam_buka import JamBuka
+from app.models.pembayaran import Pembayaran  # noqa: F401
 from app.models.pesanan import Pesanan, PesananItem
 from app.models.produk import Produk
 from app.models.toko import Toko
