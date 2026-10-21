@@ -43,6 +43,28 @@ Produk product(
 );
 
 void main() {
+  test(
+    'checkout cleanup removes purchased quantities once across restore',
+    () async {
+      final storage = CartStorage();
+      final cart = KeranjangNotifier(storage, 'u1');
+      await cart.siap;
+      await cart.tambahItem(product('p1'), qty: 2);
+      await cart.tambahItem(product('p2'));
+      await cart.pilihItem('p2', false);
+      final purchased = cart.state.items.where((i) => i.dipilih).toList();
+      await cart.tambahItem(product('p1'));
+      expect(await cart.selesaikanCheckout('key1', purchased), isTrue);
+      expect(cart.state.items.first.qty, 1);
+      expect(cart.state.items.last.produk.id, 'p2');
+      cart.dispose();
+      final restored = KeranjangNotifier(storage, 'u1');
+      await restored.siap;
+      expect(await restored.selesaikanCheckout('key1', purchased), isTrue);
+      expect(restored.state.totalItem, 2);
+      restored.dispose();
+    },
+  );
   test('qty merges, subtotal uses selected items and zero removes', () async {
     final storage = CartStorage();
     final cart = KeranjangNotifier(storage, 'u1');

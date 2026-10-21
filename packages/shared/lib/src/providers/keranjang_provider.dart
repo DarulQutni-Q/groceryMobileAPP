@@ -27,6 +27,7 @@ class KeranjangNotifier extends StateNotifier<Keranjang> {
   late final Future<void> siap;
   Future<void> _operations = Future.value();
   bool _restoreGagal = false;
+  List<String> _selesai = [];
 
   Future<void> _restore() async {
     try {
@@ -37,6 +38,7 @@ class KeranjangNotifier extends StateNotifier<Keranjang> {
         if (json['version'] != 1) {
           throw const FormatException('Versi keranjang tidak didukung');
         }
+        _selesai = List<String>.from(json['checkout_selesai'] as List? ?? []);
         items.addAll(
           (json['items'] as List).map(
             (item) => KeranjangItem.fromJson(item as Map<String, dynamic>),
@@ -79,21 +81,29 @@ class KeranjangNotifier extends StateNotifier<Keranjang> {
   Future<bool> _change(
     List<KeranjangItem> Function(List<KeranjangItem>) change, {
     bool reset = false,
+    String? checkoutKey,
   }) {
     final result = _operations.then((_) async {
       await siap;
       if (!mounted || (_restoreGagal && !reset)) return false;
+      if (checkoutKey != null && _selesai.contains(checkoutKey)) return true;
       final before = state.items;
       try {
         final next = change(before);
+        final completed = [..._selesai, ?checkoutKey];
+        if (completed.length > 30) {
+          completed.removeRange(0, completed.length - 30);
+        }
         state = Keranjang(items: next);
         await storage.saveKeranjang(
           userId,
           jsonEncode({
             'version': 1,
             'items': next.map((item) => item.toJson()).toList(),
+            if (completed.isNotEmpty) 'checkout_selesai': completed,
           }),
         );
+        _selesai = completed;
         if (reset) _restoreGagal = false;
         return true;
       } on ArgumentError catch (error) {
@@ -194,4 +204,17 @@ class KeranjangNotifier extends StateNotifier<Keranjang> {
   Future<bool> hapusDipilih() =>
       _change((items) => items.where((item) => !item.dipilih).toList());
   int hitungSubtotal() => state.subtotal;
+  Future<bool> selesaikanCheckout(String key, List<KeranjangItem> purchased) =>
+      _change((items) {
+        final quantities = {
+          for (final item in purchased) item.produk.id: item.qty,
+        };
+        return [
+          for (final item in items)
+            if (!quantities.containsKey(item.produk.id))
+              item
+            else if (item.qty > quantities[item.produk.id]!)
+              item.copyWith(qty: item.qty - quantities[item.produk.id]!),
+        ];
+      }, checkoutKey: key);
 }

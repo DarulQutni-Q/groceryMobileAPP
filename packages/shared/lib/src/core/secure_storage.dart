@@ -74,4 +74,14 @@ class SecureStorage {
 
   Future<void> saveKeranjang(String userId, String value) =>
       _write(() => _storage.write(key: 'customer_cart_$userId', value: value));
+  Future<String?> readCheckout(String userId) async {
+    await _writes;
+    return _storage.read(key: 'customer_checkout_$userId');
+  }
+
+  Future<void> saveCheckout(String userId, String value) => _write(
+    () => _storage.write(key: 'customer_checkout_$userId', value: value),
+  );
+  Future<void> clearCheckout(String userId) =>
+      _write(() => _storage.delete(key: 'customer_checkout_$userId'));
 }
