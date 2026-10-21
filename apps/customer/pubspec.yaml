@@ -1,0 +1,43 @@
+name: gardenmart_customer
+description: Aplikasi pembeli GardenMart.
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.5
+
+dependencies:
+  dio: ^5.11.1
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_dotenv: ^6.0.1
+  flutter_riverpod: ^3.4.3
+  google_sign_in: ^7.2.0
+  grocery_shared:
+    path: ../../packages/shared
+  url_launcher: ^6.3.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/references/
+    - .env.dev.example
+    - .env.staging.example
+    - .env.prod.example
+  fonts:
+    - family: GardenSerif
+      fonts:
+        - asset: assets/fonts/LiberationSerif-Regular.ttf
+        - asset: assets/fonts/LiberationSerif-Bold.ttf
+          weight: 700
