@@ -1,0 +1,39 @@
+$ flutter analyze
+Analyzing shared...
+No issues found! (ran in 1.9s)
+
+$ flutter test
+00:00 +0: loading /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart
+00:00 +0: /home/darulqutni/groceryMobileAPP/packages/shared/test/pesanan_api_test.dart: order API preserves snapshots, tab filter and transition payloads
+00:00 +1: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: 401 refreshes once and replays the authenticated request
+00:00 +2: /home/darulqutni/groceryMobileAPP/packages/shared/test/store_api_test.dart: multipart upload is replayed once after token refresh
+00:00 +3: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: concurrent unauthorized requests share one refresh
+00:00 +4: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: concurrent unauthorized requests share one refresh
+00:00 +5: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: temporary offline during refresh preserves the session for retry
+00:00 +6: /home/darulqutni/groceryMobileAPP/packages/shared/test/error_message_test.dart: offline and timeout failures have specific Indonesian messages
+00:00 +7: /home/darulqutni/groceryMobileAPP/packages/shared/test/error_message_test.dart: offline and timeout failures have specific Indonesian messages
+00:00 +8: /home/darulqutni/groceryMobileAPP/packages/shared/test/error_message_test.dart: offline and timeout failures have specific Indonesian messages
+00:00 +9: /home/darulqutni/groceryMobileAPP/packages/shared/test/api_client_test.dart: temporary replay-offline during refresh preserves the session for retry
+00:00 +10: /home/darulqutni/groceryMobileAPP/packages/shared/test/laporan_api_test.dart: report API parses totals, calendar dates and deleted products
+00:00 +11: /home/darulqutni/groceryMobileAPP/packages/shared/test/laporan_api_test.dart: report API parses totals, calendar dates and deleted products
+00:00 +12: /home/darulqutni/groceryMobileAPP/packages/shared/test/laporan_api_test.dart: report API parses totals, calendar dates and deleted products
+00:00 +13: /home/darulqutni/groceryMobileAPP/packages/shared/test/laporan_api_test.dart: report API parses totals, calendar dates and deleted products
+00:00 +14: /home/darulqutni/groceryMobileAPP/packages/shared/test/laporan_api_test.dart: report API parses totals, calendar dates and deleted products
+00:00 +15: /home/darulqutni/groceryMobileAPP/packages/shared/test/laporan_api_test.dart: report API parses totals, calendar dates and deleted products
+00:00 +16: /home/darulqutni/groceryMobileAPP/packages/shared/test/customer_auth_api_test.dart: customer registration reuses session endpoint with real email and phone
+00:00 +17: /home/darulqutni/groceryMobileAPP/packages/shared/test/customer_auth_api_test.dart: customer registration reuses session endpoint with real email and phone
+00:00 +18: /home/darulqutni/groceryMobileAPP/packages/shared/test/customer_auth_api_test.dart: phone login uses phone endpoint without creating synthetic email
+00:00 +19: /home/darulqutni/groceryMobileAPP/packages/shared/test/customer_auth_api_test.dart: Google selects customer role while legacy seller payload stays unchanged
+00:00 +20: /home/darulqutni/groceryMobileAPP/packages/shared/test/customer_auth_api_test.dart: remember preference does not remove or log encrypted session
+00:00 +21: /home/darulqutni/groceryMobileAPP/packages/shared/test/keranjang_test.dart: qty merges, subtotal uses selected items and zero removes
+00:00 +22: /home/darulqutni/groceryMobileAPP/packages/shared/test/catalog_api_test.dart: customer catalog requests explicit pagination and preserves search store and category
+00:00 +23: /home/darulqutni/groceryMobileAPP/packages/shared/test/catalog_api_test.dart: customer catalog requests explicit pagination and preserves search store and category
+00:00 +24: /home/darulqutni/groceryMobileAPP/packages/shared/test/catalog_api_test.dart: customer catalog requests explicit pagination and preserves search store and category
+00:00 +25: /home/darulqutni/groceryMobileAPP/packages/shared/test/catalog_api_test.dart: customer catalog requests explicit pagination and preserves search store and category
+00:00 +26: /home/darulqutni/groceryMobileAPP/packages/shared/test/catalog_api_test.dart: customer catalog requests explicit pagination and preserves search store and category
+00:00 +27: /home/darulqutni/groceryMobileAPP/packages/shared/test/catalog_api_test.dart: customer catalog requests explicit pagination and preserves search store and category
+00:00 +28: /home/darulqutni/groceryMobileAPP/packages/shared/test/catalog_api_test.dart: customer catalog requests explicit pagination and preserves search store and category
+00:00 +29: /home/darulqutni/groceryMobileAPP/packages/shared/test/catalog_api_test.dart: customer catalog requests explicit pagination and preserves search store and category
+00:00 +30: /home/darulqutni/groceryMobileAPP/packages/shared/test/catalog_api_test.dart: default catalog pagination categories and demo promos use existing client
+00:00 +31: /home/darulqutni/groceryMobileAPP/packages/shared/test/catalog_api_test.dart: public store list and detail parse optional hours without seller-only fields
+00:00 +32: All tests passed!

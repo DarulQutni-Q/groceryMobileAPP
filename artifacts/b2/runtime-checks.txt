@@ -1,0 +1,7 @@
+PASS flutter build apk --debug --flavor dev -t lib/main_dev.dart
+PASS normal APK installed and launched
+PASS login HP through normal Android UI reached Home
+PASS three product add buttons tapped; native UI showed cart badge 3
+NOT VERIFIED native cold start across processes: Android emulator disconnected repeatedly
+PASS shared persistence tests and Android journey rebootstrap restored cart
+No claim that emulator restart or native cold start passed

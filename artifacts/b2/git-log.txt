@@ -1,0 +1,16 @@
+8ade9f6 catat kontrak dan hasil implementasi customer B2
+45031ad uji perjalanan belanja B2 dengan backend dan Android nyata
+a880ca7 dekatkan posisi harga dan ringkas badge member
+702af1d rapikan validasi batas jumlah keranjang
+73d1f5a tambahkan tombol untuk mengosongkan pencarian produk
+bd24518 rapikan kartu member dan produk mengikuti acuan B2
+697c10f jaga hitungan jumlah saat tombol plus ditekan beruntun
+dd6eb85 hubungkan tombol kembali Android ke navigasi customer
+7d7d639 pulihkan antrean penyimpanan setelah gagal menyimpan keranjang
+39ab9ac tampilkan beranda detail dan keranjang belanja customer
+44e67de atur pencarian dan pagination katalog customer
+7c3b64c simpan keranjang customer per akun di perangkat
+10432c3 sambungkan API katalog customer di shared
+302dba3 buka katalog produk dan toko untuk customer
+132a50f siapkan cache foto untuk katalog customer
+111cae8 catat cakupan katalog dan keranjang customer B2

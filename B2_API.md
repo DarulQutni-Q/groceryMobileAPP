@@ -119,5 +119,7 @@ buka pertama dari API dan ETA statis15–20menit sesuai cakupan fase ini.
 Tidak mengedit apps/seller atau perubahan pengguna pada A3, README, CONTEXT,
 root specs dan docs. Diff awal pengguna dibandingkan kembali sebelum selesai.
 Build iOS, perangkat fisik dan deploy staging/production belum diuji.
+Cold start native lintas proses belum tuntas karena emulator berulang kali
+terputus; persistensi shared dan restart widget aplikasi pada journey lulus.
 
 Perintah verifikasi dan hasil aktual ada di artifacts/b2/README.md dan lognya.

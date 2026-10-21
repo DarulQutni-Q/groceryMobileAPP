@@ -1,0 +1,300 @@
+{
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/register",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/register",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/toko/me",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/toko/me/jam-buka",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/toko/me/status",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/produk/f5fa55ce-e6eb-40cd-8179-d9489810fed6/toggle",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/produk?q=indomie&toko_id=97b78a8c-b870-4e98-a31c-7cea3c0bdfb7",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/produk?kategori=Beras&toko_id=97b78a8c-b870-4e98-a31c-7cea3c0bdfb7",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/produk?page=2&per_page=5&toko_id=97b78a8c-b870-4e98-a31c-7cea3c0bdfb7",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/produk?per_page=200&toko_id=97b78a8c-b870-4e98-a31c-7cea3c0bdfb7",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/produk/6f9f770b-4d9c-4289-82e0-5676216e91b6",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/produk/f5fa55ce-e6eb-40cd-8179-d9489810fed6",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "method": "GET",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/toko",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/toko/97b78a8c-b870-4e98-a31c-7cea3c0bdfb7?per_page=5",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kategori",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/promo",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/produk",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "method": "GET",
+      "path": "/toko",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "method": "GET",
+      "path": "/kategori",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "method": "GET",
+      "path": "/promo",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "method": "GET",
+      "path": "/produk?page=0",
+      "expected": 422,
+      "actual": 422
+    },
+    {
+      "method": "GET",
+      "path": "/produk?per_page=-1",
+      "expected": 422,
+      "actual": 422
+    },
+    {
+      "method": "GET",
+      "path": "/produk/not-uuid",
+      "expected": 422,
+      "actual": 422
+    },
+    {
+      "method": "GET",
+      "path": "/toko/not-uuid",
+      "expected": 422,
+      "actual": 422
+    },
+    {
+      "method": "GET",
+      "path": "/produk?q=%00",
+      "expected": 422,
+      "actual": 422
+    },
+    {
+      "method": "GET",
+      "path": "/produk/bf68563a-7469-4abf-b259-abaaea2754f2",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "method": "PATCH",
+      "path": "/produk/6f9f770b-4d9c-4289-82e0-5676216e91b6/toggle",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "method": "PATCH",
+      "path": "/toko/me/status",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "method": "PATCH",
+      "path": "/toko/me/status",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/toko/97b78a8c-b870-4e98-a31c-7cea3c0bdfb7",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "method": "GET",
+      "path": "/produk?toko_id=97b78a8c-b870-4e98-a31c-7cea3c0bdfb7",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/toko/me/status",
+      "expected": 200,
+      "actual": 200
+    }
+  ],
+  "checks": "search/category/page2/limit/privacy/hours/auth/ownership/closed-store",
+  "server_errors": 0
+}

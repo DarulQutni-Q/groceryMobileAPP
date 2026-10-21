@@ -1,0 +1,121 @@
+Resolving dependencies...
+Downloading packages...
+  code_assets 1.2.1 (2.1.0 available)
+  hooks 2.0.2 (2.2.0 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.3 (1.19.0 available)
+  objective_c 9.5.0 (9.6.2 available)
+  record_use 0.6.0 (1.1.1 available)
+  test_api 0.7.12 (0.7.15 available)
+  vector_math 2.4.0 (2.4.3 available)
+Got dependencies!
+8 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Running Gradle task 'assembleDevDebug'...                           8.8s
+✓ Built build/app/outputs/flutter-apk/app-dev-debug.apk
+Installing build/app/outputs/flutter-apk/app-dev-debug.apk...        749ms
+I/rt_customer.dev(17259): Compiler allocated 5174KB to compile void android.view.ViewRootImpl.performTraversals()
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+VMServiceFlutterDriver: Connecting to Flutter application at [VM SERVICE REDACTED]
+VMServiceFlutterDriver: Isolate found with number: 2558556718390227
+VMServiceFlutterDriver: Isolate 2558556718390227 is runnable.
+VMServiceFlutterDriver: Isolate is paused at start.
+VMServiceFlutterDriver: Attempting to resume isolate
+I/flutter (17259): 00:00 +0: live B2 browse search filter cart qty selections persistence and empty state
+VMServiceFlutterDriver: Connected to Flutter application.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/ProfileInstaller(17259): Installing profile for com.gardenmart.gardenmart_customer.dev
+D/EGL_emulation(17259): app_time_stats: avg=564.81ms min=360.50ms max=856.97ms count=3
+D/EGL_emulation(17259): app_time_stats: avg=1781.84ms min=766.13ms max=2797.55ms count=2
+I/ImeTracker(17259): com.gardenmart.gardenmart_customer.dev:55c94797: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(17259): showSoftInput() view=io.flutter.embedding.android.FlutterView{e98729 VFE...... .F....ID 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(17259): com.gardenmart.gardenmart_customer.dev:6a4fbd07: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(17259): showSoftInput() view=io.flutter.embedding.android.FlutterView{e98729 VFE...... .F....ID 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(17259): com.gardenmart.gardenmart_customer.dev:8ec5312: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+I/AssistStructure(17259): Flattened final assist data: 300 bytes, containing 1 windows, 2 views
+W/RemoteInputConnectionImpl(17259): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(17259): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(17259): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(17259): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(17259): requestCursorUpdates on inactive InputConnection
+D/InsetsController(17259): show(ime(), fromIme=true)
+W/InteractionJankMonitor(17259): Initializing without READ_DEVICE_CONFIG permission. enabled=true, interval=1, missedFrameThreshold=3, frameTimeThreshold=64, package=com.gardenmart.gardenmart_customer.dev
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/InsetsController(17259): hide(ime(), fromIme=true)
+I/ImeTracker(17259): com.gardenmart.gardenmart_customer.dev:6a4fbd07: onCancelled at PHASE_CLIENT_ANIMATION_CANCEL
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+W/WindowOnBackDispatcher(17259): sendCancelIfRunning: isInProgress=false callback=ImeCallback=ImeOnBackInvokedCallback@82578374 Callback=android.window.IOnBackInvokedCallback$Stub$Proxy@cf0da47
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+I/ImeTracker(17259): com.gardenmart.gardenmart_customer.dev:b74efae7: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_ON_ANIMATION_STATE_CHANGED fromUser false
+I/ImeTracker(17259): com.gardenmart.gardenmart_customer.dev:8ec5312: onHidden
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/FlutterJNI(17259): Sending viewport metrics to the engine.
+D/EGL_emulation(17259): app_time_stats: avg=349.43ms min=110.47ms max=715.57ms count=4
+VMServiceFlutterDriver: request_data message is taking a long time to complete...
+D/EGL_emulation(17259): app_time_stats: avg=227.37ms min=109.98ms max=625.26ms count=5
+D/EGL_emulation(17259): app_time_stats: avg=116.57ms min=11.62ms max=266.99ms count=9
+D/EGL_emulation(17259): app_time_stats: avg=133.06ms min=12.23ms max=2394.47ms count=24
+W/rt_customer.dev(17259): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/rt_customer.dev(17259): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+D/EGL_emulation(17259): app_time_stats: avg=95.43ms min=15.27ms max=233.28ms count=11
+D/EGL_emulation(17259): app_time_stats: avg=87.55ms min=7.76ms max=117.64ms count=12
+W/WindowOnBackDispatcher(17259): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@41991e0
+D/EGL_emulation(17259): app_time_stats: avg=90.27ms min=10.04ms max=126.60ms count=12
+D/EGL_emulation(17259): app_time_stats: avg=89.13ms min=9.33ms max=130.74ms count=12
+D/EGL_emulation(17259): app_time_stats: avg=222.69ms min=115.13ms max=612.84ms count=5
+D/EGL_emulation(17259): app_time_stats: avg=98.64ms min=16.60ms max=123.16ms count=11
+D/EGL_emulation(17259): app_time_stats: avg=206.19ms min=82.25ms max=622.70ms count=5
+E/FrameTracker(17259): force finish cuj, time out: J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164302, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164333, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164367, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164396, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164425, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164454, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164483, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164512, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164541, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164570, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164599, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164628, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164664, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164700, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164729, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164758, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+W/FrameTracker(17259): Missed SF frame:PREDICTION_ERROR, 164787, 0, CUJ=J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+V/PerfettoTrigger(17259): Triggering /system/bin/trigger_perfetto com.android.telemetry.interaction-jank-monitor-81
+D/EGL_emulation(17259): app_time_stats: avg=8450.20ms min=8450.20ms max=8450.20ms count=1
+D/EGL_emulation(17259): app_time_stats: avg=133.54ms min=14.48ms max=266.08ms count=9
+D/EGL_emulation(17259): app_time_stats: avg=87.24ms min=7.26ms max=118.20ms count=12
+D/EGL_emulation(17259): app_time_stats: avg=83.20ms min=14.97ms max=128.72ms count=13
+W/WindowOnBackDispatcher(17259): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@41991e0
+D/EGL_emulation(17259): app_time_stats: avg=258.68ms min=132.91ms max=325.45ms count=4
+D/EGL_emulation(17259): app_time_stats: avg=87.46ms min=11.28ms max=119.31ms count=12
+W/rt_customer.dev(17259): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/rt_customer.dev(17259): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+D/EGL_emulation(17259): app_time_stats: avg=70.16ms min=16.42ms max=119.29ms count=15
+D/EGL_emulation(17259): app_time_stats: avg=6466.10ms min=6466.10ms max=6466.10ms count=1
+D/EGL_emulation(17259): app_time_stats: avg=98.08ms min=6.17ms max=266.71ms count=11
+I/flutter (17259): 00:22 +1: (tearDownAll)
+I/flutter (17259): 00:22 +2: All tests passed!
+All tests passed.

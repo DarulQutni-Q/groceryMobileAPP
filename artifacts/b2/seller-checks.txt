@@ -1,0 +1,39 @@
+$ flutter analyze
+Analyzing seller...
+No issues found! (ran in 2.8s)
+
+$ flutter test
+00:00 +0: loading /home/darulqutni/groceryMobileAPP/apps/seller/test/auth_provider_test.dart
+00:00 +0: /home/darulqutni/groceryMobileAPP/apps/seller/test/auth_provider_test.dart: login persists a session, restores it, and logout clears it
+00:00 +1: /home/darulqutni/groceryMobileAPP/apps/seller/test/auth_flow_test.dart: small phone and keyboard keep login and validation reachable
+00:00 +2: /home/darulqutni/groceryMobileAPP/apps/seller/test/auth_flow_test.dart: small phone and keyboard keep login and validation reachable
+00:00 +3: /home/darulqutni/groceryMobileAPP/apps/seller/test/auth_flow_test.dart: small phone and keyboard keep login and validation reachable
+00:01 +4: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: failed logout keeps the store available and can be retried
+00:01 +5: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: failed logout keeps the store available and can be retried
+00:01 +6: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: failed logout keeps the store available and can be retried
+00:02 +7: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: failed logout keeps the store available and can be retried
+00:02 +8: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: failed logout keeps the store available and can be retried
+00:02 +9: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: failed logout keeps the store available and can be retried
+00:02 +10: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: failed logout keeps the store available and can be retried
+00:02 +11: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: failed logout keeps the store available and can be retried
+00:02 +12: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: failed logout keeps the store available and can be retried
+00:02 +13: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: failed logout keeps the store available and can be retried
+00:02 +14: /home/darulqutni/groceryMobileAPP/apps/seller/test/laporan_flow_test.dart: report error has a red snackbar and retry recovers
+00:02 +15: /home/darulqutni/groceryMobileAPP/apps/seller/test/laporan_flow_test.dart: report error has a red snackbar and retry recovers
+00:03 +16: /home/darulqutni/groceryMobileAPP/apps/seller/test/laporan_flow_test.dart: report error has a red snackbar and retry recovers
+00:03 +17: /home/darulqutni/groceryMobileAPP/apps/seller/test/pesanan_flow_test.dart: rejection requires a reason and moves order to completed tab
+00:03 +18: /home/darulqutni/groceryMobileAPP/apps/seller/test/pesanan_flow_test.dart: rejection requires a reason and moves order to completed tab
+00:03 +19: /home/darulqutni/groceryMobileAPP/apps/seller/test/pesanan_flow_test.dart: rejection requires a reason and moves order to completed tab
+00:03 +20: /home/darulqutni/groceryMobileAPP/apps/seller/test/laporan_flow_test.dart: report stops loading after three seconds and ignores late data
+00:03 +21: /home/darulqutni/groceryMobileAPP/apps/seller/test/laporan_flow_test.dart: report stops loading after three seconds and ignores late data
+00:03 +22: /home/darulqutni/groceryMobileAPP/apps/seller/test/laporan_flow_test.dart: report stops loading after three seconds and ignores late data
+00:03 +23: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: failed delete reports the backend error inside the editor
+00:03 +24: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: failed delete reports the backend error inside the editor
+00:04 +25: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: failed delete reports the backend error inside the editor
+00:04 +26: /home/darulqutni/groceryMobileAPP/apps/seller/test/pesanan_flow_test.dart: pending undo is safe when sheet and detail are closed
+00:04 +27: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: successful delete closes editor even when refresh fails
+00:04 +28: /home/darulqutni/groceryMobileAPP/apps/seller/test/pesanan_flow_test.dart: detail refresh reports offline error without throwing
+00:04 +29: /home/darulqutni/groceryMobileAPP/apps/seller/test/pesanan_flow_test.dart: detail refresh reports offline error without throwing
+00:04 +30: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: product form validates photo and store hours stay reachable on a small phone
+00:05 +31: /home/darulqutni/groceryMobileAPP/apps/seller/test/store_flow_test.dart: product form validates photo and store hours stay reachable on a small phone
+00:05 +32: All tests passed!

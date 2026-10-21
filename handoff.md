@@ -12,8 +12,11 @@ Review state menutup tiga P2 lewat tes merah-hijau: write cart gagal tidak
 meracuni pembacaan token, reload masuk antrean, plus menghitung qty terbaru.
 Navigator root menggantikan nested navigator pada builder; system Back diuji.
 Tombol hapus search menyinkronkan controller dan query serta diuji Android.
-APK dev normal dibuild/install dan login HP lewat UI. Pemeriksaan pemulihan
-setelah force-stop/start proses baru masih berlangsung.
+APK dev normal dibuild/install dan login HP lewat UI. Verifikasi native
+cold start lintas proses belum tuntas: emulator berulang kali terputus dan
+AVD baru tidak memuat APK customer. Jangan mengklaimnya lulus. Persistensi
+unit/shared dan rebootstrap journey Android lulus; lanjutkan lintas proses
+di emulator stabil atau perangkat fisik.
 
 Keranjang satu toko dengan konfirmasi pergantian; key customer_cart_{user_id}.
 Subtotal/Checkout hanya pilihan, badge seluruh qty. Beli Sekarang hanya tambah

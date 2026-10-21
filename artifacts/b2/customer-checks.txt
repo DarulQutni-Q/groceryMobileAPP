@@ -1,0 +1,25 @@
+$ flutter analyze
+Analyzing customer...
+No issues found! (ran in 2.4s)
+
+$ flutter test
+00:00 +0: loading /home/darulqutni/groceryMobileAPP/apps/customer/test/auth_state_test.dart
+00:00 +0: /home/darulqutni/groceryMobileAPP/apps/customer/test/auth_state_test.dart: customer login persists and restores session then logout clears it
+00:00 +1: /home/darulqutni/groceryMobileAPP/apps/customer/test/auth_state_test.dart: unchecked remember me keeps current login but does not restore next launch
+00:00 +2: /home/darulqutni/groceryMobileAPP/apps/customer/test/auth_state_test.dart: late login cannot recreate session after logout
+00:00 +3: /home/darulqutni/groceryMobileAPP/apps/customer/test/auth_state_test.dart: temporary profile failure keeps tokens for retry and wrong role is refused
+00:00 +4: /home/darulqutni/groceryMobileAPP/apps/customer/test/customer_flow_test.dart: splash registration validates passwords then opens customer placeholder
+00:00 +5: /home/darulqutni/groceryMobileAPP/apps/customer/test/customer_flow_test.dart: splash registration validates passwords then opens customer placeholder
+00:00 +6: /home/darulqutni/groceryMobileAPP/apps/customer/test/customer_flow_test.dart: splash registration validates passwords then opens customer placeholder
+00:01 +7: /home/darulqutni/groceryMobileAPP/apps/customer/test/customer_flow_test.dart: splash registration validates passwords then opens customer placeholder
+00:01 +8: /home/darulqutni/groceryMobileAPP/apps/customer/test/customer_flow_test.dart: splash registration validates passwords then opens customer placeholder
+00:02 +9: /home/darulqutni/groceryMobileAPP/apps/customer/test/customer_flow_test.dart: splash registration validates passwords then opens customer placeholder
+00:02 +10: /home/darulqutni/groceryMobileAPP/apps/customer/test/catalog_flow_test.dart: home detail cart badge qty selections deletion and persisted restore
+00:02 +11: /home/darulqutni/groceryMobileAPP/apps/customer/test/catalog_flow_test.dart: home detail cart badge qty selections deletion and persisted restore
+00:02 +12: /home/darulqutni/groceryMobileAPP/apps/customer/test/customer_flow_test.dart: missing reset endpoint shows soon without pretending email was sent
+00:03 +13: /home/darulqutni/groceryMobileAPP/apps/customer/test/catalog_flow_test.dart: search and category filter real products and small screen does not overflow
+00:03 +14: /home/darulqutni/groceryMobileAPP/apps/customer/test/catalog_flow_test.dart: search and category filter real products and small screen does not overflow
+00:03 +15: /home/darulqutni/groceryMobileAPP/apps/customer/test/customer_flow_test.dart: forms stay scrollable on small screen with keyboard and large text
+00:03 +16: /home/darulqutni/groceryMobileAPP/apps/customer/test/customer_flow_test.dart: invalid phone stays on registration without an API call
+00:03 +17: /home/darulqutni/groceryMobileAPP/apps/customer/test/customer_flow_test.dart: email sent opens email app through the external launcher
+00:03 +18: All tests passed!
