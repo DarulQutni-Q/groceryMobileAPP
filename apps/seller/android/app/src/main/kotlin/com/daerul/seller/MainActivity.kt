@@ -1,4 +1,4 @@
-package com.daclanari.seller
+package com.daerul.seller
 
 import io.flutter.embedding.android.FlutterActivity
 
