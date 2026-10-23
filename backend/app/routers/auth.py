@@ -10,20 +10,29 @@ from app.db.session import get_db
 from app.models.user import User
 from app.schemas.auth import (
     FcmTokenRequest,
+    ForgotPasswordRequest,
+    ForgotPasswordResponse,
     GoogleLoginRequest,
     LoginRequest,
     PhoneLoginRequest,
     RefreshRequest,
     RegisterRequest,
+    ResetPasswordRequest,
+    ResetPasswordResponse,
     TokenResponse,
     UserResponse,
+    VerifyOtpRequest,
+    VerifyOtpResponse,
 )
 from app.services.auth import (
     google_user,
     login_customer_phone,
     login_user,
     register_user,
+    request_otp,
+    reset_password,
     token_response,
+    verify_otp,
 )
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -93,3 +102,30 @@ def google(data: GoogleLoginRequest, request: Request, db: Session = Depends(get
     user = google_user(claims, db, data.role)
     request.state.user_id = str(user.id)
     return token_response(user, request.app.state.settings.jwt_secret.get_secret_value())
+
+
+@router.post("/forgot-password", response_model=ForgotPasswordResponse)
+def forgot_password(data: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    _, expires_in, masked_phone = request_otp(str(data.email), db)
+    return ForgotPasswordResponse(
+        message="Kode verifikasi telah dikirim",
+        email=str(data.email),
+        expires_in=expires_in,
+        masked_phone=masked_phone,
+    )
+
+
+@router.post("/verify-otp", response_model=VerifyOtpResponse)
+def verify_otp_endpoint(data: VerifyOtpRequest, request: Request, db: Session = Depends(get_db)):
+    secret = request.app.state.settings.jwt_secret.get_secret_value()
+    token = verify_otp(str(data.email), data.otp, db, secret)
+    return VerifyOtpResponse(message="Kode verifikasi valid", reset_token=token)
+
+
+@router.post("/reset-password", response_model=ResetPasswordResponse)
+def reset_password_endpoint(
+    data: ResetPasswordRequest, request: Request, db: Session = Depends(get_db)
+):
+    secret = request.app.state.settings.jwt_secret.get_secret_value()
+    reset_password(str(data.email), data.reset_token, data.password, db, secret)
+    return ResetPasswordResponse(message="Kata sandi berhasil diperbarui")
