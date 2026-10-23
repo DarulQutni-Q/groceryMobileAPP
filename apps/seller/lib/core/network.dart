@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grocery_shared/shared.dart';
 
-const sellerLoadLimit = Duration(seconds: 3);
+const sellerLoadLimit = Duration(seconds: 15);
 
 bool _connected(List<ConnectivityResult> values) =>
     values.any((value) => value != ConnectivityResult.none);
@@ -18,7 +20,13 @@ final connectionEventsProvider = Provider<Stream<bool>>(
 final connectionStateProvider = StreamProvider.autoDispose<bool>((ref) async* {
   final check = ref.watch(connectionCheckProvider);
   final changes = ref.watch(connectionEventsProvider);
-  yield await check().timeout(sellerLoadLimit);
+  bool initial = true;
+  try {
+    initial = await check().timeout(sellerLoadLimit);
+  } on TimeoutException {
+    initial = true;
+  }
+  yield initial;
   yield* changes;
 });
 
@@ -29,7 +37,14 @@ void configureSellerNetwork(ApiClient client, Future<bool> Function() check) {
         final generation =
             options.extra['sessionGeneration'] ?? client.storage.generation;
         try {
-          final online = await check().timeout(sellerLoadLimit);
+          bool online;
+          try {
+            online = await check().timeout(sellerLoadLimit);
+          } on TimeoutException {
+            // Jika connectivity check timeout (misal di HP fisik atau tunnel),
+            // jangan langsung gagalkan request HTTP; biarkan transport Dio mencoba.
+            online = true;
+          }
           if (generation != client.storage.generation) {
             throw DioException(
               requestOptions: options,

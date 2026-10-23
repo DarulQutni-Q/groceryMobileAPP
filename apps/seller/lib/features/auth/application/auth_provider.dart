@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
@@ -14,6 +15,10 @@ class AuthState {
   final AuthStatus status;
   final User? user;
   final String? message;
+}
+
+class AuthCancelledException implements Exception {
+  const AuthCancelledException();
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
@@ -39,6 +44,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       return true;
     } catch (error) {
       if (!_current(operation)) return false;
+      if (error is AuthCancelledException) {
+        state = const AuthState(AuthStatus.unauthenticated);
+        return false;
+      }
       state = AuthState(
         AuthStatus.error,
         message: error is AuthFailure ? error.message : authErrorMessage(error),
@@ -158,15 +167,21 @@ final googleTokenProvider = Provider<Future<String> Function()>((ref) {
         throw const AuthFailure('Google tidak mengirim token login');
       }
       return token;
-    } on GoogleSignInException {
+    } on GoogleSignInException catch (e, stack) {
+      debugPrint('GoogleSignInException: code=${e.code}, description=${e.description}, details=${e.details}\n$stack');
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        throw const AuthCancelledException();
+      }
       throw const AuthFailure(
         'Login Google gagal. Periksa konfigurasi atau coba lagi.',
       );
-    } on PlatformException {
+    } on PlatformException catch (e, stack) {
+      debugPrint('PlatformException on Google Sign-In: code=${e.code}, message=${e.message}, details=${e.details}\n$stack');
       throw const AuthFailure(
         'Login Google belum dikonfigurasi untuk perangkat ini',
       );
-    } on UnsupportedError {
+    } on UnsupportedError catch (e, stack) {
+      debugPrint('UnsupportedError on Google Sign-In: $e\n$stack');
       throw const AuthFailure('Login Google belum didukung di perangkat ini');
     }
   };
