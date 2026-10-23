@@ -60,6 +60,7 @@ class _AccountFormState extends ConsumerState<AccountForm> {
     bool required = false,
     bool password = false,
     bool email = false,
+    Key? fieldKey,
   }) => Padding(
     padding: const EdgeInsets.only(bottom: 14),
     child: Column(
@@ -68,7 +69,7 @@ class _AccountFormState extends ConsumerState<AccountForm> {
         Text(label, style: const TextStyle(color: Colors.black, fontSize: 14)),
         const SizedBox(height: 4),
         TextFormField(
-          key: Key(email ? 'email' : label),
+          key: fieldKey ?? Key(email ? 'email' : label),
           controller: controller,
           keyboardType: email ? TextInputType.emailAddress : TextInputType.text,
           textInputAction: password
@@ -144,16 +145,22 @@ class _AccountFormState extends ConsumerState<AccountForm> {
           ),
           const SizedBox(height: 16),
           _field(
-            'Nama Pemilik',
-            'Masukkan Nama Pemilik',
+            widget.register ? 'Nama Pemilik' : 'Nama Pemilik (Opsional)',
+            widget.register
+                ? 'Masukkan Nama Pemilik'
+                : 'Boleh dikosongkan untuk login',
             _nama,
             required: widget.register,
+            fieldKey: const Key('Nama Pemilik'),
           ),
           _field(
-            'Nama Toko',
-            'Masukkan Nama Toko',
+            widget.register ? 'Nama Toko' : 'Nama Toko (Opsional)',
+            widget.register
+                ? 'Masukkan Nama Toko'
+                : 'Boleh dikosongkan untuk login',
             _toko,
             required: widget.register,
+            fieldKey: const Key('Nama Toko'),
           ),
           _field('Email', 'Masukkan alamat email', _email, email: true),
           _field(

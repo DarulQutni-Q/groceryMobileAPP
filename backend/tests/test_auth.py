@@ -160,7 +160,7 @@ def test_health_checks_database_and_adds_request_id(client):
     assert result.headers["x-request-id"]
 
 
-def test_google_verifies_audience_and_does_not_link_email_accounts(client, account, monkeypatch):
+def test_google_verifies_audience_and_links_registered_email_account(client, account, monkeypatch):
     client.post("/auth/register", json=account)
     client.app.state.settings.google_client_id = "configured-client-id"
 
@@ -171,9 +171,24 @@ def test_google_verifies_audience_and_does_not_link_email_accounts(client, accou
 
     monkeypatch.setattr("google.oauth2.id_token.verify_oauth2_token", verified)
     result = client.post("/auth/google", json={"id_token": "signed-google-token"})
-    assert result.status_code == 400
-    assert "metode login semula" in result.json()["detail"]
+    assert result.status_code == 200
+    data = result.json()
+    assert "access_token" in data
+    profile = client.get(
+        "/auth/me", headers={"Authorization": f"Bearer {data['access_token']}"}
+    ).json()
+    assert profile["email"] == account["email"]
+    assert profile["nama"] == account["nama_pemilik"]
 
+    def verified_mismatched(token, transport, audience):
+        return {"sub": "google-account-2", "email": account["email"], "email_verified": True}
+
+    monkeypatch.setattr("google.oauth2.id_token.verify_oauth2_token", verified_mismatched)
+    mismatched = client.post(
+        "/auth/google", json={"id_token": "signed-google-token", "role": "customer"}
+    )
+    assert mismatched.status_code == 401
+    assert "peran akun" in mismatched.json()["detail"]
 
 def test_fcm_and_password_are_persisted_safely(client, account, tmp_path):
     import sqlite3

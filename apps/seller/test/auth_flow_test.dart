@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:seller/app.dart';
 import 'package:seller/features/auth/application/auth_provider.dart';
+import 'package:seller/features/auth/presentation/account_form.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -79,6 +80,54 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Login Google belum dikonfigurasi'), findsOneWidget);
       expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'AccountForm shows optional labels in login mode and required labels in register mode',
+    (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            apiBaseUrlProvider.overrideWithValue('https://api.example.com'),
+          ],
+          child: const MaterialApp(
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: AccountForm(register: false),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Login mode
+      expect(find.text('Nama Pemilik (Opsional)'), findsOneWidget);
+      expect(find.text('Nama Toko (Opsional)'), findsOneWidget);
+      expect(find.text('Boleh dikosongkan untuk login'), findsNWidgets(2));
+
+      // Register mode
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            apiBaseUrlProvider.overrideWithValue('https://api.example.com'),
+          ],
+          child: const MaterialApp(
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: AccountForm(register: true),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Nama Pemilik'), findsOneWidget);
+      expect(find.text('Nama Toko'), findsOneWidget);
+      expect(find.text('Masukkan Nama Pemilik'), findsOneWidget);
+      expect(find.text('Masukkan Nama Toko'), findsOneWidget);
     },
   );
 }

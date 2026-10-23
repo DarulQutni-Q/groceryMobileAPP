@@ -18,6 +18,9 @@ def client(monkeypatch, tmp_path):
     monkeypatch.setenv("GOOGLE_CLIENT_ID", "")
     monkeypatch.setenv("AUTO_CREATE_TABLES", "true")
     monkeypatch.setenv("UPLOADS_DIR", str(tmp_path / "uploads"))
+    monkeypatch.setenv("CORS_ORIGINS", "[]")
+    if os.environ.get("ENV") is None:
+        monkeypatch.setenv("ENV", "prod")
     with TestClient(create_app()) as http:
         yield http
 

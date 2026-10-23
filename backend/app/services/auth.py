@@ -82,8 +82,14 @@ def google_user(claims: dict, db: Session, role: str = "seller") -> User:
         if user.role != role:
             raise HTTPException(401, "Gunakan aplikasi yang sesuai dengan peran akun")
         return user
-    if db.scalar(select(User).where(User.email == email)):
-        raise HTTPException(400, "Email sudah terdaftar. Gunakan metode login semula.")
+    existing = db.scalar(select(User).where(User.email == email))
+    if existing:
+        if existing.role != role:
+            raise HTTPException(401, "Gunakan aplikasi yang sesuai dengan peran akun")
+        existing.google_subject = subject
+        db.commit()
+        db.refresh(existing)
+        return existing
     user = User(
         nama=claims.get("name") or email.split("@")[0],
         email=email,
