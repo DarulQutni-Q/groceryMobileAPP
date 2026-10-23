@@ -68,6 +68,15 @@ def create_app() -> FastAPI:
     app.add_middleware(ConfiguredCors)
     app.add_middleware(UploadLimit)
     app.add_middleware(RequestLog)
+    @app.get("/")
+    def root():
+        return {
+            "app": "Daclanari Grocery API",
+            "status": "online",
+            "health": "/health",
+            "version": "1.0.0",
+        }
+
     app.add_api_route("/health", health, methods=["GET"])
     app.add_api_route("/uploads/{filename}", photo_file, methods=["GET"], include_in_schema=False)
     return app
