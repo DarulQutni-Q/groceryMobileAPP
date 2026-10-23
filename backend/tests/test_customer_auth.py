@@ -71,7 +71,7 @@ def test_admin_role_is_rejected_before_account_creation(customer_client):
         assert db.scalar(select(func.count()).select_from(User)) == 0
 
 
-def test_customer_google_role_and_existing_account_are_immutable(customer_client, monkeypatch):
+def test_customer_google_role_can_upgrade_to_seller(customer_client, monkeypatch):
     client = customer_client
     client.app.state.settings.google_client_id = "test-client"
     monkeypatch.setattr(
@@ -91,11 +91,14 @@ def test_customer_google_role_and_existing_account_are_immutable(customer_client
     )
     assert profile.json()["role"] == "customer"
     assert profile.json()["nama"] == "Pembeli Google"
-    assert client.post("/auth/google", json={**payload, "role": "seller"}).status_code == 401
-    assert client.post("/auth/google", json=payload).status_code == 200
+    upgraded = client.post("/auth/google", json={**payload, "role": "seller"})
+    assert upgraded.status_code == 200
+    upgraded_profile = client.get(
+        "/auth/me", headers={"Authorization": "Bearer " + upgraded.json()["access_token"]}
+    ).json()
+    assert upgraded_profile["role"] == "seller"
     with client.app.state.sessions() as db:
-        assert db.scalar(select(func.count()).select_from(Toko)) == 0
-
+        assert db.scalar(select(func.count()).select_from(Toko)) == 1
 
 def test_customer_email_login_is_explicit_and_seller_client_does_not_accept_it(customer_client):
     client = customer_client

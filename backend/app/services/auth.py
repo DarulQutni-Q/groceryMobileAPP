@@ -6,7 +6,7 @@ from uuid import UUID
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.security import (
     create_access_token,
@@ -77,16 +77,41 @@ def google_user(claims: dict, db: Session, role: str = "seller") -> User:
     email = claims.get("email", "").lower()
     if not subject or not email or claims.get("email_verified") is not True:
         raise HTTPException(401, "Akun Google belum terverifikasi")
-    user = db.scalar(select(User).where(User.google_subject == subject))
+    user = db.scalar(
+        select(User).options(joinedload(User.toko)).where(User.google_subject == subject)
+    )
     if user:
         if user.role != role:
+            if role == "seller":
+                user.role = "seller"
+                if not user.toko:
+                    create_store(user, db)
+                db.commit()
+                db.refresh(user)
+                return user
             raise HTTPException(401, "Gunakan aplikasi yang sesuai dengan peran akun")
+        if role == "seller" and not user.toko:
+            create_store(user, db)
+            db.commit()
+            db.refresh(user)
         return user
-    existing = db.scalar(select(User).where(User.email == email))
+    existing = db.scalar(
+        select(User).options(joinedload(User.toko)).where(User.email == email)
+    )
     if existing:
         if existing.role != role:
+            if role == "seller":
+                existing.role = "seller"
+                existing.google_subject = subject
+                if not existing.toko:
+                    create_store(existing, db)
+                db.commit()
+                db.refresh(existing)
+                return existing
             raise HTTPException(401, "Gunakan aplikasi yang sesuai dengan peran akun")
         existing.google_subject = subject
+        if role == "seller" and not existing.toko:
+            create_store(existing, db)
         db.commit()
         db.refresh(existing)
         return existing

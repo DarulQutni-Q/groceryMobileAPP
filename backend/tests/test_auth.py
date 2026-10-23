@@ -242,6 +242,43 @@ def test_verified_google_creates_seller_and_reuses_stable_subject(client, monkey
     )
 
 
+def test_google_login_upgrades_customer_to_seller_and_creates_store(client, monkeypatch):
+    client.app.state.settings.google_client_id = "configured-client-id"
+    registered = client.post(
+        "/auth/register",
+        json={
+            "email": "custupgrade@example.com",
+            "password": "Password123!",
+            "role": "customer",
+            "nama_pemilik": "Budi Customer",
+        },
+    )
+    assert registered.status_code == 200
+
+    claims = {
+        "sub": "google-customer-upgrade-sub",
+        "email": "custupgrade@example.com",
+        "email_verified": True,
+        "name": "Budi Customer",
+    }
+    monkeypatch.setattr("google.oauth2.id_token.verify_oauth2_token", lambda *args: claims)
+    result = client.post("/auth/google", json={"id_token": "token", "role": "seller"})
+    assert result.status_code == 200
+    token = result.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    profile = client.get("/auth/me", headers=headers).json()
+    assert profile["role"] == "seller"
+    assert profile["email"] == "custupgrade@example.com"
+
+    toko = client.get("/toko/me", headers=headers)
+    assert toko.status_code == 200
+    assert toko.json()["nama"] == "Toko Budi Customer"
+
+    # Second login with same google subject reuses upgraded seller
+    second = client.post("/auth/google", json={"id_token": "token", "role": "seller"})
+    assert second.status_code == 200
+
 def test_unverified_google_email_is_rejected(client, monkeypatch):
     client.app.state.settings.google_client_id = "configured-client-id"
     monkeypatch.setattr(
