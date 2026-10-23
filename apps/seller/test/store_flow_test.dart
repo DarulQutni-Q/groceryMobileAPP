@@ -249,4 +249,19 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('toko screen status action chip toggles store status', (
+    tester,
+  ) async {
+    await open(tester);
+    await tester.tap(find.byKey(const Key('nav-toko')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('toko-status-action')), findsOneWidget);
+    expect(find.text('Toko sedang tutup'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('toko-status-action')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Toko sedang buka'), findsOneWidget);
+  });
 }
