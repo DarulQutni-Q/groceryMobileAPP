@@ -73,13 +73,37 @@ class AuthApi {
         if (role != 'seller') 'role': role,
       });
 
-  Future<void> requestPasswordReset(String email) async {
-    await client.dio.post<void>(
+  Future<Map<String, dynamic>> forgotPassword(String email) async {
+    final response = await client.dio.post<Map<String, dynamic>>(
       '/auth/forgot-password',
       data: {'email': email},
       options: Options(extra: {'skipAuth': true}),
     );
+    return response.data!;
   }
+
+  Future<String> verifyOtp(String email, String otp) async {
+    final response = await client.dio.post<Map<String, dynamic>>(
+      '/auth/verify-otp',
+      data: {'email': email, 'otp': otp},
+      options: Options(extra: {'skipAuth': true}),
+    );
+    return response.data!['reset_token'] as String;
+  }
+
+  Future<void> resetPassword({
+    required String email,
+    required String resetToken,
+    required String password,
+  }) async {
+    await client.dio.post<void>(
+      '/auth/reset-password',
+      data: {'email': email, 'reset_token': resetToken, 'password': password},
+      options: Options(extra: {'skipAuth': true}),
+    );
+  }
+
+  Future<void> requestPasswordReset(String email) => forgotPassword(email).then((_) {});
 
   Future<Tokens> refreshToken(String token) =>
       _session('/auth/refresh', {'refresh_token': token});

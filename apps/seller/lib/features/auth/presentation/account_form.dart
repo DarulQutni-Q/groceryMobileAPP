@@ -11,10 +11,12 @@ class AccountForm extends ConsumerStatefulWidget {
     required this.register,
     this.onRegistered,
     this.onSignUp,
+    this.onForgotPassword,
   });
   final bool register;
   final VoidCallback? onRegistered;
   final VoidCallback? onSignUp;
+  final VoidCallback? onForgotPassword;
 
   @override
   ConsumerState<AccountForm> createState() => _AccountFormState();
@@ -164,7 +166,7 @@ class _AccountFormState extends ConsumerState<AccountForm> {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () => showAuthMessage(context, 'Segera hadir'),
+                onPressed: widget.onForgotPassword,
                 child: const Text(
                   'Lupa kata sandi?',
                   style: TextStyle(color: Color(0xFF1B5E20)),

@@ -5,6 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/seller_theme.dart';
 import 'features/auth/application/auth_provider.dart';
 import 'features/auth/presentation/account_form.dart';
+import 'features/auth/presentation/forgot_password_screen.dart';
+import 'features/auth/presentation/otp_screen.dart';
+import 'features/auth/presentation/new_password_screen.dart';
 import 'features/auth/presentation/register_screen.dart';
 import 'shared/auth_layout.dart';
 import 'features/store/presentation/seller_shell.dart';
@@ -33,6 +36,9 @@ class AuthFlow extends ConsumerStatefulWidget {
 
 class _AuthFlowState extends ConsumerState<AuthFlow> {
   String _page = 'splash';
+  String _resetEmail = '';
+  String? _resetMaskedPhone;
+  String _resetToken = '';
 
   @override
   void initState() {
@@ -105,6 +111,30 @@ class _AuthFlowState extends ConsumerState<AuthFlow> {
         onBack: () => setState(() => _page = 'login'),
         onComplete: () => setState(() => _page = 'home'),
       ),
+      'forgot_password' => ForgotPasswordScreen(
+        onBack: () => setState(() => _page = 'login'),
+        onOtpSent: (email, maskedPhone) => setState(() {
+          _resetEmail = email;
+          _resetMaskedPhone = maskedPhone;
+          _page = 'otp';
+        }),
+      ),
+      'otp' => OtpScreen(
+        email: _resetEmail,
+        maskedPhone: _resetMaskedPhone,
+        onBack: () => setState(() => _page = 'forgot_password'),
+        onVerified: (email, token) => setState(() {
+          _resetEmail = email;
+          _resetToken = token;
+          _page = 'new_password';
+        }),
+      ),
+      'new_password' => NewPasswordScreen(
+        email: _resetEmail,
+        resetToken: _resetToken,
+        onBack: () => setState(() => _page = 'otp'),
+        onSuccess: () => setState(() => _page = 'login'),
+      ),
       'home' => _home(),
       _ => AuthLayout(
         title: 'Login ke Toko',
@@ -112,6 +142,7 @@ class _AuthFlowState extends ConsumerState<AuthFlow> {
         child: AccountForm(
           register: false,
           onSignUp: () => setState(() => _page = 'register'),
+          onForgotPassword: () => setState(() => _page = 'forgot_password'),
         ),
       ),
     };
