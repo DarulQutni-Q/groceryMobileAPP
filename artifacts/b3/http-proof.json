@@ -1,0 +1,223 @@
+{
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/register",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/register",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/register",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/toko/me/status",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/produk",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/alamat",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "POST",
+      "path": "/alamat",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "GET",
+      "path": "/alamat",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/alamat",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/alamat/2fdec6b4-cf80-451f-8cbf-d1b550380266",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/alamat/2fdec6b4-cf80-451f-8cbf-d1b550380266/jadikan-utama",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/alamat/cb2096c3-d5e9-4978-9a1b-310ce27a6806/jadikan-utama",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/alamat/cb2096c3-d5e9-4978-9a1b-310ce27a6806",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "method": "DELETE",
+      "path": "/alamat/cb2096c3-d5e9-4978-9a1b-310ce27a6806",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "method": "PATCH",
+      "path": "/alamat/cb2096c3-d5e9-4978-9a1b-310ce27a6806/jadikan-utama",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "method": "DELETE",
+      "path": "/alamat/2fdec6b4-cf80-451f-8cbf-d1b550380266",
+      "expected": 204,
+      "actual": 204
+    },
+    {
+      "method": "POST",
+      "path": "/checkout",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "method": "POST",
+      "path": "/checkout",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "method": "GET",
+      "path": "/pesanan",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/checkout",
+      "expected": 422,
+      "actual": 422
+    },
+    {
+      "method": "POST",
+      "path": "/checkout",
+      "expected": 422,
+      "actual": 422
+    },
+    {
+      "method": "POST",
+      "path": "/checkout",
+      "expected": 422,
+      "actual": 422
+    },
+    {
+      "method": "POST",
+      "path": "/checkout/preview",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "/checkout",
+      "expected": 503,
+      "actual": 503
+    },
+    {
+      "method": "POST",
+      "path": "/checkout",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "POST",
+      "path": "/checkout",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "GET",
+      "path": "/pembayaran/827ae4d8-a014-4964-82a0-a29661ce6e57/status",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/pembayaran/827ae4d8-a014-4964-82a0-a29661ce6e57/status",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "method": "GET",
+      "path": "/pesanan/d63356ef-6743-4b9d-a617-f7adddd50330",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "/pesanan/d63356ef-6743-4b9d-a617-f7adddd50330",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "method": "POST",
+      "path": "/webhook/xendit",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "method": "GET",
+      "path": "/alamat",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "method": "GET",
+      "path": "/pembayaran/827ae4d8-a014-4964-82a0-a29661ce6e57/status",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "method": "POST",
+      "path": "/checkout",
+      "expected": 401,
+      "actual": 401
+    }
+  ],
+  "errors_500": 0,
+  "qris": "503 expected: sandbox key absent",
+  "callback": "unsigned rejected; signed PAID covered by controlled transport HTTP tests"
+}

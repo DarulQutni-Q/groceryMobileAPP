@@ -1,6 +1,6 @@
 # Rancangan Fase A3
 
-Status: fungsional A3 selesai dan terverifikasi 20 Oktober 2026. Pengguna meminta "continue A3" setelah A2 dipush ke main pada b876f2b. Batas kesamaan visual dicatat di bawah dan di handoff.
+Status: aktif, pengguna meminta "continue A3" setelah A2 dipush ke main pada b876f2b. Keputusan sebelumnya tetap berlaku tanpa persetujuan ulang.
 
 ## Sumber dan keadaan aktual
 
@@ -67,14 +67,3 @@ Filter tab: Baru hanya `baru`; Diproses mencakup `diproses/dikemas/diantar`; Sel
 Implementasi memakai siklus satu tes HTTP/widget gagal lalu kode minimum sampai lulus per perilaku. Setelah itu jalankan seluruh regresi A1, analyzer/lint/build/import/Compose, acceptance curl, run Android, dan screenshot tiga tab/detail/modal/sheet. Tes PostgreSQL nyata diperlukan karena SQLite tidak membuktikan row locking.
 
 Push notification, pembayaran, checkout/stok transaksional, laporan nyata dan customer app tetap di luar cakupan. Tes lama tidak dilonggarkan untuk menutupi regresi. ENERGY 1 / RHYTHM 1 / MOTION 1 mengikuti referensi operasional: kartu berulang agar pesanan mudah dibandingkan; warna membedakan status; animasi hanya transisi Material.
-
-## Hasil pelaksanaan
-
-- Model, migrasi 0003, tujuh endpoint, shared API/model, Riverpod dan UI pesanan sudah terhubung melalui entry point produksi.
-- 41 tes backend, 10 shared dan 17 seller lulus; analyzer shared/seller bersih. Tes PostgreSQL nyata membuktikan snapshot setelah hapus produk, UTC dan konflik transisi. Retry kode, biaya invalid dan overflow diuji tanpa data parsial.
-- Acceptance curl membuat tiga dummy dan memeriksa skenario wajib. Guard ENV prod diperiksa melalui Uvicorn pada image yang sama: HTTP 404 dan jumlah pesanan tidak berubah.
-- Journey Android A3 lulus dan menghasilkan screenshot 01-12. APK normal dibangun/diinstall, force-stop dan buka ulang memulihkan sesi/riwayat, screenshot 13. Alembic head/check, import, ruff dan Compose lulus; source container cocok dengan host.
-- Review independen backend/seller tidak menyisakan P1/P2. Temuan refresh/lifecycle diperbaiki dengan tes regresi. Assertion placeholder A2 dipindahkan ke Laporan A4 mengikuti perubahan kontrak; Pesanan diuji terpisah.
-- UI belum pixel-identik dan beberapa gambar acuan belum tersedia. Build/run iOS, HP fisik, panggilan pembeli nyata dan APK staging/prod belum diuji.
-
-Rincian endpoint/curl ada di `A3_API.md`; bukti ada di `artifacts/a3/README.md`; kelanjutan ada di `handoff.md`.

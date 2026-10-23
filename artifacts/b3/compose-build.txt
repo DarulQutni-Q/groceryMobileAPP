@@ -1,0 +1,53 @@
+time="2026-10-21T17:39:39+07:00" level=warning msg="buildx Docker CLI plugin not found: falling back to the classic builder. BuildKit-only build features (multi-arch, secrets, ssh, additional contexts, ...) will not be available"
+ Image grocery-a1-backend Building
+ Image grocery-a1-backend Building
+Sending build context to Docker daemon  131.9kB
+
+Step 1/11 : FROM python:3.14-slim
+ ---> a2b82f3c4855
+Step 2/11 : WORKDIR /srv
+ ---> Using cache
+ ---> c72f8993d38f
+Step 3/11 : COPY requirements.lock .
+ ---> Using cache
+ ---> fd774a80d16d
+Step 4/11 : RUN pip install --no-cache-dir -r requirements.lock
+ ---> Using cache
+ ---> e5d31fea515e
+Step 5/11 : COPY alembic.ini .
+ ---> Using cache
+ ---> d1729a7100ba
+Step 6/11 : COPY app ./app
+ ---> e02e59d01a9c
+Step 7/11 : RUN useradd --create-home grocery && mkdir /srv/uploads && chown grocery:grocery /srv/uploads
+ ---> Running in 63c14046c1db
+ ---> Removed intermediate container 63c14046c1db
+ ---> e8558b8a1d73
+Step 8/11 : USER grocery
+ ---> Running in 080a64835c54
+ ---> Removed intermediate container 080a64835c54
+ ---> 873fdc527ca9
+Step 9/11 : EXPOSE 8000
+ ---> Running in 5558b9fbc17a
+ ---> Removed intermediate container 5558b9fbc17a
+ ---> a17fd79279da
+Step 10/11 : CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log"]
+ ---> Running in ed599424cdc4
+ ---> Removed intermediate container ed599424cdc4
+ ---> 9da155351f98
+Step 11/11 : LABEL com.docker.compose.image.builder=classic
+ ---> Running in e09e8508f794
+ ---> Removed intermediate container e09e8508f794
+ ---> 99d9e1b02dfb
+Successfully built 99d9e1b02dfb
+Successfully tagged grocery-a1-backend:latest
+ Image grocery-a1-backend Built
+ Image grocery-a1-backend Built
+ Container grocery-a1-db-1 Running
+ Container grocery-a1-backend-1 Recreate
+ Container grocery-a1-backend-1 Recreated
+ Container grocery-a1-db-1 Waiting
+ Container grocery-a1-db-1 Healthy
+ Container grocery-a1-backend-1 Starting
+ Container grocery-a1-backend-1 Started
+

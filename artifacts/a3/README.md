@@ -16,15 +16,9 @@ Pengujian 20 Oktober 2026 memakai backend Docker/PostgreSQL lokal dan emulator A
 | [10-modal-lainnya.png](10-modal-lainnya.png) | Alasan Lainnya dengan teks terisi |
 | [11-pesanan-kosong.png](11-pesanan-kosong.png) | Empty state Baru setelah seluruh pesanan ditangani |
 | [12-pesanan-sesi-pulih.png](12-pesanan-sesi-pulih.png) | Riwayat setelah rekreasi app dengan sesi tersimpan |
-| [13-cold-start.png](13-cold-start.png) | APK normal setelah force-stop dan buka ulang, riwayat tiga pesanan tetap ada |
-| [verification.txt](verification.txt) | Gate 68 tes, analyzer, build dan perangkat |
-| [cold-start.txt](cold-start.txt) | Perintah, hasil dan hash APK normal |
 | [backend-smoke.txt](backend-smoke.txt) | Acceptance curl tiga dummy, filter, timeline, alasan, ownership dan snapshot |
 | [prod-guard.txt](prod-guard.txt) | Endpoint dummy 404 dan tidak menambah data saat ENV=prod |
 | [runtime-checks.txt](runtime-checks.txt) | Compose, Alembic head/check, import serta hash source container |
-| [git-log.txt](git-log.txt) | Empat commit implementasi A3, sebelum commit bukti/handoff ini |
-
-68 tes unit/widget/HTTP lulus: backend 41, shared 10, seller 17. Analyzer shared/seller bersih; ruff/import/Compose/Alembic lulus. Journey Android A3 lulus pada backend nyata. APK normal berhasil dibangun, dipasang dan dibuka ulang tanpa login ulang.
 
 Customer pada pesanan pengujian null sesuai fase. Nama/telepon memakai `-` dan tombol telepon nonaktif. Pengujian tidak membuat pembeli fiktif, menjalankan pembayaran, mengurangi stok atau mengirim push.
 

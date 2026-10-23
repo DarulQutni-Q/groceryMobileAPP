@@ -82,9 +82,6 @@ class Xendit:
             raise HTTPException(503, "Status invoice belum pasti, coba periksa lagi nanti")
         return values[0]
 
-    def get_invoice(self, invoice_id):
-        return self.request("GET", f"/v2/invoices/{invoice_id}")
-
 
 def get_gateway(request: Request):
     return lambda metode: Xendit(request.app.state.settings, metode)

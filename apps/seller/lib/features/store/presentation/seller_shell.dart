@@ -208,7 +208,7 @@ class _SellerShellState extends ConsumerState<SellerShell>
       4 => TokoScreen(userId: widget.user.id, toko: state.toko!),
       _ => Center(
         child: Text(
-          '${labels[_tab]}\nTahap A4',
+          '${labels[_tab]}\nTahap ${_tab == 3 ? 'A3' : 'A4'}',
           textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 24),
         ),

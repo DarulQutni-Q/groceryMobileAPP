@@ -13,6 +13,8 @@ from app.main import create_app
 def client(monkeypatch, tmp_path):
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path / 'auth.db'}")
     monkeypatch.setenv("JWT_SECRET", secrets.token_urlsafe(48))
+    monkeypatch.setenv("XENDIT_API_KEY", "")
+    monkeypatch.setenv("XENDIT_WEBHOOK_TOKEN", "")
     monkeypatch.setenv("GOOGLE_CLIENT_ID", "")
     monkeypatch.setenv("AUTO_CREATE_TABLES", "true")
     monkeypatch.setenv("UPLOADS_DIR", str(tmp_path / "uploads"))
@@ -44,6 +46,8 @@ def pg_client(monkeypatch, tmp_path):
     url = make_url(raw).update_query_dict({"options": f"-csearch_path={schema}"})
     monkeypatch.setenv("DATABASE_URL", url.render_as_string(hide_password=False))
     monkeypatch.setenv("JWT_SECRET", secrets.token_urlsafe(48))
+    monkeypatch.setenv("XENDIT_API_KEY", "")
+    monkeypatch.setenv("XENDIT_WEBHOOK_TOKEN", "")
     monkeypatch.setenv("AUTO_CREATE_TABLES", "true")
     monkeypatch.setenv("UPLOADS_DIR", str(tmp_path / "uploads"))
     try:

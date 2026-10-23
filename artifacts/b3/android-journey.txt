@@ -1,0 +1,160 @@
+Resolving dependencies...
+Downloading packages...
+  code_assets 1.2.1 (2.1.0 available)
+  hooks 2.0.2 (2.2.0 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.3 (1.19.0 available)
+  objective_c 9.5.0 (9.6.2 available)
+  record_use 0.6.0 (1.1.1 available)
+  test_api 0.7.12 (0.7.15 available)
+  vector_math 2.4.0 (2.4.3 available)
+Got dependencies!
+8 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Running Gradle task 'assembleDevDebug'...                          22.2s
+✓ Built build/app/outputs/flutter-apk/app-dev-debug.apk
+Installing build/app/outputs/flutter-apk/app-dev-debug.apk...      1,295ms
+I/rt_customer.dev(24428): Compiler allocated 5174KB to compile void android.view.ViewRootImpl.performTraversals()
+I/Choreographer(24428): Skipped 41 frames!  The application may be doing too much work on its main thread.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+VMServiceFlutterDriver: Connecting to Flutter application at http://127.0.0.1:38211/fucSvfbtp_o=/
+VMServiceFlutterDriver: Isolate found with number: 1312007529928043
+VMServiceFlutterDriver: Isolate 1312007529928043 is runnable.
+VMServiceFlutterDriver: Isolate is paused at start.
+VMServiceFlutterDriver: Attempting to resume isolate
+I/flutter (24428): 00:00 +0: live B3 address checkout COD success and empty cart
+VMServiceFlutterDriver: Connected to Flutter application.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/EGL_emulation(24428): app_time_stats: avg=466.90ms min=323.43ms max=660.70ms count=3
+D/ProfileInstaller(24428): Installing profile for com.gardenmart.gardenmart_customer.dev
+D/EGL_emulation(24428): app_time_stats: avg=96.92ms min=42.63ms max=180.74ms count=11
+D/EGL_emulation(24428): app_time_stats: avg=79.77ms min=6.35ms max=204.47ms count=13
+VMServiceFlutterDriver: request_data message is taking a long time to complete...
+D/EGL_emulation(24428): app_time_stats: avg=87.57ms min=12.31ms max=119.42ms count=12
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:2bb02f99: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(24428): showSoftInput() view=io.flutter.embedding.android.FlutterView{5d07082 VFE...... .F....ID 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:acc65f0: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(24428): showSoftInput() view=io.flutter.embedding.android.FlutterView{5d07082 VFE...... .F....ID 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:693bc6b2: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(24428): showSoftInput() view=io.flutter.embedding.android.FlutterView{5d07082 VFE...... .F....ID 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:5bd973ed: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(24428): showSoftInput() view=io.flutter.embedding.android.FlutterView{5d07082 VFE...... .F....ID 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/EGL_emulation(24428): app_time_stats: avg=3397.75ms min=716.86ms max=6078.64ms count=2
+W/RemoteInputConnectionImpl(24428): getSurroundingText on inactive InputConnection
+W/rt_customer.dev(24428): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/rt_customer.dev(24428): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:d60afe57: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(24428): showSoftInput() view=io.flutter.embedding.android.FlutterView{5d07082 VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:a64b9445: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(24428): showSoftInput() view=io.flutter.embedding.android.FlutterView{5d07082 VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+W/RemoteInputConnectionImpl(24428): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(24428): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(24428): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(24428): requestCursorUpdates on inactive InputConnection
+D/InsetsController(24428): show(ime(), fromIme=true)
+W/InteractionJankMonitor(24428): Initializing without READ_DEVICE_CONFIG permission. enabled=true, interval=1, missedFrameThreshold=3, frameTimeThreshold=64, package=com.gardenmart.gardenmart_customer.dev
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/InsetsController(24428): show(ime(), fromIme=true)
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:acc65f0: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/EGL_emulation(24428): app_time_stats: avg=80.28ms min=14.64ms max=148.53ms count=14
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(24428): requestCursorUpdates on inactive InputConnection
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(24428): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(24428): getSurroundingText on inactive InputConnection
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+W/RemoteInputConnectionImpl(24428): getSurroundingText on inactive InputConnection
+W/RemoteInputConnectionImpl(24428): requestCursorUpdates on inactive InputConnection
+W/RemoteInputConnectionImpl(24428): requestCursorUpdates on inactive InputConnection
+D/InsetsController(24428): show(ime(), fromIme=true)
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:5bd973ed: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/InputConnectionAdaptor(24428): The input method toggled cursor monitoring on
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/InputConnectionAdaptor(24428): The input method toggled cursor monitoring off
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/InputConnectionAdaptor(24428): The input method toggled cursor monitoring on
+D/InsetsController(24428): show(ime(), fromIme=true)
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:d60afe57: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/InsetsController(24428): show(ime(), fromIme=true)
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:a64b9445: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:2bb02f99: onShown
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:730daaa1: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(24428): showSoftInput() view=io.flutter.embedding.android.FlutterView{5d07082 VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:b6d867a5: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager(24428): showSoftInput() view=io.flutter.embedding.android.FlutterView{5d07082 VFE...... .F...... 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/InputConnectionAdaptor(24428): The input method toggled cursor monitoring on
+D/InputConnectionAdaptor(24428): The input method toggled cursor monitoring off
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:bcd87086: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+D/InputConnectionAdaptor(24428): The input method toggled cursor monitoring on
+D/InsetsController(24428): show(ime(), fromIme=true)
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:730daaa1: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/InsetsController(24428): show(ime(), fromIme=true)
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:b6d867a5: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+D/InsetsController(24428): hide(ime(), fromIme=true)
+D/InputConnectionAdaptor(24428): The input method toggled cursor monitoring off
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+W/WindowOnBackDispatcher(24428): sendCancelIfRunning: isInProgress=false callback=ImeCallback=ImeOnBackInvokedCallback@82578374 Callback=android.window.IOnBackInvokedCallback$Stub$Proxy@7e6b3e7
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/EGL_emulation(24428): app_time_stats: avg=27.00ms min=8.52ms max=250.85ms count=37
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:e7f6f68b: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_ON_ANIMATION_STATE_CHANGED fromUser false
+I/ImeTracker(24428): com.gardenmart.gardenmart_customer.dev:bcd87086: onHidden
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/FlutterJNI(24428): Sending viewport metrics to the engine.
+D/EGL_emulation(24428): app_time_stats: avg=130.62ms min=30.19ms max=267.62ms count=9
+D/EGL_emulation(24428): app_time_stats: avg=104.99ms min=10.82ms max=190.54ms count=10
+D/EGL_emulation(24428): app_time_stats: avg=721.86ms min=22.21ms max=1795.66ms count=3
+D/EGL_emulation(24428): app_time_stats: avg=144.44ms min=31.93ms max=266.18ms count=7
+D/EGL_emulation(24428): app_time_stats: avg=111.41ms min=43.08ms max=262.93ms count=10
+D/EGL_emulation(24428): app_time_stats: avg=1384.18ms min=1384.18ms max=1384.18ms count=1
+D/EGL_emulation(24428): app_time_stats: avg=95.64ms min=13.57ms max=240.96ms count=11
+D/EGL_emulation(24428): app_time_stats: avg=1665.99ms min=1665.99ms max=1665.99ms count=1
+W/rt_customer.dev(24428): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/rt_customer.dev(24428): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+D/EGL_emulation(24428): app_time_stats: avg=108.40ms min=17.62ms max=266.70ms count=10
+D/EGL_emulation(24428): app_time_stats: avg=1432.96ms min=1432.96ms max=1432.96ms count=1
+D/EGL_emulation(24428): app_time_stats: avg=149.50ms min=114.04ms max=263.14ms count=8
+D/EGL_emulation(24428): app_time_stats: avg=89.16ms min=14.72ms max=136.87ms count=12
+D/EGL_emulation(24428): app_time_stats: avg=1917.07ms min=1917.07ms max=1917.07ms count=1
+W/rt_customer.dev(24428): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/rt_customer.dev(24428): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+D/EGL_emulation(24428): app_time_stats: avg=257.21ms min=110.46ms max=670.64ms count=5
+W/WindowOnBackDispatcher(24428): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@4807c75
+E/FrameTracker(24428): force finish cuj, time out: J<IME_INSETS_SHOW_ANIMATION::0@1@com.gardenmart.gardenmart_customer.dev>
+D/EGL_emulation(24428): app_time_stats: avg=73.50ms min=11.94ms max=117.69ms count=14
+E/FrameTracker(24428): force finish cuj, time out: J<IME_INSETS_HIDE_ANIMATION::1@1@com.gardenmart.gardenmart_customer.dev>
+D/EGL_emulation(24428): app_time_stats: avg=2666.41ms min=2666.41ms max=2666.41ms count=1
+D/EGL_emulation(24428): app_time_stats: avg=136.51ms min=112.85ms max=265.43ms count=8
+I/flutter (24428): 00:19 +1: (tearDownAll)
+I/flutter (24428): 00:19 +2: All tests passed!
+All tests passed.

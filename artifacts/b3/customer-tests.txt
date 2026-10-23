@@ -1,0 +1,28 @@
+00:00 +0: loading /home/darulqutni/groceryMobileAPP/apps/customer/test/auth_state_test.dart
+00:00 +0: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: expired checkout clears the account resume entry
+00:00 +1: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: expired checkout clears the account resume entry
+00:00 +2: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: expired checkout clears the account resume entry
+00:00 +3: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: expired checkout clears the account resume entry
+00:00 +4: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: expired checkout clears the account resume entry
+00:00 +5: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: expired checkout clears the account resume entry
+00:00 +6: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: expired checkout clears the account resume entry
+00:00 +7: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: expired checkout clears the account resume entry
+00:00 +8: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: expired checkout clears the account resume entry
+00:01 +9: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: expired checkout clears the account resume entry
+00:02 +10: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: expired checkout clears the account resume entry
+00:02 +11: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: expired checkout clears the account resume entry
+00:02 +12: /home/darulqutni/groceryMobileAPP/apps/customer/test/customer_flow_test.dart: splash registration validates passwords then opens customer placeholder
+00:03 +13: /home/darulqutni/groceryMobileAPP/apps/customer/test/customer_flow_test.dart: splash registration validates passwords then opens customer placeholder
+00:03 +14: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: saved payment can resume from account even after cart is cleared
+00:03 +15: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: saved payment can resume from account even after cart is cleared
+00:03 +16: /home/darulqutni/groceryMobileAPP/apps/customer/test/catalog_flow_test.dart: search and category filter real products and small screen does not overflow
+00:03 +17: /home/darulqutni/groceryMobileAPP/apps/customer/test/catalog_flow_test.dart: search and category filter real products and small screen does not overflow
+00:04 +18: /home/darulqutni/groceryMobileAPP/apps/customer/test/catalog_flow_test.dart: search and category filter real products and small screen does not overflow
+00:04 +19: /home/darulqutni/groceryMobileAPP/apps/customer/test/catalog_flow_test.dart: search and category filter real products and small screen does not overflow
+00:04 +20: /home/darulqutni/groceryMobileAPP/apps/customer/test/customer_flow_test.dart: successful reset response reaches email sent screen
+00:04 +21: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: cart checkout selects COD and clears purchased items after order succeeds
+00:04 +22: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: cart checkout selects COD and clears purchased items after order succeeds
+00:04 +23: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: cart checkout selects COD and clears purchased items after order succeeds
+00:04 +24: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: cart checkout selects COD and clears purchased items after order succeeds
+00:04 +25: /home/darulqutni/groceryMobileAPP/apps/customer/test/checkout_flow_test.dart: paid payment retries only local finalization when cart storage fails
+00:04 +26: All tests passed!

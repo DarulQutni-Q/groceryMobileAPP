@@ -1,11 +1,55 @@
+# Handoff B3 customer, 21 Oktober 2026
+
+Implementasi checkout B3 tersedia lokal. COD lulus pada backend PostgreSQL dan
+emulator: alamat/form/pilih alamat, dua barang, pilih COD, sukses DG, cart kosong.
+Invoice Xendit sandbox, token callback, idempotensi, reservasi stok dan polling
+tersambung. Pembayaran QRIS sandbox nyata belum diuji karena XENDIT_API_KEY dan
+XENDIT_WEBHOOK_TOKEN belum diberikan. Jangan mengklaim seluruh B3 end-to-end lunas.
+
+Baca B3_API.md (endpoint/curl/panduan), B3_PLAN.md (ADR), artifacts/b3/README.md
+(hasil/batas), changes.md, http-results.md dan delapan screenshot. Backend 224,
+shared 34, customer 26, seller 32 tes lulus; dua varian SQLite untuk concurrency
+skip karena kedua tes itu lulus di PostgreSQL. Analyze semua paket bersih.
+HTTP lokal 36 request memenuhi expected, tanpa 500; QRIS 503 sengaja saat belum
+dikonfigurasi. Callback PAID/duplicate/recovery diuji dengan gateway terkontrol,
+bukan transaksi Xendit nyata. Jangan mengganti pembuktian sandbox dengan fixture.
+
+API lokal di port 8000, PostgreSQL 55432, migrasi head 0009_payment_reconcile. Kredensial
+uji/define tetap di /tmp/grocery-b3-*.json, jangan dicetak. APK normal sudah
+dipasang, login lewat UI dan force-stop/reopen memulihkan sesi ke Home.
+APK normal unduhan telah dipulihkan setelah flutter drive agar tidak memuat
+define privat pengujian. Semua screenshot telah dibuka dan diperiksa.
+
+Transaksi order/items/payment/stok satu DB transaction. Attempt audit terpisah
+dicatat sebelum RPC karena external_id Xendit tidak unik. Timeout memakai key
+yang sama dan rekonsiliasi GET, tanpa POST ulang otomatis. Dana masuk setelah
+cancel disimpan paid+perlu_rekonsiliasi, tidak memulihkan order batal otomatis.
+Refund/manual reconciliation tetap pekerjaan operator. Jangan hapus attempt
+yang outcome RPC-nya belum diketahui. Invoice ditolak bila test key atau token
+callback belum dikonfigurasi; COD tetap dapat dipakai.
+
+Customer menyimpan sesi checkout per akun dan snapshot alamat/catatan/biaya.
+Cart hanya menghapus qty yang dibeli, deduplikasi key tersimpan dalam cart.
+Sesi dapat dilanjutkan dari Akun saat cart kosong. Retry setelah paid hanya
+finalisasi lokal. Browser eksternal dipilih dari opsi yang diizinkan B3,
+menggunakan url_launcher yang sudah ada. Lihat Pesanan masih placeholder B4.
+
+Diff pengguna awal pada A3/root/seller dibandingkan byte-for-byte dan tidak
+berubah. Snapshot /tmp/b3-preserved-user.patch. Tidak ada commit apps/seller
+dari B3. Commit kecil langsung tetap diizinkan. Push belum dilakukan.
+Lanjutkan validasi QRIS setelah kredensial dan URL callback HTTPS tersedia;
+untuk pengembangan B4 sebaiknya gunakan task baru agar konteks tetap ringan.
+
+---
+
 # Handoff B2 customer, 21 Oktober 2026
 
 B2 selesai lokal: browse/search/filter/pagination, detail produk, keranjang
 per akun, qty/pilihan/hapus/subtotal, penyimpanan terenkripsi dan lima tab.
 Baca B2_API.md untuk endpoint/curl/per-file/batas; B2_PLAN.md untuk ADR;
-artifacts/b2/ untuk hasil246tes,49HTTP tanpa500, journey Android dan4screenshot.
+artifacts/b2/ untuk hasil246tes,49HTTP tanpa 500, journey Android dan4screenshot.
 
-Backend164, shared32, customer18 dan seller32 tes lulus. Analyze tiga paket
+Backend164, shared32, customer18 dan seller 32 tes lulus. Analyze tiga paket
 bersih. List produk/toko maksimal3query termasuk JWT. Seller legacy tetap
 array tanpa pagination dan semua mutasi customer403. Tidak ada migrasi B2.
 Review state menutup tiga P2 lewat tes merah-hijau: write cart gagal tidak
@@ -30,7 +74,7 @@ A3_API/A3_PLAN/CONTEXT/README/artifacts/a3/seller_shell.dart atau root specs/doc
 Diff awal tersimpan privat /tmp/b2-preserved-user.patch. Pengguna mengizinkan
 commit kecil langsung setelah verifikasi; pesan natural Bahasa Indonesia.
 
-Compose dev API8000/PostgreSQL55432; emulatorpixel5554. Password/JWT pengujian
+Compose dev API8000/PostgreSQL 55432; emulatorpixel5554. Password/JWT pengujian
 berada dalam file privat /tmp, jangan dicetak/disalin ke repo. HTTP seed hanya
 untuk lokal. PostgreSQL tes memakai schema acak terpisah dari public aplikasi.
 Build iOS, perangkat fisik dan deploy staging/prod belum diuji. Acuan visual
@@ -62,9 +106,9 @@ HTTP hanya dev; iOS mempunyai tiga scheme yang belum dibuild di macOS.
 
 ## Bukti terbaru
 
-Backend150, customer11, shared20 dan seller32 tes lulus, analyze tiga package
+Backend150, customer11, shared20 dan seller 32 tes lulus, analyze tiga package
 No issues found. Total213 tes dan satu journey Android nyata lulus. API Docker
-19 kasus expected=actual tanpa500, termasuk role admin422, duplicate HP400,
+19 kasus expected=actual tanpa 500, termasuk role admin422, duplicate HP400,
 customer tidak bisa toko403 dan login keenam429. Image45 file Python cocok
 hash host. Compose valid. Full backend log, tabel HTTP dan screenshot ada di
 artifacts/b1. APK dev normal juga dibuild/install ulang, login HP melalui UI,
@@ -88,7 +132,7 @@ Backend/shared/fondasi/UI dikomit terpisah. Jangan stage perubahan pengguna:
 root specs/docs, A3/README/CONTEXT dan seller_shell.dart sudah berubah sebelum B1.
 artifacts/b1/git-log.txt adalah snapshot sebelum commit bukti pengujian.
 
-Backend Compose lokal ENV=dev, API8000, PostgreSQL55432, emulatorpixel5554.
+Backend Compose lokal ENV=dev, API8000, PostgreSQL 55432, emulatorpixel5554.
 Kredensial tetap di file privat /tmp yang dirujuk bagian A5, jangan dicetak atau
 diganti. Task berikutnya B2 sebaiknya dimulai pada task baru dengan handoff ini.
 
@@ -115,11 +159,11 @@ Login5/menit/IP, register3/menit/IP dan mutasi60/menit/user sudah diuji, termasu
 Uvicorn access log dinonaktifkan agar query rahasia tidak ikut tercetak.
 CORS env ketat, docs/internal non-dev404 sebelum parser; health SELECT1 dengan
 versi1.0.0 dan DB gagal503. NUL, batas integer/string/telepon/boolean, JSON dalam
-dan integer5000digit ditangani tanpa500 pada acceptance.
+dan integer5000digit ditangani tanpa 500 pada acceptance.
 
 ## Bukti dan batas
 
-138 tes lulus tanpa skip (89.19detik), 369 kasus HTTP expected=actual tanpa500.
+138 tes lulus tanpa skip (89.19detik), 369 kasus HTTP expected=actual tanpa 500.
 Ruff, compile, Compose, migration upgrade/downgrade/check dan dua review lulus.
 Docker prod mengulang rate limit, health DB mati, guard404 dan cap100; marker
 query/password/JWT tidak masuk log. Hash45file app container sama dengan host.

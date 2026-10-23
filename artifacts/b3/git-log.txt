@@ -1,0 +1,12 @@
+f3c524b uji checkout COD lewat HTTP dan emulator Android
+7c1c8d6 izinkan perbaikan keranjang sebelum invoice dimulai
+fe4b39d uji resume pembayaran dan batas polling customer
+a9829af jaga rekonsiliasi dana dan validasi checkout terakhir
+be4c441 pastikan rollback utuh dan callback tidak menurunkan status
+a66ff17 hubungkan checkout customer sampai konfirmasi pembayaran
+f7d700a bersihkan item checkout sekali dan simpan sesi per akun
+3358c4e sambungkan daftar dan formulir alamat customer
+b2e9fb3 tambahkan API alamat dan pembayaran ke shared
+849aa58 amankan webhook dan pemulihan invoice Xendit
+ccffb85 buat checkout atomik dengan stok dan pembayaran COD
+449dad5 simpan alamat pengiriman dan pilihan alamat utama

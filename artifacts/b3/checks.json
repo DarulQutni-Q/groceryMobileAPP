@@ -1,0 +1,49 @@
+{
+  "shared": {
+    "tests": 34,
+    "analyze": "No issues found",
+    "exit_code": 0
+  },
+  "customer": {
+    "tests": 26,
+    "analyze": "No issues found",
+    "exit_code": 0
+  },
+  "seller_regression": {
+    "tests": 32,
+    "analyze": "No issues found",
+    "exit_code": 0,
+    "source_files_changed": false
+  },
+  "android": {
+    "journey": "COD, real backend, 2 products, address form and selection, success, cart empty",
+    "passed": true
+  },
+  "normal_apk": {
+    "path": "apps/customer/build/app/outputs/flutter-apk/app-dev-debug.apk",
+    "sha256": "02bcef8f3554fa520fca009132e193f6e975337037fca17a86dfb554e6952084",
+    "cold_start": "am start reported COLD; UI login once after install, force-stop, reopen, Home verified by layout and screenshot",
+    "activity_total_ms": 1738,
+    "session_restored": true
+  },
+  "xendit_live_sandbox": {
+    "verified": false,
+    "reason": "XENDIT_API_KEY and XENDIT_WEBHOOK_TOKEN absent"
+  },
+  "not_verified": [
+    "QRIS/VA/e-wallet real sandbox payments and browser payment screenshot",
+    "iOS, physical device, staging/prod deployment"
+  ],
+  "warnings": [
+    "Docker buildx absent; classic builder completed successfully",
+    "SDK XML metadata v4/v3 mismatch warning; APK build completed successfully",
+    "Android IME frame tracker timing warnings; integration assertions passed"
+  ],
+  "backend": {
+    "tests": 224,
+    "skipped": 2,
+    "skip_reason": "SQLite variants of the two row-lock concurrency tests; PostgreSQL variants passed",
+    "exit_code": 0
+  },
+  "total_automated_passed": 316
+}
