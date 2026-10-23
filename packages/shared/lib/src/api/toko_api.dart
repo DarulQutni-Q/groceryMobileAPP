@@ -1,3 +1,6 @@
+
+import 'package:dio/dio.dart';
+
 import '../models/toko.dart';
 import '../models/halaman.dart';
 import 'api_client.dart';
@@ -50,5 +53,23 @@ class TokoApi {
     return data
         .map((item) => JamBuka.fromJson(item as Map<String, dynamic>))
         .toList();
+  }
+
+  Future<Toko> uploadLogo(List<int> bytes, String filename) async {
+    final ext = filename.split('.').last.toLowerCase();
+    final mime = ext == 'jpg' || ext == 'jpeg' ? 'jpeg' : ext;
+    final form = FormData.fromMap({
+      'file': MultipartFile.fromBytes(
+        bytes,
+        filename: filename,
+        contentType: DioMediaType('image', mime),
+      ),
+    });
+    return Toko.fromJson(
+      (await client.dio.post<Map<String, dynamic>>(
+        '/toko/me/logo',
+        data: form,
+      )).data!,
+    );
   }
 }

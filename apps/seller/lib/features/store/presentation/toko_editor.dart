@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grocery_shared/shared.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../application/store_provider.dart';
 import 'store_widgets.dart';
+
+final logoPickerProvider = Provider<Future<XFile?> Function()>(
+  (ref) => () => ImagePicker().pickImage(source: ImageSource.gallery),
+);
 
 class TokoEditor extends ConsumerStatefulWidget {
   const TokoEditor({
@@ -28,6 +33,7 @@ class _TokoEditorState extends ConsumerState<TokoEditor> {
   late Set<String> _kategori, _kirim;
   late double _radius;
   bool _saving = false;
+  bool _uploadingLogo = false;
   @override
   void initState() {
     super.initState();
@@ -91,54 +97,79 @@ class _TokoEditorState extends ConsumerState<TokoEditor> {
     }
   }
 
+  Future<void> _pickAndUploadLogo() async {
+    try {
+      final picker = ref.read(logoPickerProvider);
+      final file = await picker();
+      if (file == null) return;
+      setState(() => _uploadingLogo = true);
+      final bytes = await file.readAsBytes();
+      await ref.read(tokoApiProvider).uploadLogo(bytes, file.name);
+      await ref.read(storeProvider(widget.userId).notifier).load();
+      if (!mounted) return;
+      storeMessage(context, 'Logo toko berhasil diperbarui');
+    } catch (e) {
+      if (!mounted) return;
+      storeMessage(context, authErrorMessage(e), error: true);
+    } finally {
+      if (mounted) {
+        setState(() => _uploadingLogo = false);
+      }
+    }
+  }
+
   @override
-  Widget build(BuildContext context) => PopScope(
-    canPop: !_saving,
-    child: StorePage(
-      title: switch (widget.section) {
-        'pengiriman' => 'Pengiriman',
-        'rekening' => 'Rekening Pencairan',
-        _ => 'Info Toko',
-      },
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Form(
-                key: _form,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: switch (widget.section) {
-                    'pengiriman' => _shipping(),
-                    'rekening' => [
-                      _field(
-                        'Bank dan nomor rekening',
-                        _rekening,
-                        hint: 'Contoh: BRI 1234567890',
-                      ),
-                    ],
-                    _ => _profile(),
-                  },
+  Widget build(BuildContext context) {
+    final currentToko =
+        ref.watch(storeProvider(widget.userId)).toko ?? widget.toko;
+    return PopScope(
+      canPop: !_saving && !_uploadingLogo,
+      child: StorePage(
+        title: switch (widget.section) {
+          'pengiriman' => 'Pengiriman',
+          'rekening' => 'Rekening Pencairan',
+          _ => 'Info Toko',
+        },
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Form(
+                  key: _form,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: switch (widget.section) {
+                      'pengiriman' => _shipping(),
+                      'rekening' => [
+                        _field(
+                          'Bank dan nomor rekening',
+                          _rekening,
+                          hint: 'Contoh: BRI 1234567890',
+                        ),
+                      ],
+                      _ => _profile(currentToko),
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 18),
-            child: SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: _saving ? null : _save,
-                child: Text(_saving ? 'Menyimpan...' : 'Simpan'),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 18),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: (_saving || _uploadingLogo) ? null : _save,
+                  child: Text(_saving ? 'Menyimpan...' : 'Simpan'),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-  List<Widget> _profile() => [
+    );
+  }
+  List<Widget> _profile(Toko toko) => [
     const Text(
       'Data ini tampil di halaman tokomu',
       style: TextStyle(fontSize: 17),
@@ -146,7 +177,7 @@ class _TokoEditorState extends ConsumerState<TokoEditor> {
     const SizedBox(height: 14),
     Row(
       children: [
-        const Icon(Icons.storefront_outlined, size: 60),
+        TokoLogo(toko: toko),
         const SizedBox(width: 16),
         Expanded(
           child: Column(
@@ -154,12 +185,15 @@ class _TokoEditorState extends ConsumerState<TokoEditor> {
             children: [
               const Text('Foto atau Logo Toko', style: TextStyle(fontSize: 18)),
               OutlinedButton.icon(
-                onPressed: () => storeMessage(
-                  context,
-                  'Upload logo belum tersedia. Foto produk dapat diunggah lewat menu Produk.',
-                ),
-                icon: const Icon(Icons.camera_alt_outlined),
-                label: const Text('Ubah Foto'),
+                onPressed: _uploadingLogo ? null : _pickAndUploadLogo,
+                icon: _uploadingLogo
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.camera_alt_outlined),
+                label: Text(_uploadingLogo ? 'Mengunggah...' : 'Ubah Foto'),
               ),
             ],
           ),

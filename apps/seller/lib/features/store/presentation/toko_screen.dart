@@ -7,6 +7,7 @@ import '../../../shared/auth_layout.dart';
 import '../application/store_provider.dart';
 import 'toko_editor.dart';
 import 'hours_editor.dart';
+import 'store_widgets.dart';
 
 class TokoScreen extends ConsumerWidget {
   const TokoScreen({super.key, required this.userId, required this.toko});
@@ -27,16 +28,7 @@ class TokoScreen extends ConsumerWidget {
         const SizedBox(height: 20),
         Row(
           children: [
-            const SizedBox(
-              width: 76,
-              height: 76,
-              child: ReferenceArtwork(
-                asset: 'splash.png',
-                rect: Rect.fromLTWH(81, 221, 307, 308),
-                width: 76,
-                semanticLabel: 'Logo toko',
-              ),
-            ),
+            TokoLogo(toko: toko),
             const SizedBox(width: 14),
             Expanded(
               child: Column(

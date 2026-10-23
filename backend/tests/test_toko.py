@@ -1,3 +1,14 @@
+import io
+
+from PIL import Image
+
+
+def photo(format="PNG"):
+    data = io.BytesIO()
+    Image.new("RGB", (16, 16), "green").save(data, format=format)
+    return data.getvalue()
+
+
 def register(client, account):
     result = client.post("/auth/register", json=account)
     assert result.status_code == 200
@@ -90,3 +101,62 @@ def test_google_fallback_store_name_stays_within_model_limit(client, monkeypatch
     headers = {"Authorization": f"Bearer {result.json()['access_token']}"}
     toko = client.get("/toko/me", headers=headers).json()
     assert len(toko["nama"]) <= 120
+
+
+def test_upload_logo_stores_url_and_replaces_old_logo(client, account):
+    headers = register(client, account)
+    result = client.post(
+        "/toko/me/logo",
+        headers=headers,
+        files={"file": ("logo.png", photo(), "image/png")},
+    )
+    assert result.status_code == 200
+    toko = result.json()
+    assert toko["logo_url"] is not None
+    assert toko["logo_url"].startswith("/uploads/")
+    first_url = toko["logo_url"]
+    assert client.get(first_url).status_code == 200
+    result2 = client.post(
+        "/toko/me/logo",
+        headers=headers,
+        files={"file": ("logo2.jpg", photo("JPEG"), "image/jpeg")},
+    )
+    assert result2.status_code == 200
+    second_url = result2.json()["logo_url"]
+    assert second_url != first_url
+    assert client.get(second_url).status_code == 200
+    assert client.get(first_url).status_code == 404
+
+
+def test_upload_logo_rejects_invalid_format(client, account):
+    headers = register(client, account)
+    for filename, data, mime in [
+        ("bad.png", b"not an image", "image/png"),
+        ("bad.svg", b"<svg/>", "image/svg+xml"),
+        ("bad.jpg", photo("JPEG")[:-20], "image/jpeg"),
+    ]:
+        result = client.post(
+            "/toko/me/logo",
+            headers=headers,
+            files={"file": (filename, data, mime)},
+        )
+        assert result.status_code == 422
+
+
+def test_upload_logo_rejects_oversized_file(client, account):
+    headers = register(client, account)
+    big = photo() + b"0" * (5 * 1024 * 1024)
+    result = client.post(
+        "/toko/me/logo",
+        headers=headers,
+        files={"file": ("big.png", big, "image/png")},
+    )
+    assert result.status_code == 422
+
+
+def test_upload_logo_requires_auth(client):
+    result = client.post(
+        "/toko/me/logo",
+        files={"file": ("logo.png", photo(), "image/png")},
+    )
+    assert result.status_code == 401

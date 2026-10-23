@@ -8,10 +8,9 @@ class UploadLimit:
         self.app = app
 
     async def __call__(self, scope, receive, send):
-        if (
-            scope["type"] != "http"
-            or not scope["path"].startswith("/produk/")
-            or not scope["path"].endswith("/foto")
+        if scope["type"] != "http" or not (
+            (scope["path"].startswith("/produk/") and scope["path"].endswith("/foto"))
+            or scope["path"] == "/toko/me/logo"
         ):
             return await self.app(scope, receive, send)
         total = 0

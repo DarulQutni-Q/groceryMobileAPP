@@ -92,6 +92,13 @@ void main() {
           expect((request.data as FormData).files.single.key, 'file');
           return jsonBody(produk, 200);
         }
+        if (request.path == '/toko/me/logo') {
+          expect(request.data, isA<FormData>());
+          final file = (request.data as FormData).files.single;
+          expect(file.key, 'file');
+          expect(file.value.filename, 'logo.png');
+          return jsonBody({...toko, 'logo_url': '/uploads/logo.png'}, 200);
+        }
         return jsonBody(toko, 200);
       });
       final client = ApiClient(
@@ -109,6 +116,9 @@ void main() {
       final uploaded = await ProdukApi(client)
           .uploadFoto('p1', Uint8List.fromList([1, 2]), 'u.png');
       expect(uploaded.fotoUrl, '/uploads/u.png');
+      final uploadedLogo = await TokoApi(client)
+          .uploadLogo(Uint8List.fromList([1, 2, 3]), 'logo.png');
+      expect(uploadedLogo.logoUrl, '/uploads/logo.png');
     },
   );
 }

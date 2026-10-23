@@ -7,9 +7,12 @@ import 'package:grocery_shared/shared.dart';
 import 'package:seller/app.dart';
 import 'package:seller/core/seller_theme.dart';
 import 'package:seller/core/network.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:seller/features/auth/application/auth_provider.dart';
 import 'package:seller/features/store/presentation/seller_shell.dart';
-
+import 'package:seller/features/store/presentation/store_widgets.dart';
+import 'package:seller/features/store/presentation/toko_editor.dart';
+import 'package:seller/shared/auth_layout.dart';
 import 'support/store_fixture.dart';
 
 void main() {
@@ -24,6 +27,7 @@ void main() {
     WidgetTester tester, {
     StoreFixture? fixture,
     bool fullApp = false,
+    List<dynamic> overrides = const [],
   }) async {
     tester.view.physicalSize = const Size(360, 740);
     tester.view.devicePixelRatio = 1;
@@ -42,6 +46,7 @@ void main() {
           connectionStateProvider.overrideWith((ref) => Stream.value(true)),
           apiBaseUrlProvider.overrideWithValue(dio.options.baseUrl),
           apiClientProvider.overrideWithValue(api),
+          ...overrides,
         ],
         child: fullApp
             ? const SellerApp()
@@ -264,4 +269,123 @@ void main() {
 
     expect(find.text('Toko sedang buka'), findsOneWidget);
   });
+
+  testWidgets(
+    'upload logo toko successfully updates store logo and refreshes profile',
+    (tester) async {
+      final fixture = StoreFixture();
+      await open(
+        tester,
+        fixture: fixture,
+        overrides: [
+          logoPickerProvider.overrideWithValue(
+            () async => XFile.fromData(
+              Uint8List.fromList([1, 2, 3, 4]),
+              name: 'logo_baru.png',
+            ),
+          ),
+        ],
+      );
+      await tester.tap(find.byKey(const Key('nav-toko')));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ReferenceArtwork), findsWidgets);
+
+      await tester.tap(find.text('Info Toko'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Ubah Foto'), findsOneWidget);
+      await tester.tap(find.text('Ubah Foto'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Logo toko berhasil diperbarui'), findsOneWidget);
+      expect(fixture.profile['logo_url'], '/uploads/logo-toko.png');
+
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(Image), findsWidgets);
+    },
+  );
+
+  testWidgets('upload logo toko handles failure and displays error snackbar', (
+    tester,
+  ) async {
+    final fixture = StoreFixture()..failLogoUpload = true;
+    await open(
+      tester,
+      fixture: fixture,
+      overrides: [
+        logoPickerProvider.overrideWithValue(
+          () async => XFile.fromData(
+            Uint8List.fromList([1, 2, 3, 4]),
+            name: 'bad_logo.png',
+          ),
+        ),
+      ],
+    );
+    await tester.tap(find.byKey(const Key('nav-toko')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Info Toko'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Ubah Foto'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Gagal mengunggah logo'), findsOneWidget);
+    expect(find.text('Ubah Foto'), findsOneWidget);
+  });
+
+  testWidgets(
+    'TokoLogo shows ReferenceArtwork when logoUrl is empty or null, and Image.network when present',
+    (tester) async {
+      const tokoNoLogo = Toko(
+        id: 't1',
+        nama: 'Toko Test',
+        alamat: 'Alamat Test',
+        telepon: '08123456789',
+        kategori: ['Sembako'],
+        metodeKirim: ['Instant'],
+        radiusKm: 5,
+        status: 'tutup',
+        logoUrl: null,
+      );
+      const tokoWithLogo = Toko(
+        id: 't1',
+        nama: 'Toko Test',
+        alamat: 'Alamat Test',
+        telepon: '08123456789',
+        kategori: ['Sembako'],
+        metodeKirim: ['Instant'],
+        radiusKm: 5,
+        status: 'tutup',
+        logoUrl: '/uploads/custom-logo.png',
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            apiBaseUrlProvider.overrideWithValue('https://api.example.com'),
+          ],
+          child: const MaterialApp(
+            home: Scaffold(
+              body: Column(
+                children: [
+                  TokoLogo(toko: tokoNoLogo),
+                  TokoLogo(toko: tokoWithLogo),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(ReferenceArtwork), findsOneWidget);
+      expect(
+        find.byWidgetPredicate((w) => w is Image && w.image is NetworkImage),
+        findsOneWidget,
+      );
+    },
+  );
 }

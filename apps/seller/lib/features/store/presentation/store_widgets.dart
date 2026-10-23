@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grocery_shared/shared.dart';
 
 import '../../../core/seller_theme.dart';
+import '../../../shared/auth_layout.dart';
 import '../../auth/application/auth_provider.dart';
-
 String rupiah(int value) =>
     'Rp ${value.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}';
 
@@ -118,6 +118,45 @@ class ProductPhoto extends ConsumerWidget {
               errorBuilder: (_, error, stack) =>
                   const Icon(Icons.broken_image_outlined),
             ),
+    );
+  }
+}
+
+class TokoLogo extends ConsumerWidget {
+  const TokoLogo({super.key, required this.toko, this.size = 76});
+  final Toko toko;
+  final double size;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final placeholder = SizedBox(
+      width: size,
+      height: size,
+      child: ReferenceArtwork(
+        asset: 'splash.png',
+        rect: const Rect.fromLTWH(81, 221, 307, 308),
+        width: size,
+        semanticLabel: 'Logo toko',
+      ),
+    );
+    final logo = toko.logoUrl;
+    if (logo == null || logo.isEmpty) {
+      return placeholder;
+    }
+    final url =
+        Uri.parse(ref.watch(apiBaseUrlProvider)).resolve(logo).toString();
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: Image.network(
+          url,
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          errorBuilder: (_, error, stack) => placeholder,
+        ),
+      ),
     );
   }
 }

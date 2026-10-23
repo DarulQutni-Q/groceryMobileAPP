@@ -7,6 +7,7 @@ class StoreFixture implements HttpClientAdapter {
   bool failDelete = false;
   bool failRefreshAfterDelete = false;
   bool failProductList = false;
+  bool failLogoUpload = false;
   final profile = <String, dynamic>{
     'id': 't1',
     'nama': 'Toko Uji',
@@ -94,6 +95,18 @@ class StoreFixture implements HttpClientAdapter {
         hours = List<Map<String, dynamic>>.from(request.data as List);
       }
       data = hours;
+    } else if (request.path == '/toko/me/logo') {
+      if (failLogoUpload) {
+        return ResponseBody.fromString(
+          jsonEncode({'detail': 'Gagal mengunggah logo'}),
+          400,
+          headers: {
+            Headers.contentTypeHeader: ['application/json'],
+          },
+        );
+      }
+      profile['logo_url'] = '/uploads/logo-toko.png';
+      data = profile;
     } else if (request.path.startsWith('/toko/me')) {
       if (request.data is Map) {
         profile.addAll(Map<String, dynamic>.from(request.data as Map));
