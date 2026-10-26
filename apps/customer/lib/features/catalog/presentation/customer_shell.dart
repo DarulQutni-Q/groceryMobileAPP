@@ -9,9 +9,12 @@ import '../../checkout/presentation/checkout_page.dart';
 import '../../checkout/application/checkout_provider.dart';
 import 'chat_driver_page.dart';
 import 'home_page.dart';
+import 'pengaturan_page.dart';
 import 'promo_page.dart';
 import 'pesanan_page.dart';
 import 'scan_qr_page.dart';
+import 'ubah_profil_page.dart';
+import '../../checkout/presentation/metode_pembayaran_page.dart';
 import '../../checkout/presentation/struk_page.dart';
 
 class CustomerShell extends ConsumerStatefulWidget {
@@ -100,6 +103,29 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
                   ),
                   icon: const Icon(Icons.location_on_outlined),
                   label: const Text('Alamat Pengiriman'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.push<void>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => PengaturanPage(
+                        onUbahProfil: () => Navigator.push<void>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const UbahProfilPage(),
+                          ),
+                        ),
+                        onMetodeBayar: () => Navigator.push<void>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const MetodePembayaranPage(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  icon: const Icon(Icons.settings_outlined),
+                  label: const Text('Pengaturan'),
                 ),
                 FilledButton(
                   onPressed: ref.read(authProvider.notifier).logout,
