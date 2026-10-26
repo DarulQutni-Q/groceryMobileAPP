@@ -1,4 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../core/theme.dart';
@@ -96,9 +101,26 @@ class StrukPage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: Row(
               children: [
-                _CircleIcon(icon: Icons.arrow_back, onPressed: () {}),
+                _CircleIcon(
+                  icon: Icons.arrow_back,
+                  onPressed: () => Navigator.maybePop(context),
+                ),
                 const Spacer(),
-                _CircleIcon(icon: Icons.ios_share, onPressed: () {}),
+                _CircleIcon(
+                  icon: Icons.ios_share,
+                  onPressed: () async {
+                    await Clipboard.setData(
+                      ClipboardData(text: _summary(data)),
+                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Ringkasan struk disalin'),
+                        ),
+                      );
+                    }
+                  },
+                ),
               ],
             ),
           ),
@@ -364,7 +386,7 @@ class StrukPage extends StatelessWidget {
             child: SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
-                onPressed: () {},
+                onPressed: () => _downloadStruk(context, data),
                 style: FilledButton.styleFrom(
                   minimumSize: const Size.fromHeight(50),
                   shape: RoundedRectangleBorder(
@@ -626,3 +648,75 @@ class _Barcode extends StatelessWidget {
     );
   }
 }
+
+/// Ringkasan teks struk untuk dibagikan lewat clipboard.
+String _summary(StrukData data) {
+  final buffer = StringBuffer()
+    ..writeln('GARDENMART SUPERMARKET')
+    ..writeln('Struk ${data.nomor}')
+    ..writeln(data.waktu)
+    ..writeln('Kasir: ${data.kasir} • Kurir: ${data.kurir}');
+  for (final item in data.items) {
+    buffer.writeln('${item.nama} (${item.qty}) = ${item.total}');
+  }
+  buffer
+    ..writeln('Total Belanja (${data.jumlahBarang}): ${data.totalBelanja}')
+    ..writeln('Diskon Promo JSM: ${data.diskonPromo}')
+    ..writeln('Diskon Voucher Toko: ${data.diskonVoucher}')
+    ..writeln('Biaya Layanan: ${data.biayaLayanan}')
+    ..writeln('Total Bayar: ${data.totalBayar} (${data.metodeBayar})');
+  return buffer.toString();
+}
+
+/// Unduh struk sebagai file PDF ke direktori dokumen aplikasi, lalu
+/// tampilkan nama filenya. Berbagi file ke aplikasi lain belum didukung
+/// (butuh share_plus); file bisa dibuka dari file manager.
+Future<void> _downloadStruk(BuildContext context, StrukData data) async {
+  final doc = pw.Document();
+  doc.addPage(
+    pw.MultiPage(
+      build: (_) => [
+        pw.Text(
+          'GARDENMART SUPERMARKET',
+          style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+        ),
+        pw.Text('Struk ${data.nomor}'),
+        pw.Text(data.waktu),
+        pw.Text('Kasir: ${data.kasir} • Kurir: ${data.kurir}'),
+        pw.SizedBox(height: 12),
+        for (final item in data.items)
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Expanded(child: pw.Text('${item.nama} (${item.qty})')),
+              pw.Text(item.total),
+            ],
+          ),
+        pw.Divider(),
+        _pdfRow('Total Belanja (${data.jumlahBarang})', data.totalBelanja),
+        _pdfRow('Diskon Promo JSM', data.diskonPromo),
+        _pdfRow('Diskon Voucher Toko', data.diskonVoucher),
+        _pdfRow('Biaya Layanan', data.biayaLayanan),
+        pw.Divider(),
+        _pdfRow('Total Bayar', data.totalBayar),
+        pw.Text('Pembayaran: ${data.metodeBayar} ${data.metodeId}'),
+        pw.Text('Poin Didapat: ${data.poin} • Stempel: ${data.stempel}'),
+      ],
+    ),
+  );
+  final dir = await getApplicationDocumentsDirectory();
+  final name =
+      'struk_${data.nomor.replaceAll(RegExp(r'[^A-Za-z0-9]+'), '_')}.pdf';
+  final file = File('${dir.path}/$name');
+  await file.writeAsBytes(await doc.save());
+  if (context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Struk tersimpan: $name')),
+    );
+  }
+}
+
+pw.Widget _pdfRow(String label, String value) => pw.Row(
+      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+      children: [pw.Text(label), pw.Text(value)],
+    );

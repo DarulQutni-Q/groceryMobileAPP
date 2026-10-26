@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../core/garden_widgets.dart';
 import '../../../core/theme.dart';
+import '../../checkout/presentation/struk_page.dart';
+import 'catalog_page.dart';
+import 'chat_driver_page.dart';
 
 /// Tab Pesanan: Pesanan Saya sesuai desain Figma.
 ///
@@ -34,7 +37,13 @@ class PesananPage extends StatelessWidget {
         height: 200,
         topPadding: 38,
         actions: [
-          RoundIconButton(icon: Icons.search, onPressed: () {}),
+          RoundIconButton(
+            icon: Icons.search,
+            onPressed: () => Navigator.push<void>(
+              context,
+              MaterialPageRoute(builder: (_) => const CatalogPage()),
+            ),
+          ),
         ],
       ),
       Expanded(
@@ -127,7 +136,14 @@ class PesananPage extends StatelessWidget {
                       SizedBox(
                         height: 34,
                         child: OutlinedButton.icon(
-                          onPressed: onChatDriver ?? () {},
+                          onPressed:
+                              onChatDriver ??
+                              () => Navigator.push<void>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ChatDriverPage(),
+                                ),
+                              ),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
@@ -146,17 +162,21 @@ class PesananPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Container(
-                        width: 34,
-                        height: 34,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFFE4F3D8),
-                        ),
-                        child: const Icon(
-                          Icons.phone,
-                          size: 17,
-                          color: gardenInk,
+                      InkWell(
+                        onTap: () => _showDriverDialog(context, onChatDriver),
+                        customBorder: const CircleBorder(),
+                        child: Container(
+                          width: 34,
+                          height: 34,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xFFE4F3D8),
+                          ),
+                          child: const Icon(
+                            Icons.phone,
+                            size: 17,
+                            color: gardenInk,
+                          ),
                         ),
                       ),
                     ],
@@ -464,7 +484,14 @@ class _HistoryCard extends StatelessWidget {
             SizedBox(
               height: 34,
               child: FilledButton.icon(
-                onPressed: onBeliLagi ?? () {},
+                onPressed:
+                    onBeliLagi ??
+                    () => Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const CatalogPage(),
+                      ),
+                    ),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   minimumSize: const Size(0, 34),
@@ -482,7 +509,12 @@ class _HistoryCard extends StatelessWidget {
             SizedBox(
               height: 34,
               child: FilledButton.icon(
-                onPressed: onLihatStruk ?? () {},
+                onPressed:
+                    onLihatStruk ??
+                    () => Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(builder: (_) => const StrukPage()),
+                    ),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   minimumSize: const Size(0, 34),
@@ -541,6 +573,39 @@ class _ThumbMore extends StatelessWidget {
         fontWeight: FontWeight.w700,
         color: gardenInk,
       ),
+    ),
+  );
+}
+
+/// Dialog info driver. Nomor telepon tidak ada di data pesanan contoh,
+/// jadi tidak ada tombol panggil yang mengarang nomor; aksi yang tersedia
+/// adalah Chat Driver.
+void _showDriverDialog(BuildContext context, VoidCallback? onChatDriver) {
+  showDialog<void>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text('Pak Budi'),
+      content: const Text('Honda Beat • BK 4122 QD\nKurir GardenMart'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(dialogContext);
+            if (onChatDriver != null) {
+              onChatDriver();
+            } else {
+              Navigator.push<void>(
+                context,
+                MaterialPageRoute(builder: (_) => const ChatDriverPage()),
+              );
+            }
+          },
+          child: const Text('Chat Driver'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext),
+          child: const Text('Tutup'),
+        ),
+      ],
     ),
   );
 }
