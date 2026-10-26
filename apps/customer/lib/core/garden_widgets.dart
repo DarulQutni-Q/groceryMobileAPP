@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'theme.dart';
 
 /// Header hijau lime dengan lekuk bawah, sesuai desain Figma.
-/// Judul di tengah, tombol kembali bulat putih di kiri.
+/// Default: judul di tengah, tombol kembali bulat putih di kiri.
+/// Varian layar Alamat: [centerTitle] false (judul di kiri setelah tombol
+/// kembali), [backFilled] false (tombol kembali outline, bukan putih penuh),
+/// [below] untuk bilah putih di bawah judul.
 class LimeHeader extends StatelessWidget {
   const LimeHeader({
     super.key,
@@ -11,11 +14,17 @@ class LimeHeader extends StatelessWidget {
     this.actions = const [],
     this.height = 150,
     this.showBack = true,
+    this.centerTitle = true,
+    this.backFilled = true,
+    this.below,
   });
   final String title;
   final List<Widget> actions;
   final double height;
   final bool showBack;
+  final bool centerTitle;
+  final bool backFilled;
+  final Widget? below;
 
   @override
   Widget build(BuildContext context) => ClipPath(
@@ -34,34 +43,61 @@ class LimeHeader extends StatelessWidget {
         bottom: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (showBack)
-                _RoundIconButton(
-                  icon: Icons.arrow_back,
-                  onPressed: () => Navigator.maybePop(context),
-                )
-              else
-                const SizedBox(width: 40),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      color: gardenInk,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (showBack)
+                    _RoundIconButton(
+                      icon: Icons.arrow_back,
+                      filled: backFilled,
+                      onPressed: () => Navigator.maybePop(context),
+                    )
+                  else if (centerTitle)
+                    const SizedBox(width: 40),
+                  if (centerTitle)
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          title,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: gardenInk,
+                          ),
+                        ),
+                      ),
+                    )
+                  else ...[
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: gardenInk,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  ],
+                  if (centerTitle)
+                    if (actions.isEmpty)
+                      const SizedBox(width: 40)
+                    else
+                      Row(mainAxisSize: MainAxisSize.min, children: actions)
+                  else if (actions.isNotEmpty)
+                    Row(mainAxisSize: MainAxisSize.min, children: actions),
+                ],
               ),
-              if (actions.isEmpty)
-                const SizedBox(width: 40)
-              else
-                Row(mainAxisSize: MainAxisSize.min, children: actions),
+              if (below != null) ...[const SizedBox(height: 12), below!],
             ],
           ),
         ),
@@ -71,13 +107,22 @@ class LimeHeader extends StatelessWidget {
 }
 
 class _RoundIconButton extends StatelessWidget {
-  const _RoundIconButton({required this.icon, required this.onPressed});
+  const _RoundIconButton({
+    required this.icon,
+    required this.onPressed,
+    this.filled = true,
+  });
   final IconData icon;
   final VoidCallback onPressed;
+  final bool filled;
   @override
   Widget build(BuildContext context) => Material(
-    color: Colors.white,
-    shape: const CircleBorder(),
+    color: filled ? Colors.white : Colors.transparent,
+    shape: CircleBorder(
+      side: filled
+          ? BorderSide.none
+          : const BorderSide(color: gardenInk, width: 1.5),
+    ),
     child: InkWell(
       customBorder: const CircleBorder(),
       onTap: onPressed,
@@ -88,6 +133,49 @@ class _RoundIconButton extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// Area hijau bawah dengan lekuk atas (naik di tengah), untuk layar Alamat
+/// dan Ubah Profil. Anaknya biasanya tombol gelap.
+class GreenBottomArea extends StatelessWidget {
+  const GreenBottomArea({super.key, required this.child, this.height = 150});
+  final Widget child;
+  final double height;
+  @override
+  Widget build(BuildContext context) => ClipPath(
+    clipper: _HillClipper(),
+    child: Container(
+      height: height,
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [limeLight, limeBright],
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 44, 20, 24),
+        child: Align(alignment: Alignment.center, child: child),
+      ),
+    ),
+  );
+}
+
+/// Lekuk atas area hijau bawah: naik di tengah, turun di sisi.
+class _HillClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path()..moveTo(0, 28);
+    path.quadraticBezierTo(size.width / 2, -18, size.width, 28);
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
 /// Lekuk bawah header: turun di tengah, naik di sisi.
