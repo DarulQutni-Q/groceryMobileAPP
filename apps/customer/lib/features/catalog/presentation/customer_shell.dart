@@ -7,8 +7,8 @@ import '../../auth/application/auth_provider.dart';
 import '../../checkout/presentation/alamat_page.dart';
 import '../../checkout/presentation/checkout_page.dart';
 import '../../checkout/application/checkout_provider.dart';
-import 'catalog_widgets.dart';
 import 'home_page.dart';
+import 'scan_qr_page.dart';
 
 class CustomerShell extends ConsumerStatefulWidget {
   const CustomerShell({super.key, this.now});
@@ -92,9 +92,10 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
       index: tab,
       onSelect: (value) {
         if (value == 2) {
-          // Halaman Scan QR dibuat di langkahnya sendiri; sementara tetap
-          // snackbar seperti sebelumnya.
-          segera(context);
+          Navigator.push<void>(
+            context,
+            MaterialPageRoute(builder: (_) => const ScanQrPage()),
+          );
         } else {
           setState(() => tab = value);
         }
