@@ -108,6 +108,7 @@ class _ResetPageState extends ConsumerState<ResetPage> {
                 onFieldSubmitted: (_) => _send(),
                 decoration: const InputDecoration(
                   hintText: 'Enter your email address...',
+                  prefixIcon: Icon(Icons.mail_outline, size: 20),
                 ),
               ),
             ),
@@ -118,7 +119,13 @@ class _ResetPageState extends ConsumerState<ResetPage> {
                 : widget.sent
                 ? _openEmail
                 : _send,
-            style: FilledButton.styleFrom(backgroundColor: resetGreen),
+            style: FilledButton.styleFrom(
+              backgroundColor: resetGreen,
+              minimumSize: const Size.fromHeight(56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28),
+              ),
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -177,15 +184,33 @@ class _ResetPageState extends ConsumerState<ResetPage> {
       ),
       TextButton(
         onPressed: () => _openEmail(contact: true),
-        child: Text(
-          widget.sent ? 'Contact us.' : 'Contact us at darulqutni512@gmail.com',
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontFamily: 'GardenSerif',
-            fontSize: 16,
-            color: Color(0xFF518D20),
-          ),
-        ),
+        child: widget.sent
+            ? const Text(
+                'Contact us.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'GardenSerif',
+                  fontSize: 16,
+                  color: Color(0xFF518D20),
+                ),
+              )
+            : Text.rich(
+                TextSpan(
+                  style: const TextStyle(
+                    fontFamily: 'GardenSerif',
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
+                  children: const [
+                    TextSpan(text: 'Contact us at '),
+                    TextSpan(
+                      text: 'darulqutni512@gmail.com',
+                      style: TextStyle(color: Color(0xFF518D20)),
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+              ),
       ),
     ],
   );

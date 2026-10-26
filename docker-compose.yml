@@ -2,6 +2,7 @@ name: grocery-a1
 services:
   db:
     image: postgres:16
+    restart: unless-stopped
     environment:
       POSTGRES_USER: grocery
       POSTGRES_DB: grocery
@@ -17,6 +18,7 @@ services:
       retries: 10
   backend:
     build: ./backend
+    restart: unless-stopped
     volumes:
       - uploads_data:/srv/uploads
     environment:
@@ -29,7 +31,7 @@ services:
       RATE_LIMIT_STORAGE_URI: ${RATE_LIMIT_STORAGE_URI:-memory://}
       ENV: ${ENV:-prod}
     ports:
-      - "0.0.0.0:8000:8000"
+      - "8001:8000"
     depends_on:
       db:
         condition: service_healthy

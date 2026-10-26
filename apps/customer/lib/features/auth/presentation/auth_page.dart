@@ -18,14 +18,13 @@ class AuthPage extends ConsumerStatefulWidget {
 class _AuthPageState extends ConsumerState<AuthPage> {
   final form = GlobalKey<FormState>();
   final identity = TextEditingController();
-  final phone = TextEditingController();
   final password = TextEditingController();
   final confirm = TextEditingController();
   bool remember = true;
 
   @override
   void dispose() {
-    for (final controller in [identity, phone, password, confirm]) {
+    for (final controller in [identity, password, confirm]) {
       controller.dispose();
     }
     super.dispose();
@@ -38,12 +37,10 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     }
     FocusScope.of(context).unfocus();
     final auth = ref.read(authProvider.notifier);
+    // Referensi register hanya punya email + kata sandi + verifikasi;
+    // phone opsional di backend, jadi tidak dikirim dari form ini.
     final success = widget.register
-        ? await auth.register(
-            identity.text.trim(),
-            password.text,
-            phone: phone.text.trim(),
-          )
+        ? await auth.register(identity.text.trim(), password.text)
         : await auth.login(
             identity.text.trim(),
             password.text,
@@ -69,6 +66,10 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               label: Text(widget.register ? 'Daftar Akun' : 'Masuk Akun'),
               style: FilledButton.styleFrom(
                 side: const BorderSide(color: Colors.white, width: 3),
+                minimumSize: const Size.fromHeight(56),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -85,7 +86,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                 child: _card(busy),
               ),
             ),
-            if (!widget.register) _registerLink(busy),
           ],
         ),
       ),
@@ -111,6 +111,12 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           if (!widget.register) _remember(busy) else const SizedBox(height: 18),
           FilledButton(
             onPressed: busy ? null : _submit,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28),
+              ),
+            ),
             child: busy
                 ? const SizedBox(
                     width: 20,
@@ -139,6 +145,11 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           ),
           const SizedBox(height: 10),
           _social(busy),
+          if (!widget.register) ...[
+            const SizedBox(height: 14),
+            const Divider(color: gardenBorder),
+            _registerLink(busy),
+          ],
         ],
       ),
     ),
@@ -163,24 +174,11 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                 : phoneError(value),
       decoration: InputDecoration(
         hintText: widget.register ? 'example@gmail.com' : 'Nomor Handphone',
-        prefixText: widget.register ? null : '+62 ',
+        suffixIcon: widget.register
+            ? null
+            : const Icon(Icons.person_outline, size: 20),
       ),
     ),
-    if (widget.register) ...[
-      const SizedBox(height: 18),
-      TextFormField(
-        key: const Key('register-phone'),
-        controller: phone,
-        keyboardType: TextInputType.phone,
-        autofillHints: const [AutofillHints.telephoneNumber],
-        textInputAction: TextInputAction.next,
-        validator: phoneError,
-        decoration: const InputDecoration(
-          hintText: 'Nomor Handphone',
-          prefixText: '+62 ',
-        ),
-      ),
-    ],
     const SizedBox(height: 18),
     PasswordField(
       key: Key(widget.register ? 'register-password' : 'login-password'),
@@ -223,6 +221,16 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             onChanged: busy
                 ? null
                 : (value) => setState(() => remember = value ?? true),
+            fillColor: WidgetStateProperty.resolveWith(
+              (states) => states.contains(WidgetState.selected)
+                  ? gardenInk
+                  : Colors.white,
+            ),
+            checkColor: Colors.white,
+            side: const BorderSide(color: gardenInk, width: 1.5),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
           ),
           GestureDetector(
             onTap: busy ? null : () => setState(() => remember = !remember),
@@ -253,6 +261,10 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           label: const Text('Google', style: TextStyle(fontSize: 12)),
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 8),
+            minimumSize: const Size(0, 48),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
           ),
         ),
       ),
@@ -268,6 +280,10 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           label: const Text('Apple ID', style: TextStyle(fontSize: 12)),
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 8),
+            minimumSize: const Size(0, 48),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
           ),
         ),
       ),
@@ -275,7 +291,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
   );
 
   Widget _registerLink(bool busy) => Padding(
-    padding: const EdgeInsets.only(top: 8),
+    padding: const EdgeInsets.only(top: 4),
     child: Wrap(
       alignment: WrapAlignment.center,
       crossAxisAlignment: WrapCrossAlignment.center,

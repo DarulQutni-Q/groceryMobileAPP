@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../../core/garden_widgets.dart';
 import 'auth_artwork.dart';
 
 class SplashPage extends StatelessWidget {
@@ -91,9 +92,9 @@ class SplashPage extends StatelessWidget {
       const SizedBox(height: 24),
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 26),
-        child: FilledButton(
+        child: DarkPillButton(
+          label: 'Get Started',
           onPressed: () => Navigator.pushNamed(context, '/login'),
-          child: const Text('Get Started', style: TextStyle(fontSize: 16)),
         ),
       ),
     ],

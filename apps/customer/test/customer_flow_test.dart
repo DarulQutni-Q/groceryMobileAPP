@@ -44,10 +44,6 @@ void main() {
         'pembeli@example.com',
       );
       await tester.enterText(
-        find.byKey(const Key('register-phone')),
-        '081234567890',
-      );
-      await tester.enterText(
         find.byKey(const Key('register-password')),
         'SandiCustomer123!',
       );
@@ -70,7 +66,10 @@ void main() {
       final payload =
           fixture.calls.firstWhere((call) => call.path == '/auth/register').data
               as Map;
-      expect(payload['phone'], '081234567890');
+      // Form register sesuai referensi tidak lagi meminta nomor telepon;
+      // phone opsional di backend, jadi payload tidak membawanya.
+      expect(payload['phone'], isNull);
+      expect(payload['email'], 'pembeli@example.com');
       expect(payload['role'], 'customer');
     },
   );
@@ -160,25 +159,24 @@ void main() {
       expect(find.text('Email wajib diisi'), findsOneWidget);
     },
   );
-  testWidgets('invalid phone stays on registration without an API call', (
+  testWidgets('invalid phone stays on login without an API call', (
     tester,
   ) async {
     fixture = AuthFixture()..installStorage();
     await open(tester);
     await tap(tester, find.text('Get Started'));
-    await tap(tester, find.text('Daftar Akun Baru'));
-    for (final entry in {
-      'register-email': 'pembeli@example.com',
-      'register-phone': '123',
-      'register-password': 'SandiCustomer123!',
-      'register-confirm': 'SandiCustomer123!',
-    }.entries) {
-      await tester.enterText(find.byKey(Key(entry.key)), entry.value);
-    }
-    await tap(tester, find.text('Daftar'));
+    await tester.enterText(
+      find.byKey(const Key('login-identity')),
+      '123',
+    );
+    await tester.enterText(
+      find.byKey(const Key('login-password')),
+      'SandiCustomer123!',
+    );
+    await tap(tester, find.text('Masuk Sekarang'));
     expect(find.text('Nomor handphone Indonesia tidak valid'), findsOneWidget);
     expect(
-      fixture.calls.where((call) => call.path == '/auth/register'),
+      fixture.calls.where((call) => call.path == '/auth/login/phone'),
       isEmpty,
     );
   });
