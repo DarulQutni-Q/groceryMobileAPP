@@ -7,6 +7,7 @@ import '../../auth/application/auth_provider.dart';
 import '../application/produk_provider.dart';
 import 'cart_page.dart';
 import 'catalog_widgets.dart';
+import 'poinku_page.dart';
 import 'product_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -583,14 +584,19 @@ class _MemberCard extends StatelessWidget {
     elevation: 0,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
     clipBehavior: Clip.antiAlias,
-    child: DecoratedBox(
+    child: Ink(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFFD5EEC0), Color(0xFF79C549)],
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
+      child: InkWell(
+        onTap: () => Navigator.push<void>(
+          context,
+          MaterialPageRoute(builder: (_) => const PoinkuPage()),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
         child: Column(
           children: [
             const Row(
@@ -755,6 +761,7 @@ class _MemberCard extends StatelessWidget {
         ),
       ),
     ),
+  ),
   );
 }
 

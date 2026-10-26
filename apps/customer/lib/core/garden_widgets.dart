@@ -28,7 +28,7 @@ class LimeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ClipPath(
-    clipper: _WaveClipper(),
+    clipper: GardenWaveClipper(),
     child: Container(
       height: height,
       width: double.infinity,
@@ -114,17 +114,17 @@ class RoundIconButton extends StatelessWidget {
     required this.icon,
     required this.onPressed,
     this.filled = true,
+    this.color = gardenInk,
   });
   final IconData icon;
   final VoidCallback onPressed;
   final bool filled;
+  final Color color;
   @override
   Widget build(BuildContext context) => Material(
     color: filled ? Colors.white : Colors.transparent,
     shape: CircleBorder(
-      side: filled
-          ? BorderSide.none
-          : const BorderSide(color: gardenInk, width: 1.5),
+      side: filled ? BorderSide.none : BorderSide(color: color, width: 1.5),
     ),
     child: InkWell(
       customBorder: const CircleBorder(),
@@ -132,7 +132,7 @@ class RoundIconButton extends StatelessWidget {
       child: SizedBox(
         width: 40,
         height: 40,
-        child: Icon(icon, size: 20, color: gardenInk),
+        child: Icon(icon, size: 20, color: color),
       ),
     ),
   );
@@ -182,7 +182,8 @@ class _HillClipper extends CustomClipper<Path> {
 }
 
 /// Lekuk bawah header: turun di tengah, naik di sisi.
-class _WaveClipper extends CustomClipper<Path> {
+/// Dipakai LimeHeader dan header Poinku.
+class GardenWaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path()..lineTo(0, size.height - 28);
