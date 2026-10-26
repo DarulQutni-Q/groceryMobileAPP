@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:grocery_shared/shared.dart';
 
 import '../../../core/theme.dart';
+import '../../catalog/presentation/customer_shell.dart';
 
 class CheckoutSuccessPage extends StatelessWidget {
   const CheckoutSuccessPage({super.key, required this.result});
@@ -52,12 +53,12 @@ class CheckoutSuccessPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
                 FilledButton(
-                  onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Detail pesanan akan tersedia di tahap B4.',
-                      ),
+                  onPressed: () => Navigator.pushAndRemoveUntil<void>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CustomerShell(initialTab: 3),
                     ),
+                    (route) => route.isFirst,
                   ),
                   child: const Text('Lihat Pesanan'),
                 ),

@@ -7,22 +7,33 @@ import '../../auth/application/auth_provider.dart';
 import '../../checkout/presentation/alamat_page.dart';
 import '../../checkout/presentation/checkout_page.dart';
 import '../../checkout/application/checkout_provider.dart';
+import 'chat_driver_page.dart';
 import 'home_page.dart';
 import 'promo_page.dart';
 import 'pesanan_page.dart';
 import 'scan_qr_page.dart';
+import '../../checkout/presentation/struk_page.dart';
 
 class CustomerShell extends ConsumerStatefulWidget {
-  const CustomerShell({super.key, this.now});
+  const CustomerShell({super.key, this.now, this.initialTab = 0});
 
   /// Diteruskan ke HomePage untuk countdown flash sale. Null = jam asli.
   final DateTime Function()? now;
+
+  /// Tab awal saat shell dibuka (0 = Beranda, 3 = Pesanan).
+  final int initialTab;
   @override
   ConsumerState<CustomerShell> createState() => _CustomerShellState();
 }
 
 class _CustomerShellState extends ConsumerState<CustomerShell> {
-  int tab = 0;
+  late int tab;
+
+  @override
+  void initState() {
+    super.initState();
+    tab = widget.initialTab;
+  }
   @override
   Widget build(BuildContext context) => Scaffold(
     body: SafeArea(
@@ -32,7 +43,17 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
           HomePage(now: widget.now),
           const PromoPage(),
           const _SoonPage('Scan QR'),
-          const PesananPage(),
+          PesananPage(
+            onLihatStruk: () => Navigator.push<void>(
+              context,
+              MaterialPageRoute(builder: (_) => const StrukPage()),
+            ),
+            onChatDriver: () => Navigator.push<void>(
+              context,
+              MaterialPageRoute(builder: (_) => const ChatDriverPage()),
+            ),
+            onBeliLagi: () => setState(() => tab = 0),
+          ),
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
