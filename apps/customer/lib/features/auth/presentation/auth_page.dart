@@ -18,13 +18,14 @@ class AuthPage extends ConsumerStatefulWidget {
 class _AuthPageState extends ConsumerState<AuthPage> {
   final form = GlobalKey<FormState>();
   final identity = TextEditingController();
+  final phone = TextEditingController();
   final password = TextEditingController();
   final confirm = TextEditingController();
   bool remember = true;
 
   @override
   void dispose() {
-    for (final controller in [identity, password, confirm]) {
+    for (final controller in [identity, phone, password, confirm]) {
       controller.dispose();
     }
     super.dispose();
@@ -39,8 +40,13 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     final auth = ref.read(authProvider.notifier);
     // Referensi register hanya punya email + kata sandi + verifikasi;
     // phone opsional di backend, jadi tidak dikirim dari form ini.
+    final phoneValue = phone.text.trim();
     final success = widget.register
-        ? await auth.register(identity.text.trim(), password.text)
+        ? await auth.register(
+            identity.text.trim(),
+            password.text,
+            phone: phoneValue.isEmpty ? null : phoneValue,
+          )
         : await auth.login(
             identity.text.trim(),
             password.text,
@@ -159,12 +165,10 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     TextFormField(
       key: Key(widget.register ? 'register-email' : 'login-identity'),
       controller: identity,
-      keyboardType: widget.register
-          ? TextInputType.emailAddress
-          : TextInputType.phone,
+      keyboardType: TextInputType.emailAddress,
       autofillHints: widget.register
           ? const [AutofillHints.email]
-          : const [AutofillHints.telephoneNumber],
+          : const [AutofillHints.email, AutofillHints.telephoneNumber],
       textInputAction: TextInputAction.next,
       autocorrect: false,
       validator: widget.register
@@ -173,12 +177,31 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                 ? emailError(value)
                 : phoneError(value),
       decoration: InputDecoration(
-        hintText: widget.register ? 'example@gmail.com' : 'Nomor Handphone',
+        hintText: widget.register
+            ? 'example@gmail.com'
+            : 'Email atau Nomor Handphone',
         suffixIcon: widget.register
             ? null
             : const Icon(Icons.person_outline, size: 20),
       ),
     ),
+    if (widget.register) ...[
+      const SizedBox(height: 18),
+      TextFormField(
+        key: const Key('register-phone'),
+        controller: phone,
+        keyboardType: TextInputType.phone,
+        autofillHints: const [AutofillHints.telephoneNumber],
+        textInputAction: TextInputAction.next,
+        autocorrect: false,
+        validator: (value) =>
+            value == null || value.trim().isEmpty ? null : phoneError(value),
+        decoration: const InputDecoration(
+          hintText: 'Nomor Handphone (opsional)',
+          suffixIcon: Icon(Icons.phone_outlined, size: 20),
+        ),
+      ),
+    ],
     const SizedBox(height: 18),
     PasswordField(
       key: Key(widget.register ? 'register-password' : 'login-password'),

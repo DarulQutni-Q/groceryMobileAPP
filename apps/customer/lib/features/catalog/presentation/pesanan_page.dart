@@ -14,7 +14,12 @@ class PesananPage extends StatelessWidget {
     this.onLihatStruk,
     this.onChatDriver,
     this.onBeliLagi,
+    this.showBack = false,
   });
+
+  /// True kalau halaman didorong mandiri (bukan tab): tampilkan tombol
+  /// kembali di header.
+  final bool showBack;
   final VoidCallback? onLihatStruk;
   final VoidCallback? onChatDriver;
   final VoidCallback? onBeliLagi;
@@ -24,7 +29,7 @@ class PesananPage extends StatelessWidget {
     children: [
       LimeHeader(
         title: 'Pesanan Saya',
-        showBack: false,
+        showBack: showBack,
         centerTitle: false,
         height: 200,
         topPadding: 38,

@@ -4,18 +4,29 @@ import 'package:grocery_shared/shared.dart';
 
 import '../../../core/theme.dart';
 import '../../auth/application/auth_provider.dart';
+import '../../checkout/application/checkout_provider.dart';
 import '../application/produk_provider.dart';
 import 'cart_page.dart';
+import 'chat_driver_page.dart';
+import 'notifications_page.dart';
+import 'pesanan_page.dart';
+import 'promo_page.dart';
+import 'scan_qr_page.dart';
+import '../../checkout/presentation/struk_page.dart';
 import 'catalog_widgets.dart';
 import 'poinku_page.dart';
 import 'product_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key, this.now});
+  const HomePage({super.key, this.now, this.onGoToTab});
 
   /// Jam yang dipakai countdown flash sale. Null = jam asli. Diisi hanya
   /// oleh golden test supaya teks countdown tidak berubah tiap detik.
   final DateTime Function()? now;
+
+  /// Pindah tab shell (1 = Promo, 3 = Pesanan). Null kalau Home
+  /// dipakai mandiri (golden test): tombol pakai fallback dorong halaman.
+  final ValueChanged<int>? onGoToTab;
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
 }
@@ -97,10 +108,19 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                 ),
                 IconButton.filledTonal(
-                  onPressed: () => segera(context),
+                  onPressed: () => Navigator.push<void>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const NotificationsPage(),
+                    ),
+                  ),
                   tooltip: 'Notifikasi',
                   icon: Badge(
-                    label: const Text('3'),
+                    isLabelVisible: ref.watch(pendingCheckoutProvider).maybeWhen(
+                      data: (value) => value,
+                      orElse: () => false,
+                    ),
+                    label: const Text('1'),
                     backgroundColor: dangerRed,
                     child: const Icon(
                       Icons.notifications_none_rounded,
@@ -159,7 +179,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                         icon: const Icon(Icons.close, size: 18),
                       ),
                     IconButton(
-                      onPressed: () => segera(context),
+                      onPressed: () => Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ScanQrPage(),
+                        ),
+                      ),
                       tooltip: 'Scan produk',
                       icon: const Icon(Icons.qr_code_scanner, size: 18),
                     ),
@@ -189,12 +214,16 @@ class _HomePageState extends ConsumerState<HomePage> {
                       description:
                           'Ada 4 voucher belanja diskon 50% siap kamu pakai.',
                       buttonLabel: 'Klaim Semua Voucher',
+                      onClaim: () =>
+                          _goToPromoTab(context, widget.onGoToTab),
                     )
                   : _PromoBanner(
                       label: values.first.judul,
                       greeting: 'Selamat pagi, ${user.nama}',
                       description: values.first.deskripsi,
                       buttonLabel: values.first.labelTombol,
+                      onClaim: () =>
+                          _goToPromoTab(context, widget.onGoToTab),
                     ),
               error: (_, _) => _PromoBanner(
                 label: 'INDOMARET POINKU • PROMO SPESIAL',
@@ -202,13 +231,18 @@ class _HomePageState extends ConsumerState<HomePage> {
                 description:
                     'Ada 4 voucher belanja diskon 50% siap kamu pakai.',
                 buttonLabel: 'Klaim Semua Voucher',
+                onClaim: () =>
+                    _goToPromoTab(context, widget.onGoToTab),
               ),
               loading: () => const LinearProgressIndicator(minHeight: 2),
             ),
             const SizedBox(height: 10),
             const _MemberCard(),
             const SizedBox(height: 12),
-            _CategoryGrid(categories: categories.asData?.value ?? const []),
+            _CategoryGrid(
+              categories: categories.asData?.value ?? const [],
+              onGoToTab: widget.onGoToTab,
+            ),
             const SizedBox(height: 10),
             Row(
               children: [
@@ -474,11 +508,13 @@ class _PromoBanner extends StatelessWidget {
     required this.greeting,
     required this.description,
     required this.buttonLabel,
+    required this.onClaim,
   });
   final String label;
   final String greeting;
   final String description;
   final String buttonLabel;
+  final VoidCallback onClaim;
   @override
   Widget build(BuildContext context) => Card(
     margin: EdgeInsets.zero,
@@ -544,7 +580,7 @@ class _PromoBanner extends StatelessWidget {
               Text(description, style: const TextStyle(fontSize: 11)),
               const SizedBox(height: 8),
               FilledButton(
-                onPressed: () => segera(context),
+                onPressed: onClaim,
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   foregroundColor: Colors.white,
@@ -765,9 +801,55 @@ class _MemberCard extends StatelessWidget {
   );
 }
 
+/// Pindah ke tab Promo (index 1). Di luar shell (mis. golden test),
+/// dorong halaman Promo mandiri dengan tombol kembali.
+void _goToPromoTab(BuildContext context, ValueChanged<int>? onGoToTab) {
+  final go = onGoToTab;
+  if (go != null) {
+    go(1);
+    return;
+  }
+  Navigator.push<void>(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const Scaffold(body: PromoPage(showBack: true)),
+    ),
+  );
+}
+
+/// Pindah ke tab Pesanan (index 3). Di luar shell, dorong halaman
+/// Pesanan mandiri dengan tombol kembali.
+void _goToPesananTab(BuildContext context, ValueChanged<int>? onGoToTab) {
+  final go = onGoToTab;
+  if (go != null) {
+    go(3);
+    return;
+  }
+  Navigator.push<void>(
+    context,
+    MaterialPageRoute(
+      builder: (_) => Scaffold(
+        body: PesananPage(
+          showBack: true,
+          onLihatStruk: () => Navigator.push<void>(
+            context,
+            MaterialPageRoute(builder: (_) => const StrukPage()),
+          ),
+          onChatDriver: () => Navigator.push<void>(
+            context,
+            MaterialPageRoute(builder: (_) => const ChatDriverPage()),
+          ),
+          onBeliLagi: () => Navigator.maybePop(context),
+        ),
+      ),
+    ),
+  );
+}
+
 class _CategoryGrid extends ConsumerWidget {
-  const _CategoryGrid({required this.categories});
+  const _CategoryGrid({required this.categories, this.onGoToTab});
   final List<String> categories;
+  final ValueChanged<int>? onGoToTab;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const entries = <(String, IconData, Color)>[
@@ -807,23 +889,45 @@ class _CategoryGrid extends ConsumerWidget {
                 key: Key('category-${categoryFor(i) ?? 'soon-$i'}'),
                 borderRadius: BorderRadius.circular(16),
                 onTap: () {
-                  final candidates = i == 2
-                      ? ['Beras', 'Minyak']
-                      : i == 4
-                      ? ['Sayur', 'Buah', 'Fresh']
-                      : <String>[];
-                  final category = categories
-                      .where(
-                        (value) => candidates.any(
-                          (term) =>
-                              value.toLowerCase().contains(term.toLowerCase()),
+                  switch (i) {
+                    case 0:
+                    case 1:
+                    case 3:
+                    case 6:
+                      _goToPromoTab(context, onGoToTab);
+                    case 2:
+                    case 4:
+                      final category = categoryFor(i);
+                      if (category != null) {
+                        ref
+                            .read(produkProvider.notifier)
+                            .filterKategori(category);
+                      }
+                      Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const CatalogPage(),
                         ),
-                      )
-                      .firstOrNull;
-                  if (category == null) {
-                    segera(context);
-                  } else {
-                    ref.read(produkProvider.notifier).filterKategori(category);
+                      );
+                    case 5:
+                      showDialog<void>(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: const Text('Tagihan PLN'),
+                          content: const Text(
+                            'Pembayaran tagihan belum tersedia di GardenMart '
+                            'karena belum ada layanan tagihan di backend.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Tutup'),
+                            ),
+                          ],
+                        ),
+                      );
+                    case 7:
+                      _goToPesananTab(context, onGoToTab);
                   }
                 },
                 child: Padding(

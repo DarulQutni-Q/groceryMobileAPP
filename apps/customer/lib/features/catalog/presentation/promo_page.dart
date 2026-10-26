@@ -5,14 +5,18 @@ import '../../../core/theme.dart';
 
 /// Tab Promo: Promo & Kupon sesuai desain Figma.
 class PromoPage extends StatelessWidget {
-  const PromoPage({super.key});
+  const PromoPage({super.key, this.showBack = false});
+
+  /// True kalau halaman didorong mandiri (bukan tab): tampilkan tombol
+  /// kembali di header.
+  final bool showBack;
 
   @override
   Widget build(BuildContext context) => Column(
     children: [
       LimeHeader(
         title: 'Promo & Kupon',
-        showBack: false,
+        showBack: showBack,
         height: 200,
         topPadding: 38,
         actions: [

@@ -43,7 +43,10 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
       child: IndexedStack(
         index: tab,
         children: [
-          HomePage(now: widget.now),
+          HomePage(
+            now: widget.now,
+            onGoToTab: (value) => setState(() => tab = value),
+          ),
           const PromoPage(),
           const _SoonPage('Scan QR'),
           PesananPage(
@@ -57,83 +60,7 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
             ),
             onBeliLagi: () => setState(() => tab = 0),
           ),
-          Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.account_circle_outlined,
-                  size: 64,
-                  color: gardenInk,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  ref.watch(authProvider).user!.nama,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ref
-                    .watch(pendingCheckoutProvider)
-                    .when(
-                      data: (pending) => pending
-                          ? FilledButton(
-                              onPressed: () => Navigator.push<void>(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const CheckoutPage(items: []),
-                                ),
-                              ),
-                              child: const Text('Lanjutkan Pembayaran'),
-                            )
-                          : const SizedBox.shrink(),
-                      loading: () => const SizedBox.shrink(),
-                      error: (_, _) => TextButton(
-                        onPressed: () =>
-                            ref.invalidate(pendingCheckoutProvider),
-                        child: const Text('Periksa Pembayaran Tersimpan'),
-                      ),
-                    ),
-                OutlinedButton.icon(
-                  onPressed: () => Navigator.push<void>(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AlamatPage()),
-                  ),
-                  icon: const Icon(Icons.location_on_outlined),
-                  label: const Text('Alamat Pengiriman'),
-                ),
-                OutlinedButton.icon(
-                  onPressed: () => Navigator.push<void>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => PengaturanPage(
-                        onUbahProfil: () => Navigator.push<void>(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const UbahProfilPage(),
-                          ),
-                        ),
-                        onMetodeBayar: () => Navigator.push<void>(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const MetodePembayaranPage(),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  icon: const Icon(Icons.settings_outlined),
-                  label: const Text('Pengaturan'),
-                ),
-                FilledButton(
-                  onPressed: ref.read(authProvider.notifier).logout,
-                  child: const Text('Keluar'),
-                ),
-              ],
-            ),
-          ),
+          const _AkunTab(),
         ],
       ),
     ),
@@ -149,6 +76,211 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
           setState(() => tab = value);
         }
       },
+    ),
+  );
+}
+
+
+/// Tab Akun sebagai layout profil: header avatar + nama + kontak, lalu
+/// menu Alamat, Pengaturan, dan Keluar. Pengaturan dibuat eksplisit agar
+/// mudah ditemukan (sebelumnya hanya deretan tombol di tengah layar).
+class _AkunTab extends ConsumerWidget {
+  const _AkunTab();
+
+  String _initials(String nama) {
+    final parts = nama.trim().split(RegExp(r'\s+'));
+    final first = parts.first.isEmpty ? '' : parts.first[0];
+    final second = parts.length > 1 && parts[1].isNotEmpty ? parts[1][0] : '';
+    return (first + second).toUpperCase();
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authProvider).user;
+    if (user == null) return const SizedBox.shrink();
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: gardenInk,
+                child: Text(
+                  _initials(user.nama),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.nama,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: gardenInk,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      user.email,
+                      style: const TextStyle(fontSize: 12, color: textGrey),
+                    ),
+                    if (user.phone != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        user.phone!,
+                        style: const TextStyle(fontSize: 12, color: textGrey),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        ref.watch(pendingCheckoutProvider).when(
+          data: (pending) => pending
+              ? Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed: () => Navigator.push<void>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const CheckoutPage(items: []),
+                          ),
+                        ),
+                        child: const Text('Lanjutkan Pembayaran'),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                )
+              : const SizedBox.shrink(),
+          loading: () => const SizedBox.shrink(),
+          error: (_, _) => TextButton(
+            onPressed: () => ref.invalidate(pendingCheckoutProvider),
+            child: const Text('Periksa Pembayaran Tersimpan'),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            children: [
+              _AkunMenuRow(
+                icon: Icons.location_on_outlined,
+                title: 'Alamat Pengiriman',
+                subtitle: 'Kelola alamat antar pesanan',
+                onTap: () => Navigator.push<void>(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AlamatPage()),
+                ),
+              ),
+              const Divider(height: 1, color: gardenBorder),
+              _AkunMenuRow(
+                icon: Icons.settings_outlined,
+                title: 'Pengaturan',
+                subtitle: 'Profil, kata sandi, pembayaran, preferensi',
+                onTap: () => Navigator.push<void>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PengaturanPage(
+                      onUbahProfil: () => Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const UbahProfilPage(),
+                        ),
+                      ),
+                      onMetodeBayar: () => Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const MetodePembayaranPage(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton(
+            onPressed: ref.read(authProvider.notifier).logout,
+            child: const Text('Keluar'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AkunMenuRow extends StatelessWidget {
+  const _AkunMenuRow({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) => InkWell(
+    key: Key('akun-$title'),
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(20),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        children: [
+          Icon(icon, size: 22, color: gardenInk),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: gardenInk,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: const TextStyle(fontSize: 11, color: textGrey),
+                ),
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right, size: 20, color: textGrey),
+        ],
+      ),
     ),
   );
 }
