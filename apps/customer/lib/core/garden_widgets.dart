@@ -50,7 +50,7 @@ class LimeHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (showBack)
-                    _RoundIconButton(
+                    RoundIconButton(
                       icon: Icons.arrow_back,
                       filled: backFilled,
                       onPressed: () => Navigator.maybePop(context),
@@ -106,8 +106,11 @@ class LimeHeader extends StatelessWidget {
   );
 }
 
-class _RoundIconButton extends StatelessWidget {
-  const _RoundIconButton({
+/// Tombol ikon bulat: putih penuh (filled) atau outline, dipakai header
+/// lime dan header keranjang.
+class RoundIconButton extends StatelessWidget {
+  const RoundIconButton({
+    super.key,
     required this.icon,
     required this.onPressed,
     this.filled = true,
@@ -236,7 +239,16 @@ class DarkPillButton extends StatelessWidget {
             child: Text(
               label,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w700),
+              // Warna eksplisit: tanpa ini, di dalam _PaymentBar keranjang
+              // (Material totalGreen) teks tombol mewarisi warna abu-abu
+              // gelap #657168 dari DefaultTextStyle sekitar, bukan putih
+              // dari foregroundColor tombol. Di layar Alamat tidak berubah,
+              // karena di sana teksnya memang sudah putih.
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
             ),
           ),
         ],
