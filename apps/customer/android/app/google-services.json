@@ -1,0 +1,121 @@
+{
+  "project_info": {
+    "project_number": "812183398359",
+    "project_id": "grocery-app-4982d",
+    "storage_bucket": "grocery-app-4982d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:812183398359:android:0bc206b43d944342c5cd92",
+        "android_client_info": {
+          "package_name": "com.daerul.seller"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "812183398359-ekbs0c2bk9a1h5rtj0lbonp6gr0cbkod.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.daerul.seller",
+            "certificate_hash": "696db45a0386acc6318b57eea895ae1f3236a427"
+          }
+        },
+        {
+          "client_id": "812183398359-3t5ehb10duoife0j1a7qil7s4qc5ukpb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbrA5Udn-Dj_HGIaCae8l4iDe1ihmRMFE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "812183398359-3t5ehb10duoife0j1a7qil7s4qc5ukpb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:812183398359:android:f5cb893d9a782b1ec5cd92",
+        "android_client_info": {
+          "package_name": "com.gardenmart.daerul"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "812183398359-5u9j41fqjd6i2naa81eoanfiusg9qoc5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gardenmart.daerul",
+            "certificate_hash": "79f8d14b795bbac19c9dba9d5f888b43c35eb47c"
+          }
+        },
+        {
+          "client_id": "812183398359-3t5ehb10duoife0j1a7qil7s4qc5ukpb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbrA5Udn-Dj_HGIaCae8l4iDe1ihmRMFE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "812183398359-3t5ehb10duoife0j1a7qil7s4qc5ukpb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:812183398359:android:a5b513f956561181c5cd92",
+        "android_client_info": {
+          "package_name": "com.gardenmart.gardenmart_customer.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "812183398359-ej3kos87fkevonlep3cgqnd4vv68fbtt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gardenmart.gardenmart_customer.dev",
+            "certificate_hash": "79f8d14b795bbac19c9dba9d5f888b43c35eb47c"
+          }
+        },
+        {
+          "client_id": "812183398359-3t5ehb10duoife0j1a7qil7s4qc5ukpb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbrA5Udn-Dj_HGIaCae8l4iDe1ihmRMFE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "812183398359-3t5ehb10duoife0j1a7qil7s4qc5ukpb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
