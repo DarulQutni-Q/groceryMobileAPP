@@ -5,7 +5,9 @@ import 'package:grocery_shared/shared.dart';
 import '../../../core/garden_widgets.dart';
 import '../../../core/theme.dart';
 import '../../auth/application/auth_provider.dart';
+import '../../checkout/presentation/alamat_page.dart';
 import '../../checkout/presentation/checkout_page.dart';
+import 'promo_page.dart';
 import '../application/produk_provider.dart';
 import 'catalog_widgets.dart';
 
@@ -69,7 +71,45 @@ class CartPage extends ConsumerWidget {
                   const Spacer(),
                   RoundIconButton(
                     icon: Icons.more_vert,
-                    onPressed: () => segera(context),
+                    onPressed: () => showModalBottomSheet<void>(
+                      context: context,
+                      builder: (sheetContext) => SafeArea(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ListTile(
+                              leading: const Icon(
+                                Icons.delete_outline,
+                                color: dangerRed,
+                              ),
+                              title: const Text('Kosongkan Keranjang'),
+                              onTap: () async {
+                                Navigator.pop(sheetContext);
+                                await ref
+                                    .read(provider.notifier)
+                                    .kosongkan();
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Keranjang dikosongkan',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.close),
+                              title: const Text('Tutup'),
+                              onTap: () =>
+                                  Navigator.pop(sheetContext),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -127,7 +167,14 @@ class CartPage extends ConsumerWidget {
                                       ),
                                     ),
                                     TextButton(
-                                      onPressed: () => segera(context),
+                                      onPressed: () =>
+                                          Navigator.push<void>(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              const AlamatPage(),
+                                        ),
+                                      ),
                                       style: TextButton.styleFrom(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 4,
@@ -265,7 +312,14 @@ class CartPage extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: InkWell(
-                              onTap: () => segera(context),
+                              onTap: () => Navigator.push<void>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const Scaffold(
+                                    body: PromoPage(showBack: true),
+                                  ),
+                                ),
+                              ),
                               borderRadius: BorderRadius.circular(16),
                               child: Padding(
                                 padding: const EdgeInsets.all(13),

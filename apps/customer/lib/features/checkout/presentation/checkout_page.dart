@@ -12,6 +12,7 @@ import '../application/checkout_session.dart';
 import 'alamat_page.dart';
 import 'checkout_success_page.dart';
 import 'metode_bayar_page.dart';
+import '../../catalog/presentation/promo_page.dart';
 import 'payment_page.dart';
 
 class CheckoutPage extends ConsumerStatefulWidget {
@@ -642,7 +643,13 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   }
 
   Widget _voucherCard() => _card(
-    onTap: () => segera(context),
+    onTap: () => Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            const Scaffold(body: PromoPage(showBack: true)),
+      ),
+    ),
     child: Row(
       children: [
         const Icon(
