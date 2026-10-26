@@ -9,6 +9,7 @@ import '../../checkout/presentation/checkout_page.dart';
 import '../../checkout/application/checkout_provider.dart';
 import 'home_page.dart';
 import 'promo_page.dart';
+import 'pesanan_page.dart';
 import 'scan_qr_page.dart';
 
 class CustomerShell extends ConsumerStatefulWidget {
@@ -31,7 +32,7 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
           HomePage(now: widget.now),
           const PromoPage(),
           const _SoonPage('Scan QR'),
-          const _SoonPage('Pesanan'),
+          const PesananPage(),
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
