@@ -101,7 +101,7 @@ void main() {
   });
 
   testWidgets(
-    'missing reset endpoint shows soon without pretending email was sent',
+    'missing reset endpoint shows not found without pretending email was sent',
     (tester) async {
       fixture = AuthFixture()..installStorage();
       fixture.api.client.dio.httpClientAdapter = CustomerAdapter(
@@ -116,7 +116,7 @@ void main() {
         'pembeli@example.com',
       );
       await tap(tester, find.text('Send Email'));
-      expect(find.text('Segera hadir'), findsOneWidget);
+      expect(find.text('Email tidak ditemukan'), findsOneWidget);
       expect(find.text('Email Reset Sent!'), findsNothing);
     },
   );
