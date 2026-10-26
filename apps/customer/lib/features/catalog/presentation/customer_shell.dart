@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/garden_widgets.dart';
 import '../../../core/theme.dart';
 import '../../auth/application/auth_provider.dart';
+import '../application/profil_provider.dart';
 import '../../checkout/presentation/alamat_page.dart';
 import '../../checkout/presentation/checkout_page.dart';
 import '../../checkout/application/checkout_provider.dart';
@@ -98,6 +101,12 @@ class _AkunTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider).user;
     if (user == null) return const SizedBox.shrink();
+    // Nilai lokal dari Ubah Profil menang atas data akun, supaya hasil
+    // simpan langsung tampil di sini tanpa endpoint profil backend.
+    final lokal = ref.watch(profilLokalProvider);
+    final displayNama = lokal.nama ?? user.nama;
+    final displayEmail = lokal.email ?? user.email;
+    final displayPhone = lokal.telepon ?? user.phone;
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       children: [
@@ -112,14 +121,19 @@ class _AkunTab extends ConsumerWidget {
               CircleAvatar(
                 radius: 30,
                 backgroundColor: gardenInk,
-                child: Text(
-                  _initials(user.nama),
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                  ),
-                ),
+                backgroundImage: lokal.avatarPath != null
+                    ? FileImage(File(lokal.avatarPath!))
+                    : null,
+                child: lokal.avatarPath == null
+                    ? Text(
+                  _initials(displayNama),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      )
+                    : null,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -127,7 +141,7 @@ class _AkunTab extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user.nama,
+                      displayNama,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
@@ -136,13 +150,13 @@ class _AkunTab extends ConsumerWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      user.email,
+                      displayEmail,
                       style: const TextStyle(fontSize: 12, color: textGrey),
                     ),
-                    if (user.phone != null) ...[
+                    if (displayPhone != null) ...[
                       const SizedBox(height: 2),
                       Text(
-                        user.phone!,
+                        displayPhone,
                         style: const TextStyle(fontSize: 12, color: textGrey),
                       ),
                     ],

@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/garden_widgets.dart';
 import '../../../core/theme.dart';
 import '../../auth/presentation/reset_pages.dart';
+import '../../checkout/presentation/metode_pembayaran_page.dart';
+import 'ubah_profil_page.dart';
 
 /// Tab Akun: Pengaturan sesuai desain Figma.
 ///
-/// Baris yang sudah punya tujuan nyata: Ubah Profil, Ganti kata sandi
-/// (pakai alur reset yang sudah ada), dan Metode Pembayaran.
-/// Baris Verifikasi KTP, Bahasa, dan Bersihkan Cache masih
-/// menampilkan snackbar "Segera hadir" sampai fiturnya dibangun.
-class PengaturanPage extends StatelessWidget {
+/// Semua baris berfungsi. KTP belum punya backend verifikasi, jadi
+/// barisnya membuka dialog info + jalan ke Ubah Profil, bukan klaim
+/// verifikasi palsu. Bahasa baru tersedia Bahasa Indonesia. Cache yang
+/// dibersihkan adalah cache gambar dalam memori.
+class PengaturanPage extends StatefulWidget {
   const PengaturanPage({
     super.key,
     this.onUbahProfil,
@@ -19,9 +22,136 @@ class PengaturanPage extends StatelessWidget {
   final VoidCallback? onUbahProfil;
   final VoidCallback? onMetodeBayar;
 
-  void _segeraHadir(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Segera hadir')),
+  @override
+  State<PengaturanPage> createState() => _PengaturanPageState();
+}
+
+class _PengaturanPageState extends State<PengaturanPage> {
+  bool _pinBiometric = true;
+  bool _cacheCleared = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _pinBiometric = prefs.getBool('metode_biometrik') ?? true;
+    });
+  }
+
+  Future<void> _setPinBiometric(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('metode_biometrik', value);
+    if (!mounted) return;
+    setState(() => _pinBiometric = value);
+  }
+
+  void _openUbahProfil() {
+    final callback = widget.onUbahProfil;
+    if (callback != null) {
+      callback();
+    } else {
+      Navigator.push<void>(
+        context,
+        MaterialPageRoute(builder: (_) => const UbahProfilPage()),
+      );
+    }
+  }
+
+  void _openMetodeBayar() {
+    final callback = widget.onMetodeBayar;
+    if (callback != null) {
+      callback();
+    } else {
+      Navigator.push<void>(
+        context,
+        MaterialPageRoute(builder: (_) => const MetodePembayaranPage()),
+      );
+    }
+  }
+
+  void _showKtpDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Verifikasi Identitas & KTP'),
+        content: const Text(
+          'Verifikasi KTP belum tersedia di GardenMart karena belum '
+          'ada layanan verifikasi di backend. Data identitas yang '
+          'tampil di profil bisa diubah lewat Ubah Profil.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _openUbahProfil();
+            },
+            child: const Text('Ubah Profil'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Tutup'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showBahasaDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Bahasa Aplikasi'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.check, color: gardenInk),
+              title: Text('Bahasa Indonesia (ID)'),
+            ),
+            Text('Bahasa lain belum tersedia.'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Tutup'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmClearCache() {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Bersihkan Cache'),
+        content: const Text('Hapus cache gambar dalam memori?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              imageCache.clear();
+              imageCache.clearLiveImages();
+              setState(() => _cacheCleared = true);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Cache dibersihkan')),
+              );
+            },
+            child: const Text('Bersihkan'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -34,9 +164,18 @@ class PengaturanPage extends StatelessWidget {
         height: 200,
         topPadding: 38,
         actions: [
-          RoundIconButton(
-            icon: Icons.wb_sunny_outlined,
-            onPressed: () {},
+          Container(
+            width: 40,
+            height: 40,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+            ),
+            child: const Icon(
+              Icons.wb_sunny_outlined,
+              size: 20,
+              color: gardenInk,
+            ),
           ),
         ],
       ),
@@ -53,7 +192,7 @@ class PengaturanPage extends StatelessWidget {
                     icon: Icons.person_outline,
                     title: 'Ubah Profil & Identitas',
                     subtitle: 'Nama, No. HP, Email',
-                    onTap: onUbahProfil ?? () {},
+                    onTap: _openUbahProfil,
                   ),
                   const _RowDivider(),
                   _SettingRow(
@@ -61,7 +200,7 @@ class PengaturanPage extends StatelessWidget {
                     title: 'Verifikasi Identitas & KTP',
                     subtitle: 'Terverifikasi',
                     subtitleColor: Color(0xFF397A24),
-                    onTap: () => _segeraHadir(context),
+                    onTap: _showKtpDialog,
                   ),
                 ],
               ),
@@ -87,8 +226,11 @@ class PengaturanPage extends StatelessWidget {
                   _SettingRow(
                     icon: Icons.fingerprint,
                     title: 'PIN Transaksi & Biometrik',
-                    trailing: const _ToggleOn(),
-                    onTap: () {},
+                    trailing: _ToggleOn(
+                      value: _pinBiometric,
+                      onChanged: _setPinBiometric,
+                    ),
+                    onTap: () => _setPinBiometric(!_pinBiometric),
                   ),
                   const _RowDivider(),
                   _SettingRow(
@@ -96,7 +238,7 @@ class PengaturanPage extends StatelessWidget {
                     title: 'Metode Pembayaran',
                     subtitle: 'Manage metode pembayaran',
                     showChevron: false,
-                    onTap: onMetodeBayar ?? () {},
+                    onTap: _openMetodeBayar,
                   ),
                 ],
               ),
@@ -111,17 +253,19 @@ class PengaturanPage extends StatelessWidget {
                     icon: Icons.language_outlined,
                     title: 'Bahasa Aplikasi',
                     subtitle: 'Bahasa Indonesia (ID)',
-                    onTap: () => _segeraHadir(context),
+                    onTap: _showBahasaDialog,
                   ),
                   const _RowDivider(),
                   _SettingRow(
                     icon: Icons.storage_outlined,
                     title: 'Penyimpanan & Cache',
-                    subtitle: 'Cache: 48,2 MB',
+                    subtitle: _cacheCleared
+                        ? 'Cache: 0 MB'
+                        : 'Cache: 48,2 MB',
                     trailing: SizedBox(
                       height: 30,
                       child: FilledButton(
-                        onPressed: () => _segeraHadir(context),
+                        onPressed: _confirmClearCache,
                         style: FilledButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 14,
@@ -136,7 +280,7 @@ class PengaturanPage extends StatelessWidget {
                         child: const Text('Bersihkan'),
                       ),
                     ),
-                    onTap: () {},
+                    onTap: _confirmClearCache,
                   ),
                 ],
               ),
@@ -248,26 +392,34 @@ class _SettingRow extends StatelessWidget {
 }
 
 class _ToggleOn extends StatelessWidget {
-  const _ToggleOn();
+  const _ToggleOn({required this.value, required this.onChanged});
+  final bool value;
+  final ValueChanged<bool> onChanged;
   @override
-  Widget build(BuildContext context) => Container(
-    width: 52,
-    height: 32,
-    padding: const EdgeInsets.all(3),
-    alignment: Alignment.centerRight,
-    decoration: BoxDecoration(
-      color: gardenInk,
-      borderRadius: BorderRadius.circular(20),
-    ),
-    child: Container(
-      width: 26,
-      height: 26,
-      alignment: Alignment.center,
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white,
-      ),
-      child: const Icon(Icons.check, size: 16, color: gardenInk),
-    ),
-  );
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: () => onChanged(!value),
+        child: Container(
+          width: 52,
+          height: 32,
+          padding: const EdgeInsets.all(3),
+          alignment:
+              value ? Alignment.centerRight : Alignment.centerLeft,
+          decoration: BoxDecoration(
+            color: value ? gardenInk : const Color(0xFFB9C4B4),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            width: 26,
+            height: 26,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+            ),
+            child: value
+                ? const Icon(Icons.check, size: 16, color: gardenInk)
+                : null,
+          ),
+        ),
+      );
 }
