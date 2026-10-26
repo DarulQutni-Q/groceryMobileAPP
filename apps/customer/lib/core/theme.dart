@@ -44,6 +44,7 @@ ThemeData customerTheme() => ThemeData(
       foregroundColor: gardenInk,
       minimumSize: const Size(0, 44),
       side: const BorderSide(color: gardenBorder),
+      textStyle: const TextStyle(fontFamily: 'Roboto'),
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
