@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/garden_widgets.dart';
 import '../../../core/theme.dart';
@@ -6,8 +7,59 @@ import '../../../core/theme.dart';
 /// Kelola metode pembayaran (layar Pengaturan > Metode Pembayaran).
 /// Beda dengan [MetodeBayarPage] yang dipakai sebagai picker saat checkout:
 /// halaman ini menampilkan dompet dan kartu yang sudah tersimpan.
-class MetodePembayaranPage extends StatelessWidget {
+class MetodePembayaranPage extends StatefulWidget {
   const MetodePembayaranPage({super.key});
+
+  @override
+  State<MetodePembayaranPage> createState() =>
+      _MetodePembayaranPageState();
+}
+
+class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
+  int _selected = 0;
+  bool _biometric = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _selected = prefs.getInt('metode_utama') ?? 0;
+      _biometric = prefs.getBool('metode_biometrik') ?? true;
+    });
+  }
+
+  Future<void> _save() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('metode_utama', _selected);
+    await prefs.setBool('metode_biometrik', _biometric);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Metode pembayaran tersimpan')),
+    );
+    Navigator.maybePop(context);
+  }
+
+  void _honestDialog(String title, String message) {
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Tutup'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -73,7 +125,11 @@ class MetodePembayaranPage extends StatelessWidget {
                             SizedBox(
                               height: 30,
                               child: FilledButton(
-                                onPressed: () {},
+                                onPressed: () => _honestDialog(
+                                  'Top Up GoPay',
+                                  'Top Up GoPay belum tersedia di GardenMart '
+                                  'karena belum ada integrasi e-wallet di backend.',
+                                ),
                                 style: FilledButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
@@ -129,7 +185,11 @@ class MetodePembayaranPage extends StatelessWidget {
                         SizedBox(
                           height: 30,
                           child: OutlinedButton(
-                            onPressed: () {},
+                            onPressed: () => _honestDialog(
+                              'Hubungkan ShopeePay',
+                              'Menghubungkan ShopeePay belum tersedia di GardenMart '
+                              'karena belum ada integrasi e-wallet di backend.',
+                            ),
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 14,
@@ -200,7 +260,10 @@ class MetodePembayaranPage extends StatelessWidget {
                         const SizedBox(width: 8),
                         const _MastercardMark(),
                         const SizedBox(width: 10),
-                        const _RadioDot(),
+                        _RadioDot(
+                          selected: _selected == 0,
+                          onTap: () => setState(() => _selected = 0),
+                        ),
                       ],
                     ),
                     const Padding(
@@ -249,7 +312,10 @@ class MetodePembayaranPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 10),
-                        const _RadioDot(),
+                        _RadioDot(
+                          selected: _selected == 1,
+                          onTap: () => setState(() => _selected = 1),
+                        ),
                       ],
                     ),
                   ],
@@ -285,7 +351,11 @@ class MetodePembayaranPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const _ToggleOn(),
+                    _ToggleOn(
+                      value: _biometric,
+                      onChanged: (value) =>
+                          setState(() => _biometric = value),
+                    ),
                   ],
                 ),
               ),
@@ -294,7 +364,7 @@ class MetodePembayaranPage extends StatelessWidget {
                 child: SizedBox(
                   width: 220,
                   child: FilledButton(
-                    onPressed: () {},
+                    onPressed: _save,
                     style: FilledButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
                       shape: RoundedRectangleBorder(
@@ -407,17 +477,34 @@ class _Pill extends StatelessWidget {
 }
 
 class _RadioDot extends StatelessWidget {
-  const _RadioDot();
+  const _RadioDot({required this.selected, required this.onTap});
+  final bool selected;
+  final VoidCallback onTap;
   @override
-  Widget build(BuildContext context) => Container(
-    width: 24,
-    height: 24,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      border: Border.all(color: const Color(0xFFB9C4B4), width: 2),
-      color: Colors.white,
-    ),
-  );
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Container(
+          width: 24,
+          height: 24,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: const Color(0xFFB9C4B4), width: 2),
+            color: Colors.white,
+          ),
+          child: selected
+              ? Container(
+                  width: 12,
+                  height: 12,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: gardenInk,
+                  ),
+                )
+              : null,
+        ),
+      );
 }
 
 class _MastercardMark extends StatelessWidget {
@@ -453,26 +540,34 @@ class _MastercardMark extends StatelessWidget {
 }
 
 class _ToggleOn extends StatelessWidget {
-  const _ToggleOn();
+  const _ToggleOn({required this.value, required this.onChanged});
+  final bool value;
+  final ValueChanged<bool> onChanged;
   @override
-  Widget build(BuildContext context) => Container(
-    width: 52,
-    height: 32,
-    padding: const EdgeInsets.all(3),
-    alignment: Alignment.centerRight,
-    decoration: BoxDecoration(
-      color: gardenInk,
-      borderRadius: BorderRadius.circular(20),
-    ),
-    child: Container(
-      width: 26,
-      height: 26,
-      alignment: Alignment.center,
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white,
-      ),
-      child: const Icon(Icons.check, size: 16, color: gardenInk),
-    ),
-  );
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: () => onChanged(!value),
+        child: Container(
+          width: 52,
+          height: 32,
+          padding: const EdgeInsets.all(3),
+          alignment:
+              value ? Alignment.centerRight : Alignment.centerLeft,
+          decoration: BoxDecoration(
+            color: value ? gardenInk : const Color(0xFFB9C4B4),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            width: 26,
+            height: 26,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+            ),
+            child: value
+                ? const Icon(Icons.check, size: 16, color: gardenInk)
+                : null,
+          ),
+        ),
+      );
 }

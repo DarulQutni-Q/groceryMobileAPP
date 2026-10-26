@@ -1,11 +1,112 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../checkout/presentation/struk_page.dart';
 
 import '../../../core/theme.dart';
 
 /// Chat dengan kurir toko sesuai desain Figma.
 /// Keyboard sistem tidak dirender (bukan bagian UI aplikasi).
-class ChatDriverPage extends StatelessWidget {
+class ChatDriverPage extends StatefulWidget {
   const ChatDriverPage({super.key});
+
+  @override
+  State<ChatDriverPage> createState() => _ChatDriverPageState();
+}
+
+class _ChatMessage {
+  const _ChatMessage({required this.mine, this.text, this.imagePath, required this.time});
+  final bool mine;
+  final String? text;
+  final String? imagePath;
+  final String time;
+}
+
+class _ChatDriverPageState extends State<ChatDriverPage> {
+  final _input = TextEditingController();
+  final _scroll = ScrollController();
+  final _messages = <_ChatMessage>[
+    const _ChatMessage(
+      mine: false,
+      text: 'Halo kak Darul, pesanan GardenMart sudah jalan ya. '
+          'Sesuai titik di depan pagar hitam rumah no 42?',
+      time: '14:33',
+    ),
+    const _ChatMessage(
+      mine: true,
+      text: 'Iya betul pak Budi. Nanti tolong titip di meja teras '
+          'aja ya pak kalau sudah sampai. Terima kasih!',
+      time: '14:34',
+    ),
+    const _ChatMessage(
+      mine: false,
+      text: 'Siap kak Darul, sekitar 3 menit lagi sampai. '
+          'Nanti saya fotokan bukti serah terimanya.',
+      time: '14:35',
+    ),
+  ];
+
+  @override
+  void dispose() {
+    _input.dispose();
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  String _now() {
+    final now = DateTime.now();
+    return '${now.hour}:${now.minute.toString().padLeft(2, '0')}';
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scroll.hasClients) {
+        _scroll.jumpTo(_scroll.position.maxScrollExtent);
+      }
+    });
+  }
+
+  void _sendText() {
+    final text = _input.text.trim();
+    if (text.isEmpty) return;
+    setState(() {
+      _messages.add(_ChatMessage(mine: true, text: text, time: _now()));
+      _input.clear();
+    });
+    _scrollToBottom();
+  }
+
+  Future<void> _sendImage(ImageSource source) async {
+    final picked = await ImagePicker().pickImage(source: source);
+    if (picked == null || !mounted) return;
+    setState(() {
+      _messages.add(
+        _ChatMessage(mine: true, imagePath: picked.path, time: _now()),
+      );
+    });
+    _scrollToBottom();
+  }
+
+  void _showDriverDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Pak Budi'),
+        content: const Text(
+          'Honda Beat • BK 4122 QD\nKurir GardenMart\n\n'
+          'Nomor telepon kurir tidak tersedia di data pesanan, '
+          'jadi panggilan belum bisa dilakukan.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Tutup'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -18,7 +119,7 @@ class ChatDriverPage extends StatelessWidget {
             child: Row(
               children: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () => Navigator.maybePop(context),
                   icon: const Icon(
                     Icons.arrow_back,
                     size: 22,
@@ -55,7 +156,7 @@ class ChatDriverPage extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: _showDriverDialog,
                   icon: const Icon(
                     Icons.phone,
                     size: 22,
@@ -75,9 +176,9 @@ class ChatDriverPage extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.inventory_2_outlined,
                     size: 22,
                     color: gardenInk,
@@ -103,12 +204,18 @@ class ChatDriverPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Text(
-                    'Lihat Detail ›',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF397A24),
+                  InkWell(
+                    onTap: () => Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(builder: (_) => const StrukPage()),
+                    ),
+                    child: Text(
+                      'Lihat Detail ›',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF397A24),
+                      ),
                     ),
                   ),
                 ],
@@ -117,39 +224,26 @@ class ChatDriverPage extends StatelessWidget {
           ),
           Expanded(
             child: ListView(
+              controller: _scroll,
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              children: const [
-                Center(
+              children: [
+                const Center(
                   child: _DateChip('Hari Ini, 14:32'),
                 ),
-                SizedBox(height: 12),
-                _SystemMessage(
+                const SizedBox(height: 12),
+                const _SystemMessage(
                   'Pesanan telah diserahkan ke Kurir Toko',
                 ),
-                SizedBox(height: 12),
-                _Bubble(
-                  mine: false,
-                  text:
-                      'Halo kak Darul, pesanan GardenMart sudah jalan ya. '
-                      'Sesuai titik di depan pagar hitam rumah no 42?',
-                  time: '14:33',
-                ),
-                SizedBox(height: 10),
-                _Bubble(
-                  mine: true,
-                  text:
-                      'Iya betul pak Budi. Nanti tolong titip di meja teras '
-                      'aja ya pak kalau sudah sampai. Terima kasih!',
-                  time: '14:34',
-                ),
-                SizedBox(height: 10),
-                _Bubble(
-                  mine: false,
-                  text:
-                      'Siap kak Darul, sekitar 3 menit lagi sampai. '
-                      'Nanti saya fotokan bukti serah terimanya.',
-                  time: '14:35',
-                ),
+                const SizedBox(height: 12),
+                for (final message in _messages) ...[
+                  const SizedBox(height: 10),
+                  _Bubble(
+                    mine: message.mine,
+                    text: message.text,
+                    imagePath: message.imagePath,
+                    time: message.time,
+                  ),
+                ],
               ],
             ),
           ),
@@ -161,21 +255,33 @@ class ChatDriverPage extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.camera_alt_outlined,
-                  size: 24,
-                  color: gardenInk,
+                IconButton(
+                  onPressed: () => _sendImage(ImageSource.camera),
+                  icon: const Icon(
+                    Icons.camera_alt_outlined,
+                    size: 24,
+                    color: gardenInk,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
                 const SizedBox(width: 12),
-                const Icon(
-                  Icons.attach_file,
-                  size: 24,
-                  color: gardenInk,
+                IconButton(
+                  onPressed: () => _sendImage(ImageSource.gallery),
+                  icon: const Icon(
+                    Icons.attach_file,
+                    size: 24,
+                    color: gardenInk,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: TextField(
-                    decoration: InputDecoration(
+                    controller: _input,
+                    onSubmitted: (_) => _sendText(),
+                    decoration: const InputDecoration(
                       hintText: 'Ketik pesan...',
                       filled: false,
                       border: InputBorder.none,
@@ -185,17 +291,21 @@ class ChatDriverPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: gardenInk,
-                  ),
-                  child: const Icon(
-                    Icons.send,
-                    size: 20,
-                    color: Colors.white,
+                InkWell(
+                  onTap: _sendText,
+                  customBorder: const CircleBorder(),
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: gardenInk,
+                    ),
+                    child: const Icon(
+                      Icons.send,
+                      size: 20,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],
@@ -203,26 +313,6 @@ class ChatDriverPage extends StatelessWidget {
           ),
         ],
       ),
-    ),
-  );
-}
-
-class _CircleIcon extends StatelessWidget {
-  const _CircleIcon({required this.icon, required this.onPressed});
-  final IconData icon;
-  final VoidCallback onPressed;
-  @override
-  Widget build(BuildContext context) => Container(
-    width: 40,
-    height: 40,
-    decoration: const BoxDecoration(
-      shape: BoxShape.circle,
-      color: Colors.white,
-    ),
-    child: IconButton(
-      onPressed: onPressed,
-      icon: Icon(icon, size: 20, color: gardenInk),
-      padding: EdgeInsets.zero,
     ),
   );
 }
@@ -285,11 +375,13 @@ class _SystemMessage extends StatelessWidget {
 class _Bubble extends StatelessWidget {
   const _Bubble({
     required this.mine,
-    required this.text,
+    this.text,
+    this.imagePath,
     required this.time,
   });
   final bool mine;
-  final String text;
+  final String? text;
+  final String? imagePath;
   final String time;
   @override
   Widget build(BuildContext context) => Row(
@@ -321,14 +413,24 @@ class _Bubble extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                text,
-                style: TextStyle(
-                  fontSize: 13,
-                  height: 1.35,
-                  color: mine ? Colors.white : gardenInk,
+              if (imagePath != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.file(
+                    File(imagePath!),
+                    width: 200,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
+              if (text != null)
+                Text(
+                  text!,
+                  style: TextStyle(
+                    fontSize: 13,
+                    height: 1.35,
+                    color: mine ? Colors.white : gardenInk,
+                  ),
+                ),
               const SizedBox(height: 4),
               Row(
                 mainAxisSize: MainAxisSize.min,
