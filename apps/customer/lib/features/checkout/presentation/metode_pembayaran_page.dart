@@ -261,6 +261,7 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                         const _MastercardMark(),
                         const SizedBox(width: 10),
                         _RadioDot(
+                          key: const Key('metode-bca'),
                           selected: _selected == 0,
                           onTap: () => setState(() => _selected = 0),
                         ),
@@ -313,6 +314,7 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                         ),
                         const SizedBox(width: 10),
                         _RadioDot(
+                          key: const Key('metode-mandiri'),
                           selected: _selected == 1,
                           onTap: () => setState(() => _selected = 1),
                         ),
@@ -477,7 +479,7 @@ class _Pill extends StatelessWidget {
 }
 
 class _RadioDot extends StatelessWidget {
-  const _RadioDot({required this.selected, required this.onTap});
+  const _RadioDot({super.key, required this.selected, required this.onTap});
   final bool selected;
   final VoidCallback onTap;
   @override

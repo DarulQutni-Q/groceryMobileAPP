@@ -156,139 +156,141 @@ class _PengaturanPageState extends State<PengaturanPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
-    children: [
-      LimeHeader(
-        title: 'Pengaturan',
-        centerTitle: false,
-        height: 200,
-        topPadding: 38,
-        actions: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
-            ),
-            child: const Icon(
-              Icons.wb_sunny_outlined,
-              size: 20,
-              color: gardenInk,
-            ),
-          ),
-        ],
-      ),
-      Expanded(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-          children: [
-            const _SectionLabel('AKUN & PERAN PENGGUNA'),
-            const SizedBox(height: 8),
-            _Card(
-              child: Column(
-                children: [
-                  _SettingRow(
-                    icon: Icons.person_outline,
-                    title: 'Ubah Profil & Identitas',
-                    subtitle: 'Nama, No. HP, Email',
-                    onTap: _openUbahProfil,
-                  ),
-                  const _RowDivider(),
-                  _SettingRow(
-                    icon: Icons.verified_user_outlined,
-                    title: 'Verifikasi Identitas & KTP',
-                    subtitle: 'Terverifikasi',
-                    subtitleColor: Color(0xFF397A24),
-                    onTap: _showKtpDialog,
-                  ),
-                ],
+  Widget build(BuildContext context) => Scaffold(
+    body: Column(
+      children: [
+        LimeHeader(
+          title: 'Pengaturan',
+          centerTitle: false,
+          height: 200,
+          topPadding: 38,
+          actions: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
               ),
-            ),
-            const SizedBox(height: 12),
-            const _SectionLabel('KEAMANAN'),
-            const SizedBox(height: 8),
-            _Card(
-              child: Column(
-                children: [
-                  _SettingRow(
-                    icon: Icons.key_outlined,
-                    title: 'Ganti kata sandi',
-                    subtitle: 'Diubah 3 hari yang lalu',
-                    onTap: () => Navigator.push<void>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ResetPage(),
-                      ),
-                    ),
-                  ),
-                  const _RowDivider(),
-                  _SettingRow(
-                    icon: Icons.fingerprint,
-                    title: 'PIN Transaksi & Biometrik',
-                    trailing: _ToggleOn(
-                      value: _pinBiometric,
-                      onChanged: _setPinBiometric,
-                    ),
-                    onTap: () => _setPinBiometric(!_pinBiometric),
-                  ),
-                  const _RowDivider(),
-                  _SettingRow(
-                    icon: Icons.credit_card_outlined,
-                    title: 'Metode Pembayaran',
-                    subtitle: 'Manage metode pembayaran',
-                    showChevron: false,
-                    onTap: _openMetodeBayar,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            const _SectionLabel('PREFERENSI APLIKASI'),
-            const SizedBox(height: 8),
-            _Card(
-              child: Column(
-                children: [
-                  _SettingRow(
-                    icon: Icons.language_outlined,
-                    title: 'Bahasa Aplikasi',
-                    subtitle: 'Bahasa Indonesia (ID)',
-                    onTap: _showBahasaDialog,
-                  ),
-                  const _RowDivider(),
-                  _SettingRow(
-                    icon: Icons.storage_outlined,
-                    title: 'Penyimpanan & Cache',
-                    subtitle: _cacheCleared
-                        ? 'Cache: 0 MB'
-                        : 'Cache: 48,2 MB',
-                    trailing: SizedBox(
-                      height: 30,
-                      child: FilledButton(
-                        onPressed: _confirmClearCache,
-                        style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                          ),
-                          minimumSize: const Size(0, 30),
-                          textStyle: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: 'Roboto',
-                          ),
-                        ),
-                        child: const Text('Bersihkan'),
-                      ),
-                    ),
-                    onTap: _confirmClearCache,
-                  ),
-                ],
+              child: const Icon(
+                Icons.wb_sunny_outlined,
+                size: 20,
+                color: gardenInk,
               ),
             ),
           ],
         ),
-      ),
-    ],
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            children: [
+              const _SectionLabel('AKUN & PERAN PENGGUNA'),
+              const SizedBox(height: 8),
+              _Card(
+                child: Column(
+                  children: [
+                    _SettingRow(
+                      icon: Icons.person_outline,
+                      title: 'Ubah Profil & Identitas',
+                      subtitle: 'Nama, No. HP, Email',
+                      onTap: _openUbahProfil,
+                    ),
+                    const _RowDivider(),
+                    _SettingRow(
+                      icon: Icons.verified_user_outlined,
+                      title: 'Verifikasi Identitas & KTP',
+                      subtitle: 'Terverifikasi',
+                      subtitleColor: Color(0xFF397A24),
+                      onTap: _showKtpDialog,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              const _SectionLabel('KEAMANAN'),
+              const SizedBox(height: 8),
+              _Card(
+                child: Column(
+                  children: [
+                    _SettingRow(
+                      icon: Icons.key_outlined,
+                      title: 'Ganti kata sandi',
+                      subtitle: 'Diubah 3 hari yang lalu',
+                      onTap: () => Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ResetPage(),
+                        ),
+                      ),
+                    ),
+                    const _RowDivider(),
+                    _SettingRow(
+                      icon: Icons.fingerprint,
+                      title: 'PIN Transaksi & Biometrik',
+                      trailing: _ToggleOn(
+                        value: _pinBiometric,
+                        onChanged: _setPinBiometric,
+                      ),
+                      onTap: () => _setPinBiometric(!_pinBiometric),
+                    ),
+                    const _RowDivider(),
+                    _SettingRow(
+                      icon: Icons.credit_card_outlined,
+                      title: 'Metode Pembayaran',
+                      subtitle: 'Manage metode pembayaran',
+                      showChevron: false,
+                      onTap: _openMetodeBayar,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              const _SectionLabel('PREFERENSI APLIKASI'),
+              const SizedBox(height: 8),
+              _Card(
+                child: Column(
+                  children: [
+                    _SettingRow(
+                      icon: Icons.language_outlined,
+                      title: 'Bahasa Aplikasi',
+                      subtitle: 'Bahasa Indonesia (ID)',
+                      onTap: _showBahasaDialog,
+                    ),
+                    const _RowDivider(),
+                    _SettingRow(
+                      icon: Icons.storage_outlined,
+                      title: 'Penyimpanan & Cache',
+                      subtitle: _cacheCleared
+                          ? 'Cache: 0 MB'
+                          : 'Cache: 48,2 MB',
+                      trailing: SizedBox(
+                        height: 30,
+                        child: FilledButton(
+                          onPressed: _confirmClearCache,
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                            ),
+                            minimumSize: const Size(0, 30),
+                            textStyle: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'Roboto',
+                            ),
+                          ),
+                          child: const Text('Bersihkan'),
+                        ),
+                      ),
+                      onTap: _confirmClearCache,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
   );
 }
 

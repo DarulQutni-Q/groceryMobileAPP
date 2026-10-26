@@ -235,13 +235,13 @@ class _ChatDriverPageState extends State<ChatDriverPage> {
                   'Pesanan telah diserahkan ke Kurir Toko',
                 ),
                 const SizedBox(height: 12),
-                for (final message in _messages) ...[
-                  const SizedBox(height: 10),
+                for (int i = 0; i < _messages.length; i++) ...[
+                  if (i > 0) const SizedBox(height: 10),
                   _Bubble(
-                    mine: message.mine,
-                    text: message.text,
-                    imagePath: message.imagePath,
-                    time: message.time,
+                    mine: _messages[i].mine,
+                    text: _messages[i].text,
+                    imagePath: _messages[i].imagePath,
+                    time: _messages[i].time,
                   ),
                 ],
               ],
@@ -255,26 +255,24 @@ class _ChatDriverPageState extends State<ChatDriverPage> {
             ),
             child: Row(
               children: [
-                IconButton(
-                  onPressed: () => _sendImage(ImageSource.camera),
-                  icon: const Icon(
+                InkWell(
+                  onTap: () => _sendImage(ImageSource.camera),
+                  customBorder: const CircleBorder(),
+                  child: const Icon(
                     Icons.camera_alt_outlined,
                     size: 24,
                     color: gardenInk,
                   ),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
                 ),
                 const SizedBox(width: 12),
-                IconButton(
-                  onPressed: () => _sendImage(ImageSource.gallery),
-                  icon: const Icon(
+                InkWell(
+                  onTap: () => _sendImage(ImageSource.gallery),
+                  customBorder: const CircleBorder(),
+                  child: const Icon(
                     Icons.attach_file,
                     size: 24,
                     color: gardenInk,
                   ),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
