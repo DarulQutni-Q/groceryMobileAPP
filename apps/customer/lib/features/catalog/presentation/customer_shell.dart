@@ -8,6 +8,7 @@ import '../../checkout/presentation/alamat_page.dart';
 import '../../checkout/presentation/checkout_page.dart';
 import '../../checkout/application/checkout_provider.dart';
 import 'home_page.dart';
+import 'promo_page.dart';
 import 'scan_qr_page.dart';
 
 class CustomerShell extends ConsumerStatefulWidget {
@@ -28,7 +29,7 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
         index: tab,
         children: [
           HomePage(now: widget.now),
-          const _SoonPage('Promo'),
+          const PromoPage(),
           const _SoonPage('Scan QR'),
           const _SoonPage('Pesanan'),
           Center(
