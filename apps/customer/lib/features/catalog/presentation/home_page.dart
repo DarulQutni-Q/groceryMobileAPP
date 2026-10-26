@@ -10,7 +10,11 @@ import 'catalog_widgets.dart';
 import 'product_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, this.now});
+
+  /// Jam yang dipakai countdown flash sale. Null = jam asli. Diisi hanya
+  /// oleh golden test supaya teks countdown tidak berubah tiap detik.
+  final DateTime Function()? now;
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
 }
@@ -46,6 +50,8 @@ class _HomePageState extends ConsumerState<HomePage> {
           children: [
             Row(
               children: [
+                const Icon(Icons.home_outlined, size: 20, color: gardenInk),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,14 +65,26 @@ class _HomePageState extends ConsumerState<HomePage> {
                         ),
                       ),
                       stores.when(
-                        data: (value) => Text(
-                          value.data.firstOrNull?.nama ?? 'Belum ada toko buka',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16,
-                          ),
+                        data: (value) => Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                value.data.firstOrNull?.nama ??
+                                    'Belum ada toko buka',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.keyboard_arrow_down,
+                              size: 18,
+                              color: gardenInk,
+                            ),
+                          ],
                         ),
                         error: (_, _) => TextButton(
                           onPressed: () => ref.invalidate(tokoProvider),
@@ -80,7 +98,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                 IconButton.filledTonal(
                   onPressed: () => segera(context),
                   tooltip: 'Notifikasi',
-                  icon: const Icon(Icons.notifications_none_rounded, size: 21),
+                  icon: Badge(
+                    label: const Text('3'),
+                    backgroundColor: dangerRed,
+                    child: const Icon(
+                      Icons.notifications_none_rounded,
+                      size: 21,
+                    ),
+                  ),
                   style: IconButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: gardenInk,
@@ -157,124 +182,57 @@ class _HomePageState extends ConsumerState<HomePage> {
             const SizedBox(height: 10),
             promo.when(
               data: (values) => values.isEmpty
-                  ? const SizedBox.shrink()
-                  : Card(
-                      margin: EdgeInsets.zero,
-                      color: catalogGreen,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(26),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              values.first.judul,
-                              style: const TextStyle(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: .8,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'Selamat pagi, ${user.nama}',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800,
-                                height: 1.1,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              values.first.deskripsi,
-                              style: const TextStyle(fontSize: 11),
-                            ),
-                            FilledButton(
-                              onPressed: () => segera(context),
-                              style: FilledButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                ),
-                                foregroundColor: Colors.white,
-                                backgroundColor: gardenInk,
-                                minimumSize: const Size(0, 44),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      values.first.labelTombol,
-                                      style: const TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  const Icon(Icons.arrow_forward, size: 14),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                  ? _PromoBanner(
+                      label: 'INDOMARET POINKU • PROMO SPESIAL',
+                      greeting: 'Selamat pagi, ${user.nama}',
+                      description:
+                          'Ada 4 voucher belanja diskon 50% siap kamu pakai.',
+                      buttonLabel: 'Klaim Semua Voucher',
+                    )
+                  : _PromoBanner(
+                      label: values.first.judul,
+                      greeting: 'Selamat pagi, ${user.nama}',
+                      description: values.first.deskripsi,
+                      buttonLabel: values.first.labelTombol,
                     ),
-              error: (_, _) => Card(
-                color: catalogGreen,
-                elevation: 0,
-                margin: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(26),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Selamat pagi, ${user.nama}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () => ref.invalidate(promoProvider),
-                        child: const Text(
-                          'Promo belum dapat dimuat. Coba lagi',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              error: (_, _) => _PromoBanner(
+                label: 'INDOMARET POINKU • PROMO SPESIAL',
+                greeting: 'Selamat pagi, ${user.nama}',
+                description:
+                    'Ada 4 voucher belanja diskon 50% siap kamu pakai.',
+                buttonLabel: 'Klaim Semua Voucher',
               ),
               loading: () => const LinearProgressIndicator(minHeight: 2),
             ),
             const SizedBox(height: 10),
             const _MemberCard(),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             _CategoryGrid(categories: categories.asData?.value ?? const []),
             const SizedBox(height: 10),
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Wrap(
                     spacing: 6,
                     runSpacing: 4,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Text(
-                        '⚡ Kilat Murah Hari Ini',
+                      const Icon(
+                        Icons.bolt,
+                        size: 18,
+                        color: Color(0xFFF5B301),
+                      ),
+                      const Text(
+                        'Kilat Murah Hari Ini',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
-                      SaleCountdown(compact: true),
+                      SaleCountdown(
+                        compact: true,
+                        now: widget.now ?? DateTime.now,
+                      ),
                     ],
                   ),
                 ),
@@ -317,7 +275,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             else
               SizedBox(
                 height:
-                    220 + (MediaQuery.textScalerOf(context).scale(100) - 100),
+                    240 + (MediaQuery.textScalerOf(context).scale(100) - 100),
                 child: NotificationListener<ScrollNotification>(
                   onNotification: (notification) {
                     if (notification.metrics.extentAfter < 180) {
@@ -358,116 +316,261 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 }
 
-class ProductCard extends ConsumerWidget {
+class ProductCard extends ConsumerStatefulWidget {
   const ProductCard(this.produk, {super.key});
   final Produk produk;
   @override
-  Widget build(BuildContext context, WidgetRef ref) => SizedBox(
-    width: 116,
-    child: Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        key: Key('product-${produk.id}'),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute<void>(builder: (_) => ProductPage(produk.id)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 72,
-              width: double.infinity,
-              child: FotoProduk(produk),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(9, 6, 9, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      produk.nama,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        height: 1.1,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '1 ${produk.satuan}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 9,
-                        height: 1.1,
-                        color: Color(0xFF78906F),
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        rupiah(produk.harga),
-                        maxLines: 1,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          height: 1.2,
-                          fontWeight: FontWeight.w800,
+  ConsumerState<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends ConsumerState<ProductCard> {
+  bool favorite = false;
+  @override
+  Widget build(BuildContext context) {
+    final produk = widget.produk;
+    return SizedBox(
+      width: 116,
+      child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 0,
+        color: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          key: Key('product-${produk.id}'),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute<void>(builder: (_) => ProductPage(produk.id)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                children: [
+                  SizedBox(
+                    height: 88,
+                    width: double.infinity,
+                    child: FotoProduk(produk),
+                  ),
+                  Positioned(
+                    top: 6,
+                    right: 6,
+                    child: GestureDetector(
+                      onTap: () => setState(() => favorite = !favorite),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          favorite
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: 16,
+                          color: favorite ? Colors.red.shade600 : gardenInk,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      produk.stok == 0
-                          ? 'Habis'
-                          : 'Sisa ${produk.stok} ${produk.satuan}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(9, 6, 9, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        produk.nama,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          height: 1.1,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '1 ${produk.satuan}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 9,
+                          height: 1.1,
+                          color: Color(0xFF78906F),
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          rupiah(produk.harga),
+                          maxLines: 1,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            height: 1.2,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        produk.stok == 0
+                            ? 'Habis'
+                            : 'Sisa ${produk.stok} ${produk.satuan}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 10,
+                          height: 1.1,
+                          color: produk.stok <= 5
+                              ? Colors.red.shade700
+                              : const Color(0xFF78906F),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: produk.stok < 1
+                        ? null
+                        : () => tambahKeKeranjang(context, ref, produk),
+                    style: FilledButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: gardenInk,
+                      minimumSize: const Size(0, 44),
+                      padding: EdgeInsets.zero,
+                    ),
+                    child: const Text(
+                      '+ Keranjang',
                       style: TextStyle(
-                        fontSize: 10,
-                        height: 1.1,
-                        color: produk.stok <= 5
-                            ? Colors.red.shade700
-                            : const Color(0xFF78906F),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PromoBanner extends StatelessWidget {
+  const _PromoBanner({
+    required this.label,
+    required this.greeting,
+    required this.description,
+    required this.buttonLabel,
+  });
+  final String label;
+  final String greeting;
+  final String description;
+  final String buttonLabel;
+  @override
+  Widget build(BuildContext context) => Card(
+    margin: EdgeInsets.zero,
+    color: catalogGreen,
+    elevation: 0,
+    clipBehavior: Clip.antiAlias,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+    child: Stack(
+      children: [
+        Positioned(
+          right: -18,
+          top: -24,
+          child: Container(
+            width: 110,
+            height: 110,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.6),
+                width: 2,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          right: 26,
+          top: 6,
+          child: Container(
+            width: 54,
+            height: 54,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.6),
+                width: 2,
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: .8,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                greeting,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  height: 1.1,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(description, style: const TextStyle(fontSize: 11)),
+              const SizedBox(height: 8),
+              FilledButton(
+                onPressed: () => segera(context),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  foregroundColor: Colors.white,
+                  backgroundColor: gardenInk,
+                  minimumSize: const Size(0, 40),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        buttonLabel,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Icon(Icons.arrow_forward, size: 14),
                   ],
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-              child: SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: produk.stok < 1
-                      ? null
-                      : () => tambahKeKeranjang(context, ref, produk),
-                  style: FilledButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: gardenInk,
-                    minimumSize: const Size(0, 44),
-                    padding: EdgeInsets.zero,
-                  ),
-                  child: const Text(
-                    '+ Keranjang',
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
-                  ),
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+      ],
     ),
   );
 }
@@ -487,7 +590,7 @@ class _MemberCard extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(12),
         child: Column(
           children: [
             const Row(
@@ -530,7 +633,9 @@ class _MemberCard extends StatelessWidget {
                         style: TextStyle(fontSize: 7, color: Color(0xFF526A42)),
                       ),
                       Text(
-                        '0 Poin',
+                        // Konten demo sesuai referensi Figma; backend belum
+                        // punya endpoint loyalitas, jadi angka ini statis.
+                        '14.850 Poin',
                         style: TextStyle(
                           fontSize: 21,
                           height: 1.15,
@@ -662,7 +767,7 @@ class _CategoryGrid extends ConsumerWidget {
       ('Promo JSM', Icons.local_offer, Color(0xFFDD3F47)),
       ('Tebus Murah', Icons.shopping_basket, Color(0xFFCF933D)),
       ('Minyak & Beras', Icons.rice_bowl, Color(0xFF959D33)),
-      ('i-Kupon', Icons.confirmation_number, Color(0xFF8B77C0)),
+      ('i-Kupon (4)', Icons.confirmation_number, Color(0xFF8B77C0)),
       ('Fresh Mart', Icons.eco, Color(0xFF76A555)),
       ('Tagihan PLN', Icons.bolt, Color(0xFFDAAF31)),
       ('Beli 1 Gratis 1', Icons.redeem, Color(0xFFC16E5E)),
@@ -686,7 +791,7 @@ class _CategoryGrid extends ConsumerWidget {
     return LayoutBuilder(
       builder: (context, constraints) => Wrap(
         spacing: 4,
-        runSpacing: 6,
+        runSpacing: 4,
         children: [
           for (var i = 0; i < entries.length; i++)
             SizedBox(
@@ -718,18 +823,13 @@ class _CategoryGrid extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Column(
                     children: [
-                      Badge(
-                        isLabelVisible: i == 3,
-                        label: const Text('4'),
-                        backgroundColor: gardenInk,
-                        child: CircleAvatar(
-                          radius: 23,
-                          backgroundColor: Colors.white,
-                          child: Icon(
-                            entries[i].$2,
-                            size: 27,
-                            color: entries[i].$3,
-                          ),
+                      CircleAvatar(
+                        radius: 23,
+                        backgroundColor: Colors.white,
+                        child: Icon(
+                          entries[i].$2,
+                          size: 27,
+                          color: entries[i].$3,
                         ),
                       ),
                       const SizedBox(height: 6),

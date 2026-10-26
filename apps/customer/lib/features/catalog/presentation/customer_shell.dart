@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/garden_widgets.dart';
 import '../../../core/theme.dart';
 import '../../auth/application/auth_provider.dart';
 import '../../checkout/presentation/alamat_page.dart';
@@ -10,7 +11,10 @@ import 'catalog_widgets.dart';
 import 'home_page.dart';
 
 class CustomerShell extends ConsumerStatefulWidget {
-  const CustomerShell({super.key});
+  const CustomerShell({super.key, this.now});
+
+  /// Diteruskan ke HomePage untuk countdown flash sale. Null = jam asli.
+  final DateTime Function()? now;
   @override
   ConsumerState<CustomerShell> createState() => _CustomerShellState();
 }
@@ -23,7 +27,7 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
       child: IndexedStack(
         index: tab,
         children: [
-          const HomePage(),
+          HomePage(now: widget.now),
           const _SoonPage('Promo'),
           const _SoonPage('Scan QR'),
           const _SoonPage('Pesanan'),
@@ -84,49 +88,17 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
         ],
       ),
     ),
-    bottomNavigationBar: NavigationBar(
-      height: 76,
-      backgroundColor: Colors.white,
-      indicatorColor: const Color(0xFFE4F2D8),
-      selectedIndex: tab,
-      onDestinationSelected: (value) {
+    bottomNavigationBar: GardenBottomNav(
+      index: tab,
+      onSelect: (value) {
         if (value == 2) {
+          // Halaman Scan QR dibuat di langkahnya sendiri; sementara tetap
+          // snackbar seperti sebelumnya.
           segera(context);
         } else {
           setState(() => tab = value);
         }
       },
-      destinations: [
-        const NavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home),
-          label: 'Beranda',
-        ),
-        const NavigationDestination(
-          icon: Icon(Icons.local_offer_outlined),
-          label: 'Promo',
-        ),
-        NavigationDestination(
-          icon: CircleAvatar(
-            radius: 25,
-            backgroundColor: gardenInk,
-            child: const Icon(
-              Icons.qr_code_scanner,
-              color: Colors.white,
-              size: 26,
-            ),
-          ),
-          label: 'Scan QR',
-        ),
-        const NavigationDestination(
-          icon: Icon(Icons.receipt_long_outlined),
-          label: 'Pesanan',
-        ),
-        const NavigationDestination(
-          icon: Icon(Icons.person_outline),
-          label: 'Akun',
-        ),
-      ],
     ),
   );
 }
