@@ -13,6 +13,7 @@ class LimeHeader extends StatelessWidget {
     required this.title,
     this.actions = const [],
     this.height = 150,
+    this.topPadding = 10,
     this.showBack = true,
     this.centerTitle = true,
     this.backFilled = true,
@@ -21,6 +22,7 @@ class LimeHeader extends StatelessWidget {
   final String title;
   final List<Widget> actions;
   final double height;
+  final double topPadding;
   final bool showBack;
   final bool centerTitle;
   final bool backFilled;
@@ -42,7 +44,7 @@ class LimeHeader extends StatelessWidget {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+          padding: EdgeInsets.fromLTRB(16, topPadding, 16, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

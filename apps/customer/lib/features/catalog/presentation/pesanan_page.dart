@@ -26,7 +26,8 @@ class PesananPage extends StatelessWidget {
         title: 'Pesanan Saya',
         showBack: false,
         centerTitle: false,
-        height: 150,
+        height: 200,
+        topPadding: 38,
         actions: [
           RoundIconButton(icon: Icons.search, onPressed: () {}),
         ],

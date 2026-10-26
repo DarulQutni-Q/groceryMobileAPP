@@ -17,12 +17,21 @@ class ChatDriverPage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
             child: Row(
               children: [
-                _CircleIcon(icon: Icons.arrow_back, onPressed: () {}),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    size: 22,
+                    color: gardenInk,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
                 const SizedBox(width: 12),
                 const CircleAvatar(
-                  radius: 22,
+                  radius: 20,
                   backgroundColor: gardenInk,
-                  child: Icon(Icons.person, size: 24, color: Colors.white),
+                  child: Icon(Icons.person, size: 22, color: Colors.white),
                 ),
                 const SizedBox(width: 10),
                 const Expanded(
@@ -32,7 +41,7 @@ class ChatDriverPage extends StatelessWidget {
                       Text(
                         'Pak Budi (Kurir Toko)',
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.w800,
                           color: gardenInk,
                         ),
@@ -40,19 +49,28 @@ class ChatDriverPage extends StatelessWidget {
                       SizedBox(height: 2),
                       Text(
                         'Online • Honda Beat BK 4122 QD',
-                        style: TextStyle(fontSize: 12, color: textGrey),
+                        style: TextStyle(fontSize: 11, color: textGrey),
                       ),
                     ],
                   ),
                 ),
-                _CircleIcon(icon: Icons.phone, onPressed: () {}),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.phone,
+                    size: 22,
+                    color: gardenInk,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
               ],
             ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: Container(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -72,7 +90,7 @@ class ChatDriverPage extends StatelessWidget {
                         Text(
                           'Pesanan #GM-8921',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 13,
                             fontWeight: FontWeight.w700,
                             color: gardenInk,
                           ),
@@ -80,7 +98,7 @@ class ChatDriverPage extends StatelessWidget {
                         SizedBox(height: 2),
                         Text(
                           'Sedang diantar (~5 mnt) • Rp 67.600',
-                          style: TextStyle(fontSize: 12, color: textGrey),
+                          style: TextStyle(fontSize: 11, color: textGrey),
                         ),
                       ],
                     ),
@@ -275,12 +293,21 @@ class _Bubble extends StatelessWidget {
   final String time;
   @override
   Widget build(BuildContext context) => Row(
+    crossAxisAlignment: CrossAxisAlignment.end,
     mainAxisAlignment:
         mine ? MainAxisAlignment.end : MainAxisAlignment.start,
     children: [
+      if (!mine) ...[
+        const CircleAvatar(
+          radius: 12,
+          backgroundColor: gardenInk,
+          child: Icon(Icons.person, size: 14, color: Colors.white),
+        ),
+        const SizedBox(width: 8),
+      ],
       Flexible(
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 290),
+          constraints: const BoxConstraints(maxWidth: 260),
           padding: const EdgeInsets.fromLTRB(14, 10, 14, 8),
           decoration: BoxDecoration(
             color: mine ? gardenInk : Colors.white,

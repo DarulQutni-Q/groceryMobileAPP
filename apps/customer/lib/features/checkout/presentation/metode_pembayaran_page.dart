@@ -17,7 +17,8 @@ class MetodePembayaranPage extends StatelessWidget {
         const LimeHeader(
           title: 'Metode Pembayaran',
           centerTitle: false,
-          height: 150,
+          height: 200,
+          topPadding: 38,
         ),
         Expanded(
           child: ListView(
@@ -288,7 +289,7 @@ class MetodePembayaranPage extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 56),
               Center(
                 child: SizedBox(
                   width: 220,

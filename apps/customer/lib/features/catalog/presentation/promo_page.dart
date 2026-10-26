@@ -13,7 +13,8 @@ class PromoPage extends StatelessWidget {
       LimeHeader(
         title: 'Promo & Kupon',
         showBack: false,
-        height: 150,
+        height: 200,
+        topPadding: 38,
         actions: [
           SizedBox(
             height: 32,
@@ -301,7 +302,7 @@ class _VoucherCard extends StatelessWidget {
   final bool claimed;
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(14),
+    padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(16),
@@ -310,7 +311,7 @@ class _VoucherCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 50,
+          width: 46,
           child: Column(
             children: [
               Text(
@@ -341,7 +342,7 @@ class _VoucherCard extends StatelessWidget {
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 11,
+                  fontSize: 10.5,
                   fontWeight: FontWeight.w700,
                   color: gardenInk,
                 ),
@@ -373,7 +374,7 @@ class _VoucherCard extends StatelessWidget {
         claimed
             ? Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
+                  horizontal: 4,
                   vertical: 7,
                 ),
                 decoration: BoxDecoration(
@@ -386,7 +387,7 @@ class _VoucherCard extends StatelessWidget {
                     Text(
                       'Sudah Klaim',
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 10.5,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF397A24),
                       ),
@@ -394,7 +395,7 @@ class _VoucherCard extends StatelessWidget {
                     SizedBox(width: 2),
                     Icon(
                       Icons.check,
-                      size: 12,
+                      size: 11,
                       color: Color(0xFF397A24),
                     ),
                   ],
