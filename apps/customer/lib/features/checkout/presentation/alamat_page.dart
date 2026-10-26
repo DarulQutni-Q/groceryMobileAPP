@@ -404,9 +404,21 @@ class _PinpointCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 InkWell(
-                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Fitur peta GPS segera hadir'),
+                  onTap: () => showDialog<void>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Titik Peta GPS'),
+                      content: const Text(
+                        'Titik peta GPS belum tersedia. Alamat pengantaran '
+                        'tetap bisa diisi manual lewat formulir di atas, '
+                        'dan kurir akan dihubungi lewat nomor HP.',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text('Tutup'),
+                        ),
+                      ],
                     ),
                   ),
                   child: const Text(

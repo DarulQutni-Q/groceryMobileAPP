@@ -169,9 +169,20 @@ class PoinkuPage extends StatelessWidget {
                     ),
                   ),
                   FilledButton(
-                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Riwayat poin segera hadir'),
+                    onPressed: () => showDialog<void>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Riwayat Poin'),
+                        content: const Text(
+                          'Riwayat poin belum tersedia di GardenMart karena '
+                          'backend belum menyediakan data loyalitas.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Tutup'),
+                          ),
+                        ],
                       ),
                     ),
                     style: FilledButton.styleFrom(
@@ -291,12 +302,22 @@ class _RewardCard extends StatelessWidget {
               children: [
                 if (cukup)
                   FilledButton(
-                    onPressed: () =>
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Penukaran poin segera hadir'),
-                          ),
+                    onPressed: () => showDialog<void>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Penukaran Poin'),
+                        content: const Text(
+                          'Penukaran poin belum tersedia di GardenMart '
+                          'karena backend belum menyediakan penukaran poin.',
                         ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Tutup'),
+                          ),
+                        ],
+                      ),
+                    ),
                     style: FilledButton.styleFrom(
                       backgroundColor: gardenInk,
                       foregroundColor: Colors.white,

@@ -45,7 +45,7 @@ class _ResetPageState extends ConsumerState<ResetPage> {
       if (mounted) {
         _message(
           error.response?.statusCode == 404
-              ? 'Segera hadir'
+              ? 'Email tidak ditemukan'
               : authErrorMessage(error),
         );
       }

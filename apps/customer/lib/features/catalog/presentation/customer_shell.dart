@@ -51,7 +51,9 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
             onGoToTab: (value) => setState(() => tab = value),
           ),
           const PromoPage(),
-          const _SoonPage('Scan QR'),
+          // Index 2 tidak pernah tampil: onSelect(2) mencegat dan
+          // membuka ScanQrPage sebagai route, bukan mengganti tab.
+          const SizedBox.shrink(),
           PesananPage(
             onLihatStruk: () => Navigator.push<void>(
               context,
@@ -299,21 +301,3 @@ class _AkunMenuRow extends StatelessWidget {
   );
 }
 
-class _SoonPage extends StatelessWidget {
-  const _SoonPage(this.title);
-  final String title;
-  @override
-  Widget build(BuildContext context) => Center(
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 10),
-        const Text('Segera hadir'),
-      ],
-    ),
-  );
-}

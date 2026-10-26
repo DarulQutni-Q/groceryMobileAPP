@@ -14,10 +14,6 @@ const totalGreen = Color(0xFF9FDD56);
 String rupiah(int value) =>
     'Rp ${value.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}';
 
-void segera(BuildContext context) =>
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Segera hadir')));
-
 void pesanCart(BuildContext context, Keranjang value) {
   if (value.pesan != null) {
     ScaffoldMessenger.of(context)

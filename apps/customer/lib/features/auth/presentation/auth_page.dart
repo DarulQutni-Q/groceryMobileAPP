@@ -296,9 +296,23 @@ class _AuthPageState extends ConsumerState<AuthPage> {
         child: OutlinedButton.icon(
           onPressed: busy
               ? null
-              : () => ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text('Segera hadir'))),
+              : () => showDialog<void>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Masuk dengan Apple'),
+                      content: const Text(
+                        'Masuk dengan Apple belum tersedia di GardenMart '
+                        'karena backend belum mendukung login Apple dan '
+                        'konfigurasi Apple Developer belum disiapkan.',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text('Tutup'),
+                        ),
+                      ],
+                    ),
+                  ),
           icon: artwork('apple_icon', width: 26, height: 28),
           label: const Text('Apple ID', style: TextStyle(fontSize: 12)),
           style: OutlinedButton.styleFrom(
