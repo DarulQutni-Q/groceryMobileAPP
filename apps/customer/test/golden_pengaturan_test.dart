@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gardenmart_customer/core/garden_widgets.dart';
 import 'package:gardenmart_customer/core/theme.dart';
 import 'package:gardenmart_customer/features/catalog/presentation/pengaturan_page.dart';
@@ -10,6 +11,9 @@ void main() {
   setUpAll(loadTestFonts);
 
   testWidgets('golden pengaturan', (tester) async {
+    // Halaman kini baca SharedPreferences (PIN, cache): mock agar tidak
+    // memanggil channel platform yang tidak ada di tester.
+    SharedPreferences.setMockInitialValues({});
     tester.view.devicePixelRatio = 2.0;
     tester.view.physicalSize = const Size(780, 1688);
     addTearDown(tester.view.resetPhysicalSize);

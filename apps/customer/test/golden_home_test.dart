@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gardenmart_customer/core/theme.dart';
 import 'package:gardenmart_customer/features/auth/application/auth_provider.dart';
 import 'package:gardenmart_customer/features/catalog/application/produk_provider.dart';
 import 'package:gardenmart_customer/features/catalog/presentation/customer_shell.dart';
+import 'package:gardenmart_customer/features/checkout/application/checkout_provider.dart';
 import 'package:grocery_shared/shared.dart';
 
 import 'auth_state_test.dart' show AuthFixture;
@@ -100,6 +102,9 @@ void main() {
   setUpAll(loadTestFonts);
 
   Future<void> openShell(WidgetTester tester) async {
+    // IndexedStack membangun _AkunTab (offstage) yang membaca
+    // profilLokalProvider -> SharedPreferences.
+    SharedPreferences.setMockInitialValues({});
     final fixture = AuthFixture()..installStorage();
     tester.view.devicePixelRatio = 2.0;
     tester.view.physicalSize = const Size(780, 1688);
@@ -149,6 +154,12 @@ void main() {
             ]),
           ),
           produkProvider.overrideWith((ref) => FakeProdukNotifier()),
+          // Tanpa override, Future readCheckout kadang melempar async
+          // (WebSocket) dan badge jadi non-deterministik. Golden ini
+          // mengunci kondisi tanpa checkout tertunda (tanpa badge).
+          pendingCheckoutProvider.overrideWithValue(
+            const AsyncValue.data(false),
+          ),
         ],
         child: MaterialApp(
           theme: customerTheme(),

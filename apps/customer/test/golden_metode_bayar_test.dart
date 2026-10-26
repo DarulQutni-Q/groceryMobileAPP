@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gardenmart_customer/core/theme.dart';
 import 'package:gardenmart_customer/features/checkout/presentation/metode_pembayaran_page.dart';
 
@@ -9,6 +10,8 @@ void main() {
   setUpAll(loadTestFonts);
 
   testWidgets('golden metode pembayaran', (tester) async {
+    // Halaman settings kini baca prefs (pilihan + biometrik).
+    SharedPreferences.setMockInitialValues({});
     tester.view.devicePixelRatio = 2.0;
     tester.view.physicalSize = const Size(780, 1688);
     addTearDown(tester.view.resetPhysicalSize);
