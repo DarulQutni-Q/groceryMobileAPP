@@ -20,7 +20,12 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        manifestPlaceholders["usesCleartextTraffic"] = "false"
+        manifestPlaceholders["usesCleartextTraffic"] = "true"
+    }
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("debug")
+        }
     }
     flavorDimensions += "environment"
     productFlavors {
@@ -34,10 +39,12 @@ android {
             dimension = "environment"
             applicationIdSuffix = ".staging"
             resValue("string", "app_name", "GardenMart STAGING")
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
         }
         create("prod") {
             dimension = "environment"
             resValue("string", "app_name", "GardenMart")
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
         }
     }
 }
