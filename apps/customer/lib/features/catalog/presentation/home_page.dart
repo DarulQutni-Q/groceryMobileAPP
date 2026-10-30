@@ -310,8 +310,10 @@ class _HomePageState extends ConsumerState<HomePage> {
               )
             else
               SizedBox(
+                // 240 lama + blok tombol (gap 6 + tombol 34 + padding 8),
+                // supaya kartu beranda tidak terpotong tombolnya.
                 height:
-                    240 + (MediaQuery.textScalerOf(context).scale(100) - 100),
+                    288 + (MediaQuery.textScalerOf(context).scale(100) - 100),
                 child: NotificationListener<ScrollNotification>(
                   onNotification: (notification) {
                     if (notification.metrics.extentAfter < 180) {

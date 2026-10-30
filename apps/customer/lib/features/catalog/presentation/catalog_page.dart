@@ -13,8 +13,9 @@ class ProductCard extends ConsumerStatefulWidget {
   const ProductCard(this.produk, {super.key, this.home = false});
   final Produk produk;
 
-  /// Varian beranda sesuai referensi: tanpa tombol + Keranjang, dengan
-  /// bilah stok dan "Sisa N pcs". Varian default (katalog) tidak berubah.
+  /// Varian beranda sesuai referensi: dengan bilah stok, "Sisa N pcs",
+  /// dan tombol + Keranjang (fungsional, sama seperti katalog).
+  /// Varian default (katalog) tidak berubah.
   final bool home;
   @override
   ConsumerState<ProductCard> createState() => _ProductCardState();
@@ -164,31 +165,32 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                   ),
                 ),
               ),
-              if (!home)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: produk.stok < 1
-                          ? null
-                          : () => tambahKeKeranjang(context, ref, produk),
-                      style: FilledButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: gardenInk,
-                        minimumSize: const Size(0, 44),
-                        padding: EdgeInsets.zero,
-                      ),
-                      child: const Text(
-                        '+ Keranjang',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                        ),
+              Padding(
+                padding: home
+                    ? const EdgeInsets.fromLTRB(8, 6, 8, 8)
+                    : const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: produk.stok < 1
+                        ? null
+                        : () => tambahKeKeranjang(context, ref, produk),
+                    style: FilledButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: gardenInk,
+                      minimumSize: Size(0, home ? 34 : 44),
+                      padding: EdgeInsets.zero,
+                    ),
+                    child: const Text(
+                      '+ Keranjang',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                 ),
+              ),
             ],
           ),
         ),

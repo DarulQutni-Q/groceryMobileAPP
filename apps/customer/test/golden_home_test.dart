@@ -78,6 +78,18 @@ class FakeProdukNotifier extends ProdukNotifier {
           kategori: 'Sembako',
           isTersedia: true,
         ),
+        // Kartu keempat: di referensi ia mengintip di tepi kanan baris
+        // Kilat, jadi barisnya terbukti bisa discroll ke samping.
+        Produk(
+          id: 'p4',
+          tokoId: 't1',
+          nama: 'Minyak Goreng Filma',
+          harga: 45000,
+          stok: 20,
+          satuan: 'Pouch',
+          kategori: 'Sembako',
+          isTersedia: true,
+        ),
       ],
       memuat: false,
       page: 1,
@@ -185,6 +197,24 @@ void main() {
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/home.png'),
+    );
+  });
+
+  testWidgets('golden home beranda discroll', (tester) async {
+    await openShell(tester);
+    // Geser halaman ke atas sampai baris Kilat (termasuk tombol
+    // + Keranjang dan kartu keempat yang mengintip) terlihat penuh,
+    // seperti screenshot referensi beranda yang sudah discroll.
+    await tester.drag(
+      find.text('Kilat Murah Hari Ini'),
+      const Offset(0, -250),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.widgetWithText(FilledButton, '+ Keranjang'), findsWidgets);
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/home_scrolled.png'),
     );
   });
 }
