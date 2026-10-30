@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gardenmart_customer/core/theme.dart';
 import 'package:gardenmart_customer/features/auth/application/auth_provider.dart';
 import 'package:gardenmart_customer/features/checkout/presentation/checkout_page.dart';
@@ -82,8 +83,12 @@ Map<String, dynamic> _codResult() => {
 Future<AuthFixture> bukaKonfirmasi(
   WidgetTester tester, {
   bool pakaiTombol = false,
+  Map<String, Object> prefsAwal = const {},
 }) async {
   final fixture = AuthFixture()..installStorage();
+  // Halaman checkout kini membaca preferensi metode dari
+  // SharedPreferences; tanpa mock, load() menggantung di tes.
+  SharedPreferences.setMockInitialValues(prefsAwal);
   final original = fixture.api.client.dio.httpClientAdapter as CustomerAdapter;
   fixture.api.client.dio.httpClientAdapter = CustomerAdapter((request) async {
     if (request.path == '/alamat') {

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gardenmart_customer/features/checkout/application/checkout_provider.dart';
 import 'package:gardenmart_customer/features/checkout/presentation/payment_page.dart';
 import 'package:grocery_shared/shared.dart';
@@ -43,6 +44,9 @@ Map<String, dynamic> checkoutResult(
 };
 
 Future<AuthFixture> openCheckout(WidgetTester tester) async {
+  // Halaman checkout kini membaca preferensi metode dari
+  // SharedPreferences; tanpa mock, load() menggantung di tes.
+  SharedPreferences.setMockInitialValues({});
   final fixture = await openCatalog(tester);
   final original = fixture.api.client.dio.httpClientAdapter as CustomerAdapter;
   fixture.api.client.dio.httpClientAdapter = CustomerAdapter((request) async {

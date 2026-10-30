@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gardenmart_customer/core/theme.dart';
 import 'package:gardenmart_customer/features/auth/application/auth_provider.dart';
 import 'package:gardenmart_customer/features/checkout/presentation/checkout_page.dart';
@@ -15,6 +16,9 @@ void main() {
 
   testWidgets('golden konfirmasi pesanan', (tester) async {
     final fixture = AuthFixture()..installStorage();
+    // Halaman checkout kini membaca preferensi metode dari
+    // SharedPreferences; tanpa mock, load() menggantung di tes.
+    SharedPreferences.setMockInitialValues({});
     // Checkout segar (tanpa sesi tersimpan): alamat + preview biaya
     // dimock lewat adapter HTTP, seperti checkout_flow_test.
     final original = fixture.api.client.dio.httpClientAdapter as CustomerAdapter;

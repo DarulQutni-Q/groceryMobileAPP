@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_shared/shared.dart';
 
 import '../../../core/garden_widgets.dart';
@@ -80,6 +81,14 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
         address = session!.alamat;
         note.text = session!.body['catatan'] as String? ?? '';
         return;
+      }
+      // Preferensi metode dari layar Metode Pembayaran (kartu utama yang
+      // disimpan): jadi metode awal checkout baru, tanpa menyentuh sesi
+      // checkout yang sedang berjalan (jalur session di atas sudah return).
+      final prefs = await SharedPreferences.getInstance();
+      final preferensi = prefs.getString('metode_bayar_preferensi');
+      if (preferensi != null && metodeBayar.containsKey(preferensi)) {
+        method = preferensi;
       }
       final addresses = await ref.read(alamatApiProvider).list();
       if (!mounted) return;

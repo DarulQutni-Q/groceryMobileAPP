@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/garden_widgets.dart';
 import '../../../core/theme.dart';
+import '../application/placeholder_metode.dart';
 
 /// Kelola metode pembayaran (layar Pengaturan > Metode Pembayaran).
 /// Beda dengan [MetodeBayarPage] yang dipakai sebagai picker saat checkout:
@@ -16,7 +17,7 @@ class MetodePembayaranPage extends StatefulWidget {
 }
 
 class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
-  int _selected = 0;
+  int _selected = -1;
   bool _biometric = true;
 
   @override
@@ -29,7 +30,7 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     setState(() {
-      _selected = prefs.getInt('metode_utama') ?? 0;
+      _selected = prefs.getInt('metode_utama') ?? -1;
       _biometric = prefs.getBool('metode_biometrik') ?? true;
     });
   }
@@ -38,6 +39,12 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('metode_utama', _selected);
     await prefs.setBool('metode_biometrik', _biometric);
+    final preferensi = metodeBayarDariKartu(_selected);
+    if (preferensi != null) {
+      await prefs.setString('metode_bayar_preferensi', preferensi);
+    } else {
+      await prefs.remove('metode_bayar_preferensi');
+    }
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Metode pembayaran tersimpan')),
@@ -89,12 +96,12 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                           label: 'GoPay',
                         ),
                         const SizedBox(width: 12),
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Saldo GoPay',
+                                placeholderDompet[0].nama,
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
@@ -103,7 +110,7 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                               ),
                               SizedBox(height: 2),
                               Text(
-                                'Rp 445.200',
+                                placeholderDompet[0].status,
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w800,
@@ -116,8 +123,8 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            const _Pill(
-                              text: 'Terhubung',
+                            _Pill(
+                              text: placeholderDompet[0].terhubung ? 'Terhubung' : 'Belum Terhubung',
                               background: Color(0xFFE4F3D8),
                               foreground: Color(0xFF397A24),
                             ),
@@ -141,7 +148,7 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                                     fontFamily: 'Roboto',
                                   ),
                                 ),
-                                child: const Text('Top Up'),
+                                child: Text(placeholderDompet[0].tombol),
                               ),
                             ),
                           ],
@@ -159,12 +166,12 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                           label: 'S Pay',
                         ),
                         const SizedBox(width: 12),
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'ShopeePay',
+                                placeholderDompet[1].nama,
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
@@ -173,7 +180,7 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                               ),
                               SizedBox(height: 2),
                               Text(
-                                'Belum Terhubung',
+                                placeholderDompet[1].status,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: textGrey,
@@ -203,7 +210,7 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                                 fontFamily: 'Roboto',
                               ),
                             ),
-                            child: const Text('Hubungkan'),
+                            child: Text(placeholderDompet[1].tombol),
                           ),
                         ),
                       ],
@@ -224,31 +231,33 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                           label: 'BCA',
                         ),
                         const SizedBox(width: 12),
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 children: [
                                   Text(
-                                    'BCA Mastercard Debit',
+                                    placeholderKartu[0].judul,
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 13,
                                       fontWeight: FontWeight.w700,
                                       color: gardenInk,
                                     ),
                                   ),
-                                  SizedBox(width: 8),
-                                  _Pill(
-                                    text: 'Utama',
-                                    background: gardenInk,
-                                    foreground: Colors.white,
-                                  ),
+                                  if (placeholderKartu[0].utama) ...[
+                                    const SizedBox(width: 8),
+                                    _Pill(
+                                      text: 'Utama',
+                                      background: gardenInk,
+                                      foreground: Colors.white,
+                                    ),
+                                  ],
                                 ],
                               ),
                               SizedBox(height: 2),
                               Text(
-                                '•••• 4122 • Exp 08/28',
+                                placeholderKartu[0].tersamar,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: textGrey,
@@ -258,7 +267,7 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const _MastercardMark(),
+                        _NetworkMark(placeholderKartu[0].network),
                         const SizedBox(width: 10),
                         _RadioDot(
                           key: const Key('metode-bca'),
@@ -280,12 +289,12 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                           italic: true,
                         ),
                         const SizedBox(width: 12),
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Mandiri Visa Debit',
+                                placeholderKartu[1].judul,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
@@ -294,7 +303,7 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                               ),
                               SizedBox(height: 2),
                               Text(
-                                '•••• 8921 • Exp 11/27',
+                                placeholderKartu[1].tersamar,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: textGrey,
@@ -303,15 +312,7 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                             ],
                           ),
                         ),
-                        const Text(
-                          'VISA',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            fontStyle: FontStyle.italic,
-                            color: Color(0xFF1A1F71),
-                          ),
-                        ),
+                        _NetworkMark(placeholderKartu[1].network),
                         const SizedBox(width: 10),
                         _RadioDot(
                           key: const Key('metode-mandiri'),
@@ -354,6 +355,7 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
                       ),
                     ),
                     _ToggleOn(
+                      key: const Key('toggle-biometrik'),
                       value: _biometric,
                       onChanged: (value) =>
                           setState(() => _biometric = value),
@@ -364,13 +366,14 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
               const SizedBox(height: 56),
               Center(
                 child: SizedBox(
-                  width: 220,
+                  width: 260,
                   child: FilledButton(
+                    key: const Key('simpan-metode'),
                     onPressed: _save,
                     style: FilledButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(25),
                       ),
                       textStyle: const TextStyle(
                         fontSize: 15,
@@ -432,12 +435,12 @@ class _BrandBox extends StatelessWidget {
   final bool italic;
   @override
   Widget build(BuildContext context) => Container(
-    width: 42,
-    height: 42,
+    width: 44,
+    height: 44,
     alignment: Alignment.center,
     decoration: BoxDecoration(
       color: color,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(10),
     ),
     child: Text(
       label,
@@ -462,7 +465,7 @@ class _Pill extends StatelessWidget {
   final Color foreground;
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     decoration: BoxDecoration(
       color: background,
       borderRadius: BorderRadius.circular(20),
@@ -487,8 +490,8 @@ class _RadioDot extends StatelessWidget {
         onTap: onTap,
         customBorder: const CircleBorder(),
         child: Container(
-          width: 24,
-          height: 24,
+          width: 22,
+          height: 22,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
@@ -497,8 +500,8 @@ class _RadioDot extends StatelessWidget {
           ),
           child: selected
               ? Container(
-                  width: 12,
-                  height: 12,
+                  width: 11,
+                  height: 11,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: gardenInk,
@@ -513,23 +516,23 @@ class _MastercardMark extends StatelessWidget {
   const _MastercardMark();
   @override
   Widget build(BuildContext context) => SizedBox(
-    width: 34,
-    height: 20,
+    width: 30,
+    height: 18,
     child: Stack(
       children: [
         Container(
-          width: 20,
-          height: 20,
+          width: 18,
+          height: 18,
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xFFEB001B),
           ),
         ),
         Positioned(
-          left: 14,
+          left: 12,
           child: Container(
-            width: 20,
-            height: 20,
+            width: 18,
+            height: 18,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               color: Color(0xFFF79E1B),
@@ -541,8 +544,25 @@ class _MastercardMark extends StatelessWidget {
   );
 }
 
+class _NetworkMark extends StatelessWidget {
+  const _NetworkMark(this.network);
+  final String network;
+  @override
+  Widget build(BuildContext context) => network == 'visa'
+      ? const Text(
+          'VISA',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
+            fontStyle: FontStyle.italic,
+            color: Color(0xFF1A1F71),
+          ),
+        )
+      : const _MastercardMark();
+}
+
 class _ToggleOn extends StatelessWidget {
-  const _ToggleOn({required this.value, required this.onChanged});
+  const _ToggleOn({super.key, required this.value, required this.onChanged});
   final bool value;
   final ValueChanged<bool> onChanged;
   @override
