@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/garden_widgets.dart';
 import '../../../core/theme.dart';
@@ -85,7 +86,7 @@ const _weekly = [
     tag: 'JSM SPECIAL',
     title: 'Promo JSM Akhir Pekan',
     subtitle: 'Diskon s/d 40%',
-    action: 'Buka Katalog ›',
+    action: 'Buka Katalog >',
     badge: _CalendarBadge(),
   ),
   _WeeklyData(
@@ -93,7 +94,7 @@ const _weekly = [
     tag: 'SERBA 5RB',
     title: 'Tebus Murah Serba 5rb',
     subtitle: 'Camilan & biskuit',
-    action: 'Lihat Produk ›',
+    action: 'Lihat Produk >',
     badge: _PercentBadge(),
   ),
 ];
@@ -104,8 +105,9 @@ const _weekly = [
 /// interaktivitas: chip filter bisa ditekan, kartu mingguan membuka katalog,
 /// tombol Klaim mengubah status jadi "Sudah Klaim", dan "Voucher saya"
 /// menyaring daftar ke voucher yang sudah diklaim.
-/// Klaim bersifat lokal di perangkat (belum ada backend voucher/loyalty),
-/// jadi voucher yang diklaim tidak memotong harga di checkout.
+/// Klaim tersimpan lokal di SharedPreferences (belum ada backend
+/// voucher/loyalty), jadi voucher yang diklaim tidak memotong harga di
+/// checkout.
 class PromoPage extends StatefulWidget {
   const PromoPage({super.key, this.showBack = false});
 
@@ -121,11 +123,53 @@ class _PromoPageState extends State<PromoPage> {
   _PromoFilter _filter = _PromoFilter.semua;
   bool _claimedOnly = false;
 
+  /// Kunci penyimpanan klaim lokal.
+  static const _klaimKey = 'promo_klaim';
+
+  /// Judul voucher yang sudah diklaim di tampilan awal referensi.
+  static const _freeTitle = 'Gratis Ongkir Instan s/d Rp 15.000';
+
   /// Judul voucher yang sudah diklaim. FREE ongkir sudah diklaim sesuai
   /// tampilan referensi (pill "Sudah Klaim").
-  final _claimed = <String>{
-    'Gratis Ongkir Instan s/d Rp 15.000',
-  };
+  final _claimed = <String>{_freeTitle};
+
+  @override
+  void initState() {
+    super.initState();
+    _muatKlaim();
+  }
+
+  /// Muat klaim tersimpan; kalau belum ada simpanan sama sekali, pakai
+  /// dan simpan set awal referensi (FREE ongkir sudah diklaim).
+  Future<void> _muatKlaim() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final stored = prefs.getStringList(_klaimKey);
+      if (!mounted) return;
+      if (stored == null) {
+        await prefs.setStringList(_klaimKey, _claimed.toList());
+      } else {
+        setState(
+          () => _claimed
+            ..clear()
+            ..addAll(stored),
+        );
+      }
+    } catch (_) {
+      // Tanpa prefs (mis. lingkungan tes tanpa mock): pakai set awal
+      // di memori saja, jangan sampai halaman gagal tampil.
+    }
+  }
+
+  Future<void> _klaim(String title) async {
+    setState(() => _claimed.add(title));
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(_klaimKey, _claimed.toList());
+    } catch (_) {
+      // Klaim tetap tampil di sesi ini walau penyimpanan gagal.
+    }
+  }
 
   void _openCatalog() {
     Navigator.push<void>(
@@ -154,6 +198,7 @@ class _PromoPageState extends State<PromoPage> {
           showBack: widget.showBack,
           height: 200,
           topPadding: 38,
+          titleSize: 24,
           actions: [
             SizedBox(
               height: 32,
@@ -184,33 +229,29 @@ class _PromoPageState extends State<PromoPage> {
                     _FilterChip(
                       'Semua Promo',
                       active: _filter == _PromoFilter.semua,
-                      onTap: () =>
-                          setState(() => _filter = _PromoFilter.semua),
+                      onTap: () => setState(() => _filter = _PromoFilter.semua),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     _FilterChip(
                       'Diskon Belanja',
                       active: _filter == _PromoFilter.diskon,
                       onTap: () =>
                           setState(() => _filter = _PromoFilter.diskon),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     _FilterChip(
                       'Gratis Ongkir',
                       active: _filter == _PromoFilter.gratis,
                       onTap: () =>
                           setState(() => _filter = _PromoFilter.gratis),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     _FilterChip(
                       'Cashback',
                       active: _filter == _PromoFilter.cashback,
                       onTap: () =>
                           setState(() => _filter = _PromoFilter.cashback),
                     ),
-                    // Ruang napas di ujung scroll supaya chip terakhir
-                    // bisa bergeser penuh ke dalam layar.
-                    const SizedBox(width: 8),
                   ],
                 ),
               ),
@@ -304,8 +345,7 @@ class _PromoPageState extends State<PromoPage> {
                     expiry: shownVouchers[i].expiry,
                     expiryColor: shownVouchers[i].expiryColor,
                     claimed: _claimed.contains(shownVouchers[i].title),
-                    onClaim: () =>
-                        setState(() => _claimed.add(shownVouchers[i].title)),
+                    onClaim: () => _klaim(shownVouchers[i].title),
                   ),
                 ],
             ],
@@ -323,25 +363,25 @@ class _FilterChip extends StatelessWidget {
   final VoidCallback onTap;
   @override
   Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(20),
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
+      decoration: BoxDecoration(
+        color: active ? gardenInk : Colors.white,
         borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: active ? gardenInk : Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: active ? null : Border.all(color: gardenBorder),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: active ? Colors.white : gardenInk,
-            ),
-          ),
+        border: active ? null : Border.all(color: gardenBorder),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: active ? Colors.white : gardenInk,
         ),
-      );
+      ),
+    ),
+  );
 }
 
 class _WeeklyCard extends StatelessWidget {
@@ -361,106 +401,103 @@ class _WeeklyCard extends StatelessWidget {
   final Widget badge;
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: background,
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    tag,
-                    style: const TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w700,
-                      color: textGrey,
-                      letterSpacing: 0.4,
-                    ),
-                  ),
+            Expanded(
+              child: Text(
+                tag,
+                style: const TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  color: textGrey,
+                  letterSpacing: 0.4,
                 ),
-                badge,
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-                color: gardenInk,
               ),
             ),
-            const SizedBox(height: 2),
-            Text(
-              subtitle,
-              style: const TextStyle(fontSize: 11, color: textGrey),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              action,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF397A24),
-              ),
-            ),
+            badge,
           ],
         ),
-      );
+        const SizedBox(height: 6),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            color: gardenInk,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(subtitle, style: const TextStyle(fontSize: 11, color: textGrey)),
+        const SizedBox(height: 8),
+        Text(
+          action,
+          style: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF397A24),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _CalendarBadge extends StatelessWidget {
   const _CalendarBadge();
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(6),
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(6),
+    ),
+    child: const Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.calendar_today_outlined, size: 12, color: gardenInk),
+        SizedBox(width: 3),
+        Text(
+          '15 Okt',
+          style: TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w700,
+            color: gardenInk,
+          ),
         ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.calendar_today_outlined, size: 12, color: gardenInk),
-            SizedBox(width: 3),
-            Text(
-              '15 Okt',
-              style: TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-                color: gardenInk,
-              ),
-            ),
-          ],
-        ),
-      );
+      ],
+    ),
+  );
 }
 
 class _PercentBadge extends StatelessWidget {
   const _PercentBadge();
   @override
   Widget build(BuildContext context) => Container(
-        width: 26,
-        height: 26,
-        alignment: Alignment.center,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color(0xFFD1C4E9),
-        ),
-        child: const Text(
-          '%',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF5E35B1),
-          ),
-        ),
-      );
+    width: 26,
+    height: 26,
+    alignment: Alignment.center,
+    decoration: const BoxDecoration(
+      shape: BoxShape.circle,
+      color: Color(0xFFD1C4E9),
+    ),
+    child: const Text(
+      '%',
+      style: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w800,
+        color: Color(0xFF5E35B1),
+      ),
+    ),
+  );
 }
 
 class _VoucherCard extends StatelessWidget {
@@ -486,122 +523,115 @@ class _VoucherCard extends StatelessWidget {
   final VoidCallback onClaim;
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 46,
+          child: Column(
+            children: [
+              Text(
+                big,
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w800,
+                  color: bigColor,
+                ),
+              ),
+              Text(
+                small,
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  color: bigColor,
+                  letterSpacing: 0.4,
+                ),
+              ),
+            ],
+          ),
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 46,
-              child: Column(
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  color: gardenInk,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: const TextStyle(fontSize: 11, color: textGrey),
+              ),
+              const SizedBox(height: 4),
+              Row(
                 children: [
+                  Icon(Icons.access_time, size: 12, color: expiryColor),
+                  const SizedBox(width: 3),
                   Text(
-                    big,
+                    expiry,
                     style: TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.w800,
-                      color: bigColor,
-                    ),
-                  ),
-                  Text(
-                    small,
-                    style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w700,
-                      color: bigColor,
-                      letterSpacing: 0.4,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: expiryColor,
                     ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w700,
-                      color: gardenInk,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(fontSize: 11, color: textGrey),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.access_time, size: 12, color: expiryColor),
-                      const SizedBox(width: 3),
-                      Text(
-                        expiry,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: expiryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            claimed
-                ? Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 7,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE4F3D8),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Sudah Klaim',
-                          style: TextStyle(
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF397A24),
-                          ),
-                        ),
-                        SizedBox(width: 2),
-                        Icon(
-                          Icons.check,
-                          size: 11,
-                          color: Color(0xFF397A24),
-                        ),
-                      ],
-                    ),
-                  )
-                : SizedBox(
-                    height: 32,
-                    child: FilledButton(
-                      onPressed: onClaim,
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        minimumSize: const Size(0, 32),
-                        textStyle: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: 'Roboto',
-                        ),
-                      ),
-                      child: const Text('Klaim'),
-                    ),
-                  ),
-          ],
+            ],
+          ),
         ),
-      );
+        const SizedBox(width: 8),
+        claimed
+            ? Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 7),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE4F3D8),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Sudah Klaim',
+                      style: TextStyle(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF397A24),
+                      ),
+                    ),
+                    SizedBox(width: 2),
+                    Icon(Icons.check, size: 11, color: Color(0xFF397A24)),
+                  ],
+                ),
+              )
+            : SizedBox(
+                height: 32,
+                child: FilledButton(
+                  onPressed: onClaim,
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    minimumSize: const Size(0, 32),
+                    textStyle: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Roboto',
+                    ),
+                  ),
+                  child: const Text('Klaim'),
+                ),
+              ),
+      ],
+    ),
+  );
 }

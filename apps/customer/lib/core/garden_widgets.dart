@@ -17,6 +17,7 @@ class LimeHeader extends StatelessWidget {
     this.showBack = true,
     this.centerTitle = true,
     this.backFilled = true,
+    this.titleSize = 20,
     this.below,
   });
   final String title;
@@ -26,6 +27,7 @@ class LimeHeader extends StatelessWidget {
   final bool showBack;
   final bool centerTitle;
   final bool backFilled;
+  final double titleSize;
   final Widget? below;
 
   @override
@@ -66,8 +68,8 @@ class LimeHeader extends StatelessWidget {
                         child: Text(
                           title,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 20,
+                          style: TextStyle(
+                            fontSize: titleSize,
                             fontWeight: FontWeight.w800,
                             color: gardenInk,
                           ),
@@ -81,8 +83,8 @@ class LimeHeader extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 8),
                         child: Text(
                           title,
-                          style: const TextStyle(
-                            fontSize: 20,
+                          style: TextStyle(
+                            fontSize: titleSize,
                             fontWeight: FontWeight.w800,
                             color: gardenInk,
                           ),

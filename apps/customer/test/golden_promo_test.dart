@@ -3,11 +3,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:gardenmart_customer/core/garden_widgets.dart';
 import 'package:gardenmart_customer/core/theme.dart';
 import 'package:gardenmart_customer/features/catalog/presentation/promo_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'golden_test.dart' show loadTestFonts;
 
 void main() {
-  setUpAll(loadTestFonts);
+  setUpAll(() async {
+    await loadTestFonts();
+    SharedPreferences.setMockInitialValues({});
+  });
 
   testWidgets('golden promo', (tester) async {
     tester.view.devicePixelRatio = 2.0;
@@ -21,10 +25,7 @@ void main() {
         home: Scaffold(
           backgroundColor: authBackground,
           body: const SafeArea(child: PromoPage()),
-          bottomNavigationBar: GardenBottomNav(
-            index: 1,
-            onSelect: (_) {},
-          ),
+          bottomNavigationBar: GardenBottomNav(index: 1, onSelect: (_) {}),
         ),
       ),
     );
