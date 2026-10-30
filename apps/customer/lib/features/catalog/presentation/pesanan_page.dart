@@ -139,18 +139,18 @@ class _PesananPageState extends ConsumerState<PesananPage> {
     });
   }
 
-  void _chatDriver() {
+  void _chatDriver(Pesanan order) {
     if (widget.onChatDriver != null) {
       widget.onChatDriver!();
       return;
     }
     Navigator.push<void>(
       context,
-      MaterialPageRoute<void>(builder: (_) => const ChatDriverPage()),
+      MaterialPageRoute<void>(builder: (_) => ChatDriverPage(order: order)),
     );
   }
 
-  void _phoneDialog() {
+  void _phoneDialog(Pesanan order) {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
@@ -163,7 +163,7 @@ class _PesananPageState extends ConsumerState<PesananPage> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _chatDriver();
+              _chatDriver(order);
             },
             child: const Text('Chat Driver'),
           ),
@@ -363,8 +363,8 @@ class _PesananPageState extends ConsumerState<PesananPage> {
             child: _isActive(order.status)
                 ? _TrackingCard(
                     order: order,
-                    onChatDriver: _chatDriver,
-                    onPhone: _phoneDialog,
+                    onChatDriver: () => _chatDriver(order),
+                    onPhone: () => _phoneDialog(order),
                   )
                 : _HistoryCard(
                     order: order,
@@ -424,8 +424,8 @@ class _PesananPageState extends ConsumerState<PesananPage> {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: _TrackingCard(
                 order: order,
-                onChatDriver: _chatDriver,
-                onPhone: _phoneDialog,
+                onChatDriver: () => _chatDriver(order),
+                onPhone: () => _phoneDialog(order),
               ),
             ),
           );
