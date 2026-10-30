@@ -9,6 +9,7 @@ import '../../checkout/presentation/alamat_page.dart';
 import '../../checkout/presentation/checkout_page.dart';
 import 'promo_page.dart';
 import '../application/produk_provider.dart';
+import '../application/placeholder_diskon.dart';
 import 'catalog_widgets.dart';
 
 class CartPage extends ConsumerWidget {
@@ -85,16 +86,11 @@ class CartPage extends ConsumerWidget {
                               title: const Text('Kosongkan Keranjang'),
                               onTap: () async {
                                 Navigator.pop(sheetContext);
-                                await ref
-                                    .read(provider.notifier)
-                                    .kosongkan();
+                                await ref.read(provider.notifier).kosongkan();
                                 if (context.mounted) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
+                                  ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text(
-                                        'Keranjang dikosongkan',
-                                      ),
+                                      content: Text('Keranjang dikosongkan'),
                                     ),
                                   );
                                 }
@@ -103,8 +99,7 @@ class CartPage extends ConsumerWidget {
                             ListTile(
                               leading: const Icon(Icons.close),
                               title: const Text('Tutup'),
-                              onTap: () =>
-                                  Navigator.pop(sheetContext),
+                              onTap: () => Navigator.pop(sheetContext),
                             ),
                           ],
                         ),
@@ -167,12 +162,10 @@ class CartPage extends ConsumerWidget {
                                       ),
                                     ),
                                     TextButton(
-                                      onPressed: () =>
-                                          Navigator.push<void>(
+                                      onPressed: () => Navigator.push<void>(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (_) =>
-                                              const AlamatPage(),
+                                          builder: (_) => const AlamatPage(),
                                         ),
                                       ),
                                       style: TextButton.styleFrom(
@@ -374,6 +367,8 @@ class CartPage extends ConsumerWidget {
                     ),
             ),
             _PaymentBar(cart),
+            if (totalHematPlaceholder(cart.items) > 0)
+              _SavingsBanner(totalHematPlaceholder(cart.items)),
           ],
         ),
       ),
@@ -442,12 +437,49 @@ class _CartRow extends StatelessWidget {
                   const SizedBox(height: 7),
                   LayoutBuilder(
                     builder: (context, constraints) {
-                      final price = Text(
-                        rupiah(p.harga),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                        ),
+                      final diskon = placeholderDiskonUntuk(p);
+                      final persen = diskon?.persenDiskon(p.harga) ?? 0;
+                      final price = Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 6,
+                        runSpacing: 2,
+                        children: [
+                          Text(
+                            rupiah(p.harga),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          if (diskon != null && persen > 0) ...[
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: dangerRed,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                '-$persen%',
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              rupiah(diskon.hargaAsli),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF8A9A82),
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                          ],
+                        ],
                       );
                       final stepper = Row(
                         mainAxisSize: MainAxisSize.min,
@@ -458,9 +490,7 @@ class _CartRow extends StatelessWidget {
                             onPressed: () => notifier.kurangItem(p.id),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Text(
                               '${item.qty}',
                               style: const TextStyle(
@@ -482,13 +512,7 @@ class _CartRow extends StatelessWidget {
                           MediaQuery.textScalerOf(context).scale(10) <= 12) {
                         return Row(
                           children: [
-                            Expanded(
-                              child: FittedBox(
-                                fit: BoxFit.scaleDown,
-                                alignment: Alignment.centerLeft,
-                                child: price,
-                              ),
-                            ),
+                            Expanded(child: price),
                             const SizedBox(width: 6),
                             stepper,
                           ],
@@ -514,6 +538,41 @@ class _CartRow extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Banner hemat di bawah tombol checkout: kartu putih membulat dengan
+/// ikon sparkle, nilainya dihitung dari diskon placeholder (bukan literal).
+class _SavingsBanner extends StatelessWidget {
+  const _SavingsBanner(this.totalHemat);
+  final int totalHemat;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+    child: Container(
+      key: const Key('cart-savings-banner'),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.auto_awesome, size: 20, color: Color(0xFF5E872F)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Total kamu hemat ${rupiah(totalHemat)} di pesanan ini!',
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: gardenInk,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class _PaymentBar extends StatelessWidget {
@@ -560,7 +619,10 @@ class _PaymentBar extends StatelessWidget {
                           const SizedBox(height: 20),
                           for (final row in [
                             ('Subtotal', rupiah(cart.subtotal)),
-                            ('Diskon', rupiah(0)),
+                            (
+                              'Diskon',
+                              rupiah(totalHematPlaceholder(cart.items)),
+                            ),
                             ('Ongkir', rupiah(0)),
                           ])
                             Padding(
@@ -648,11 +710,7 @@ class _PaymentBar extends StatelessWidget {
 
 /// Kotak centang persegi sesuai Figma (bukan Checkbox Material).
 class _SquareCheck extends StatelessWidget {
-  const _SquareCheck({
-    super.key,
-    required this.value,
-    required this.onChanged,
-  });
+  const _SquareCheck({super.key, required this.value, required this.onChanged});
   final bool value;
   final ValueChanged<bool> onChanged;
   @override
