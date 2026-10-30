@@ -12,8 +12,14 @@ import '../application/checkout_session.dart';
 import 'alamat_page.dart';
 import 'checkout_success_page.dart';
 import 'metode_bayar_page.dart';
-import '../../catalog/presentation/promo_page.dart';
 import 'payment_page.dart';
+import 'voucher_picker_page.dart';
+
+/// Tarif normal pengiriman Instant menurut referensi.
+///
+/// Backend saat ini selalu mengembalikan ongkir 0 (promo gratis ongkir),
+/// jadi nilai coret ini dari referensi sampai backend punya tarif asli.
+const ongkirNormal = 10000;
 
 class CheckoutPage extends ConsumerStatefulWidget {
   const CheckoutPage({super.key, required this.items});
@@ -29,6 +35,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   bool loading = true, busy = false;
   String shipping = 'Instant', method = 'qris';
   String? error;
+  VoucherLocal? voucher;
   final note = TextEditingController();
   String get userId => ref.read(authProvider).user!.id;
   SecureStorage get storage => ref.read(storageProvider);
@@ -125,6 +132,34 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
 
   Future<void> pay() async {
     if (busy || costs == null) return;
+    // Penagihan toko belum mendukung voucher: total yang dikirim ke
+    // backend harus sama dengan total preview backend, kalau tidak
+    // backend menolak (409). Kalau voucher membuat total tampil beda
+    // dari total toko, beri tahu dulu sebelum menagih.
+    if (voucher != null && _total != (costs!['total'] as int)) {
+      final lanjut = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Voucher belum didukung penagihan toko'),
+          content: Text(
+            'Potongan voucher tampil di aplikasi, tapi penagihan toko '
+            'belum mendukung voucher. Total yang ditagih adalah '
+            '${rupiah(costs!['total'] as int)}.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Batal'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Lanjut Bayar'),
+            ),
+          ],
+        ),
+      );
+      if (lanjut != true || !mounted) return;
+    }
     setState(() {
       busy = true;
       error = null;
@@ -213,9 +248,26 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   };
 
   int get _totalQty => items.fold<int>(0, (n, i) => n + i.qty);
-  int get _diskon => costs == null ? 0 : costs!['diskon'] as int;
-  int get _ongkir => costs == null ? 0 : costs!['ongkir'] as int;
-  int get _total => costs == null ? 0 : costs!['total'] as int;
+  int get _subtotal => costs == null ? 0 : costs!['subtotal'] as int;
+  int get _backendDiskon => costs == null ? 0 : costs!['diskon'] as int;
+  int get _backendOngkir => costs == null ? 0 : costs!['ongkir'] as int;
+  int get _biayaLayanan =>
+      costs == null ? 0 : costs!['biaya_layanan'] as int;
+
+  /// Potongan dari voucher lokal yang dipilih. Potongan produk (harga
+  /// coret placeholder di keranjang) sudah tercermin di harga jual, jadi
+  /// tidak dihitung lagi di sini; baris voucher hanya berisi voucher.
+  int get _voucherDiskon =>
+      voucher == null ? 0 : voucher!.potonganTagihan(_subtotal);
+  int get _voucherOngkirDiskon =>
+      voucher == null ? 0 : voucher!.potonganOngkir(_backendOngkir);
+  int get _diskon => _backendDiskon + _voucherDiskon;
+  int get _ongkir => _backendOngkir - _voucherOngkirDiskon;
+  int get _total => _subtotal - _diskon + _ongkir + _biayaLayanan;
+
+  /// Promo gratis ongkir toko berlaku kalau backend mengembalikan
+  /// ongkir 0 (bukan karena voucher).
+  bool get _gratisOngkirPromo => costs != null && _backendOngkir == 0;
 
   Future<void> _chooseShipping() async {
     final value = await showModalBottomSheet<String>(
@@ -249,6 +301,22 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     if (value != null && mounted) setState(() => shipping = value);
   }
 
+  Future<void> _chooseVoucher() async {
+    if (busy || session != null) return;
+    final result = await Navigator.push<VoucherLocal>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => VoucherPickerPage(
+          subtotal: _subtotal,
+          ongkir: _backendOngkir,
+          selected: voucher,
+        ),
+      ),
+    );
+    if (!mounted || result == null) return;
+    setState(() => voucher = result.isTanpa ? null : result);
+  }
+
   Future<void> _editNote() async {
     final controller = TextEditingController(text: note.text);
     final saved = await showDialog<bool>(
@@ -277,7 +345,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     if (saved == true && mounted) setState(() => note.text = controller.text);
   }
 
-  Widget _card({required Widget child, VoidCallback? onTap}) {
+  Widget _card({Key? key, required Widget child, VoidCallback? onTap}) {
     final card = Card(
       color: Colors.white,
       elevation: 0,
@@ -287,6 +355,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     );
     if (onTap == null) return card;
     return InkWell(
+      key: key,
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: card,
@@ -309,7 +378,12 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     color: Colors.black45,
   );
 
-  Widget _costRow(String label, String amount, {bool bold = false}) =>
+  Widget _costRow(
+    String label,
+    String amount, {
+    bool bold = false,
+    String? coret,
+  }) =>
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
@@ -323,6 +397,17 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                 ),
               ),
             ),
+            if (coret != null) ...[
+              Text(
+                coret,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.black38,
+                  decoration: TextDecoration.lineThrough,
+                ),
+              ),
+              const SizedBox(width: 6),
+            ],
             Text(
               amount,
               style: TextStyle(
@@ -434,7 +519,16 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                       color: Color(0xFF5E872F),
                     ),
                   ),
-                  if (_ongkir == 0) ...[
+                  if (_gratisOngkirPromo) ...[
+                    const SizedBox(width: 8),
+                    Text(
+                      rupiah(ongkirNormal),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.black38,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
                     const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -487,7 +581,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
               InkWell(
                 onTap: () => setState(() => _showAll = !_showAll),
                 child: Text(
-                  _showAll ? 'Sembunyikan ›' : 'Lihat Semua ›',
+                  _showAll ? 'Sembunyikan >' : 'Lihat Semua >',
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -584,56 +678,60 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           Row(
             children: [
               Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEFF4EB),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.note_alt_outlined,
-                        size: 14,
-                        color: Colors.black54,
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          stripText.isEmpty
-                              ? 'Tambah catatan pesanan'
-                              : 'Catatan: $stripText',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Colors.black54,
+                child: InkWell(
+                  key: const Key('checkout-note-strip'),
+                  onTap: busy || session != null ? null : _editNote,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEFF4EB),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.note_alt_outlined,
+                          size: 14,
+                          color: Colors.black54,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            stripText.isEmpty
+                                ? 'Tambah catatan pesanan'
+                                : 'Catatan: $stripText',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Colors.black54,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
               const SizedBox(width: 8),
-              OutlinedButton(
-                onPressed: busy || session != null ? null : _editNote,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: gardenInk,
-                  minimumSize: const Size(0, 36),
-                  side: const BorderSide(color: gardenBorder),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  textStyle: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'Roboto',
+              InkWell(
+                key: const Key('summary-ubah'),
+                onTap: busy
+                    ? null
+                    : () => Navigator.maybePop(context),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+                  child: Text(
+                    'Ubah',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF5E872F),
+                    ),
                   ),
                 ),
-                child: const Text('Ubah'),
               ),
             ],
           ),
@@ -642,51 +740,59 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     );
   }
 
-  Widget _voucherCard() => _card(
-    onTap: () => Navigator.push<void>(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            const Scaffold(body: PromoPage(showBack: true)),
+  Widget _voucherCard() {
+    final dipilih = voucher;
+    final hematVoucher = _voucherDiskon + _voucherOngkirDiskon;
+    return _card(
+      key: const Key('choose-voucher'),
+      onTap: busy || session != null ? null : _chooseVoucher,
+      child: Row(
+        children: [
+          const Icon(
+            Icons.confirmation_number_outlined,
+            color: Color(0xFF7A9B52),
+            size: 24,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Gunakan / Masukkan Voucher',
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  dipilih == null
+                      ? 'Ada 2 voucher aktif hemat belanja'
+                      : 'Terpilih: ${dipilih.title}',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Color(0xFF73876B),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            dipilih == null
+                ? 'Hemat s/d Rp 25rb >'
+                : (hematVoucher > 0
+                      ? 'Hemat ${rupiah(hematVoucher)} >'
+                      : 'Ganti >'),
+            textAlign: TextAlign.right,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF5E872F),
+            ),
+          ),
+        ],
       ),
-    ),
-    child: Row(
-      children: [
-        const Icon(
-          Icons.confirmation_number_outlined,
-          color: Color(0xFF7A9B52),
-          size: 24,
-        ),
-        const SizedBox(width: 10),
-        const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Gunakan / Masukkan Voucher',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
-              ),
-              SizedBox(height: 3),
-              Text(
-                'Ada 2 voucher aktif hemat belanja',
-                style: TextStyle(fontSize: 11, color: Color(0xFF73876B)),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 6),
-        const Text(
-          'Hemat s/d Rp 25rb ›',
-          textAlign: TextAlign.right,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF5E872F),
-          ),
-        ),
-      ],
-    ),
-  );
+    );
+  }
 
   Widget _paymentCard() => _card(
     onTap: busy || session != null
@@ -777,7 +883,11 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
             'Total Diskon Voucher',
             _diskon > 0 ? '-${rupiah(_diskon)}' : rupiah(0),
           ),
-          _costRow('Ongkos Kirim Toko', rupiah(_ongkir)),
+          _costRow(
+            'Ongkos Kirim Toko',
+            rupiah(_ongkir),
+            coret: _gratisOngkirPromo ? rupiah(ongkirNormal) : null,
+          ),
           _costRow(
             'Biaya Layanan Aplikasi',
             rupiah(costs!['biaya_layanan'] as int),
@@ -806,7 +916,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                       children: [
                         RoundIconButton(
                           icon: Icons.arrow_back,
-                          filled: false,
+                          background: limePale,
                           onPressed: busy
                               ? () {}
                               : () => Navigator.maybePop(context),

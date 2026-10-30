@@ -104,8 +104,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('bayar-gopay')));
     await tester.pumpAndSettle();
-    // Isi catatan pesanan seperti strip referensi.
-    await tester.tap(find.text('Ubah'));
+    // Isi catatan pesanan seperti strip referensi (ketuk strip catatan;
+    // tombol Ubah sekarang kembali ke keranjang).
+    await tester.tap(find.byKey(const Key('checkout-note-strip')));
     await tester.pumpAndSettle();
     await tester.enterText(
       find.byType(TextField),
