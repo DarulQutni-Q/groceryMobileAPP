@@ -16,12 +16,19 @@ class AuthPage extends ConsumerStatefulWidget {
 }
 
 class _AuthPageState extends ConsumerState<AuthPage> {
+  late bool showRegister;
   final form = GlobalKey<FormState>();
   final identity = TextEditingController();
   final phone = TextEditingController();
   final password = TextEditingController();
   final confirm = TextEditingController();
   bool remember = true;
+
+  @override
+  void initState() {
+    super.initState();
+    showRegister = widget.register;
+  }
 
   @override
   void dispose() {
@@ -41,7 +48,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     // Referensi register hanya punya email + kata sandi + verifikasi;
     // phone opsional di backend, jadi tidak dikirim dari form ini.
     final phoneValue = phone.text.trim();
-    final success = widget.register
+    final success = showRegister
         ? await auth.register(
             identity.text.trim(),
             password.text,
@@ -66,18 +73,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           children: [
             const GardenLogo(),
             const SizedBox(height: 16),
-            FilledButton.icon(
-              onPressed: busy ? null : () => FocusScope.of(context).unfocus(),
-              icon: const Icon(Icons.shopping_cart_outlined, size: 20),
-              label: Text(widget.register ? 'Daftar Akun' : 'Masuk Akun'),
-              style: FilledButton.styleFrom(
-                side: const BorderSide(color: Colors.white, width: 3),
-                minimumSize: const Size.fromHeight(56),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(28),
-                ),
-              ),
-            ),
+            _modeTabs(busy),
             const SizedBox(height: 16),
             Card(
               margin: EdgeInsets.zero,
@@ -98,6 +94,61 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     );
   }
 
+  /// Tab Masuk/Daftar di posisi pill lama: tab aktif gelap (gardenInk,
+  /// teks putih), tab nonaktif transparan dengan teks gelap. Ikon keranjang
+  /// tidak muat di layout dua tab, jadi dihapus dari tab ini.
+  Widget _modeTabs(bool busy) => Container(
+    height: 56,
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.white, width: 3),
+      borderRadius: BorderRadius.circular(28),
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(25),
+      child: Row(
+        children: [
+          Expanded(
+            child: _tab(
+              label: 'Masuk Akun',
+              active: !showRegister,
+              onTap: busy ? null : () => setState(() => showRegister = false),
+            ),
+          ),
+          Expanded(
+            child: _tab(
+              label: 'Daftar Akun',
+              active: showRegister,
+              onTap: busy ? null : () => setState(() => showRegister = true),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+
+  Widget _tab({
+    required String label,
+    required bool active,
+    required VoidCallback? onTap,
+  }) =>
+      Material(
+        color: active ? gardenInk : Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: active ? Colors.white : gardenInk,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                fontFamily: 'Roboto',
+              ),
+            ),
+          ),
+        ),
+      );
+
   Widget _card(bool busy) => AutofillGroup(
     child: Form(
       key: form,
@@ -114,7 +165,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           ),
           const SizedBox(height: 18),
           ..._fields(),
-          if (!widget.register) _remember(busy) else const SizedBox(height: 18),
+          if (!showRegister) _remember(busy) else const SizedBox(height: 18),
           FilledButton(
             onPressed: busy ? null : _submit,
             style: FilledButton.styleFrom(
@@ -129,7 +180,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Text(widget.register ? 'Daftar' : 'Masuk Sekarang'),
+                : Text(showRegister ? 'Daftar' : 'Masuk Sekarang'),
           ),
           const SizedBox(height: 14),
           const Row(
@@ -151,7 +202,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           ),
           const SizedBox(height: 10),
           _social(busy),
-          if (!widget.register) ...[
+          if (!showRegister) ...[
             const SizedBox(height: 14),
             const Divider(color: gardenBorder),
             _registerLink(busy),
@@ -163,29 +214,33 @@ class _AuthPageState extends ConsumerState<AuthPage> {
 
   List<Widget> _fields() => [
     TextFormField(
-      key: Key(widget.register ? 'register-email' : 'login-identity'),
+      key: Key(showRegister ? 'register-email' : 'login-identity'),
       controller: identity,
       keyboardType: TextInputType.emailAddress,
-      autofillHints: widget.register
+      autofillHints: showRegister
           ? const [AutofillHints.email]
           : const [AutofillHints.email, AutofillHints.telephoneNumber],
       textInputAction: TextInputAction.next,
       autocorrect: false,
-      validator: widget.register
+      validator: showRegister
           ? emailError
           : (value) => value?.contains('@') == true
                 ? emailError(value)
                 : phoneError(value),
       decoration: InputDecoration(
-        hintText: widget.register
+        hintText: showRegister
             ? 'example@gmail.com'
             : 'Email atau Nomor Handphone',
-        suffixIcon: widget.register
+        suffixIcon: showRegister
             ? null
-            : const Icon(Icons.person_outline, size: 20),
+            : const Icon(
+                Icons.person_outline,
+                size: 24,
+                color: Color(0xFF515951),
+              ),
       ),
     ),
-    if (widget.register) ...[
+    if (showRegister) ...[
       const SizedBox(height: 18),
       TextFormField(
         key: const Key('register-phone'),
@@ -204,20 +259,20 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     ],
     const SizedBox(height: 18),
     PasswordField(
-      key: Key(widget.register ? 'register-password' : 'login-password'),
+      key: Key(showRegister ? 'register-password' : 'login-password'),
       controller: password,
-      hint: widget.register ? 'Kata sandi' : 'Masukkan Kata Sandi',
-      validator: widget.register
+      hint: showRegister ? 'Kata sandi' : 'Masukkan Kata Sandi',
+      validator: showRegister
           ? passwordError
           : (value) => value == null || value.isEmpty
                 ? 'Kata sandi wajib diisi'
                 : null,
-      autofillHints: widget.register
+      autofillHints: showRegister
           ? const [AutofillHints.newPassword]
           : const [AutofillHints.password],
-      onSubmitted: widget.register ? null : _submit,
+      onSubmitted: showRegister ? null : _submit,
     ),
-    if (widget.register) ...[
+    if (showRegister) ...[
       const SizedBox(height: 18),
       PasswordField(
         key: const Key('register-confirm'),
