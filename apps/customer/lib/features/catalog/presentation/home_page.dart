@@ -8,12 +8,10 @@ import '../../checkout/application/checkout_provider.dart';
 import '../application/produk_provider.dart';
 import 'cart_page.dart';
 import 'catalog_page.dart';
-import 'chat_driver_page.dart';
 import 'notifications_page.dart';
 import 'pesanan_page.dart';
 import 'promo_page.dart';
 import 'scan_qr_page.dart';
-import '../../checkout/presentation/struk_page.dart';
 import 'catalog_widgets.dart';
 import 'poinku_page.dart';
 
@@ -708,20 +706,7 @@ void _goToPesananTab(BuildContext context, ValueChanged<int>? onGoToTab) {
   Navigator.push<void>(
     context,
     MaterialPageRoute(
-      builder: (_) => Scaffold(
-        body: PesananPage(
-          showBack: true,
-          onLihatStruk: () => Navigator.push<void>(
-            context,
-            MaterialPageRoute(builder: (_) => const StrukPage()),
-          ),
-          onChatDriver: () => Navigator.push<void>(
-            context,
-            MaterialPageRoute(builder: (_) => const ChatDriverPage()),
-          ),
-          onBeliLagi: () => Navigator.maybePop(context),
-        ),
-      ),
+      builder: (_) => Scaffold(body: const PesananPage(showBack: true)),
     ),
   );
 }

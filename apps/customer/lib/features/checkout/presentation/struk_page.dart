@@ -185,25 +185,29 @@ class StrukPage extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: _Meta(
-                              label: 'Kasir / Picker',
-                              value: data.kasir,
-                            ),
-                          ),
-                          Expanded(
-                            child: _Meta(
-                              label: 'Kurir Toko',
-                              value: data.kurir,
-                              alignRight: true,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
+                      if (data.kasir.isNotEmpty || data.kurir.isNotEmpty) ...[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (data.kasir.isNotEmpty)
+                              Expanded(
+                                child: _Meta(
+                                  label: 'Kasir / Picker',
+                                  value: data.kasir,
+                                ),
+                              ),
+                            if (data.kurir.isNotEmpty)
+                              Expanded(
+                                child: _Meta(
+                                  label: 'Kurir Toko',
+                                  value: data.kurir,
+                                  alignRight: true,
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                      ],
                       const Text(
                         'RINCIAN BARANG BELANJA',
                         style: TextStyle(
@@ -225,16 +229,20 @@ class StrukPage extends StatelessWidget {
                         value: data.totalBelanja,
                       ),
                       const SizedBox(height: 4),
-                      _TotalRow(
-                        label: 'Diskon Promo JSM',
-                        value: data.diskonPromo,
-                      ),
-                      const SizedBox(height: 4),
-                      _TotalRow(
-                        label: 'Diskon Voucher Toko',
-                        value: data.diskonVoucher,
-                      ),
-                      const SizedBox(height: 4),
+                      if (data.diskonPromo.isNotEmpty) ...[
+                        _TotalRow(
+                          label: 'Diskon Promo JSM',
+                          value: data.diskonPromo,
+                        ),
+                        const SizedBox(height: 4),
+                      ],
+                      if (data.diskonVoucher.isNotEmpty) ...[
+                        _TotalRow(
+                          label: 'Diskon Voucher Toko',
+                          value: data.diskonVoucher,
+                        ),
+                        const SizedBox(height: 4),
+                      ],
                       const _TotalRow(
                         label: 'Ongkir Instan (15 mnt)',
                         value: 'GRATIS',
@@ -270,97 +278,108 @@ class StrukPage extends StatelessWidget {
                       const SizedBox(height: 8),
                       const _DashedLine(),
                       const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Text(
-                            'Metode Pembayaran',
-                            style: TextStyle(fontSize: 11, color: textGrey),
-                          ),
-                          const Spacer(),
-                          Text(
-                            data.metodeId,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: textGrey,
+                      if (data.metodeId.isNotEmpty) ...[
+                        Row(
+                          children: [
+                            const Text(
+                              'Metode Pembayaran',
+                              style: TextStyle(fontSize: 11, color: textGrey),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Container(
-                            width: 18,
-                            height: 18,
-                            alignment: Alignment.center,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFF397A24),
+                            const Spacer(),
+                            Text(
+                              data.metodeId,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: textGrey,
+                              ),
                             ),
-                            child: const Icon(
-                              Icons.check,
-                              size: 12,
-                              color: Colors.white,
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                      ],
+                      if (data.metodeBayar.isNotEmpty) ...[
+                        Row(
+                          children: [
+                            Container(
+                              width: 18,
+                              height: 18,
+                              alignment: Alignment.center,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color(0xFF397A24),
+                              ),
+                              child: const Icon(
+                                Icons.check,
+                                size: 12,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            data.metodeBayar,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: gardenInk,
+                            const SizedBox(width: 6),
+                            Text(
+                              data.metodeBayar,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: gardenInk,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _RewardPill(
-                              icon: Icons.star,
-                              text: 'Poin Didapat: ${data.poin}',
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: _RewardPill(
-                              icon: Icons.check_circle_outline,
-                              text: 'Stempel: ${data.stempel}',
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              children: [
-                                const _Barcode(),
-                                const SizedBox(height: 4),
-                                Text(
-                                  data.kodeBarcode,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: gardenInk,
-                                  ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                      if (data.poin.isNotEmpty || data.stempel.isNotEmpty) ...[
+                        Row(
+                          children: [
+                            if (data.poin.isNotEmpty)
+                              Expanded(
+                                child: _RewardPill(
+                                  icon: Icons.star,
+                                  text: 'Poin Didapat: ${data.poin}',
                                 ),
-                              ],
+                              ),
+                            if (data.poin.isNotEmpty && data.stempel.isNotEmpty)
+                              const SizedBox(width: 8),
+                            if (data.stempel.isNotEmpty)
+                              Expanded(
+                                child: _RewardPill(
+                                  icon: Icons.check_circle_outline,
+                                  text: 'Stempel: ${data.stempel}',
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                      if (data.kodeBarcode.isNotEmpty) ...[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  const _Barcode(),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    data.kodeBarcode,
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: gardenInk,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          QrImageView(
-                            data: data.kodeBarcode,
-                            size: 64,
-                            backgroundColor: Colors.white,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
+                            const SizedBox(width: 12),
+                            QrImageView(
+                              data: data.kodeBarcode,
+                              size: 64,
+                              backgroundColor: Colors.white,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                      ],
                       const Center(
                         child: Text(
                           'Terima kasih telah berbelanja di GardenMart.',
@@ -436,8 +455,7 @@ class _DashedLine extends StatelessWidget {
     builder: (context, constraints) {
       const dashWidth = 6.0;
       const dashSpace = 4.0;
-      final count =
-          (constraints.maxWidth / (dashWidth + dashSpace)).floor();
+      final count = (constraints.maxWidth / (dashWidth + dashSpace)).floor();
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(
@@ -466,13 +484,11 @@ class _Meta extends StatelessWidget {
   final bool alignRight;
   @override
   Widget build(BuildContext context) => Column(
-    crossAxisAlignment:
-        alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+    crossAxisAlignment: alignRight
+        ? CrossAxisAlignment.end
+        : CrossAxisAlignment.start,
     children: [
-      Text(
-        label,
-        style: const TextStyle(fontSize: 11, color: textGrey),
-      ),
+      Text(label, style: const TextStyle(fontSize: 11, color: textGrey)),
       const SizedBox(height: 2),
       Text(
         value,
@@ -578,10 +594,7 @@ class _TotalRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
     children: [
-      Text(
-        label,
-        style: const TextStyle(fontSize: 12, color: textGrey),
-      ),
+      Text(label, style: const TextStyle(fontSize: 12, color: textGrey)),
       const Spacer(),
       Text(
         value,
@@ -632,17 +645,52 @@ class _Barcode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const widths = [
-      3.0, 1.0, 2.0, 1.0, 1.0, 3.0, 2.0, 1.0, 4.0, 1.0, 2.0, 2.0, 1.0,
-      3.0, 1.0, 1.0, 2.0, 4.0, 1.0, 2.0, 1.0, 3.0, 1.0, 2.0, 2.0, 1.0,
-      1.0, 3.0, 2.0, 1.0, 4.0, 1.0, 2.0, 1.0, 1.0, 3.0, 2.0, 2.0, 1.0,
+      3.0,
+      1.0,
+      2.0,
+      1.0,
+      1.0,
+      3.0,
+      2.0,
+      1.0,
+      4.0,
+      1.0,
+      2.0,
+      2.0,
+      1.0,
+      3.0,
+      1.0,
+      1.0,
+      2.0,
+      4.0,
+      1.0,
+      2.0,
+      1.0,
+      3.0,
+      1.0,
+      2.0,
+      2.0,
+      1.0,
+      1.0,
+      3.0,
+      2.0,
+      1.0,
+      4.0,
+      1.0,
+      2.0,
+      1.0,
+      1.0,
+      3.0,
+      2.0,
+      2.0,
+      1.0,
     ];
     return SizedBox(
       height: 36,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          for (final w in widths)
-            Container(width: w, color: gardenInk),
+          for (final w in widths) Container(width: w, color: gardenInk),
         ],
       ),
     );
@@ -654,17 +702,31 @@ String _summary(StrukData data) {
   final buffer = StringBuffer()
     ..writeln('GARDENMART SUPERMARKET')
     ..writeln('Struk ${data.nomor}')
-    ..writeln(data.waktu)
-    ..writeln('Kasir: ${data.kasir} • Kurir: ${data.kurir}');
+    ..writeln(data.waktu);
+  if (data.kasir.isNotEmpty || data.kurir.isNotEmpty) {
+    buffer.writeln(
+      [
+        if (data.kasir.isNotEmpty) 'Kasir: ${data.kasir}',
+        if (data.kurir.isNotEmpty) 'Kurir: ${data.kurir}',
+      ].join(' • '),
+    );
+  }
   for (final item in data.items) {
     buffer.writeln('${item.nama} (${item.qty}) = ${item.total}');
   }
+  buffer.writeln('Total Belanja (${data.jumlahBarang}): ${data.totalBelanja}');
+  if (data.diskonPromo.isNotEmpty) {
+    buffer.writeln('Diskon Promo JSM: ${data.diskonPromo}');
+  }
+  if (data.diskonVoucher.isNotEmpty) {
+    buffer.writeln('Diskon Voucher Toko: ${data.diskonVoucher}');
+  }
   buffer
-    ..writeln('Total Belanja (${data.jumlahBarang}): ${data.totalBelanja}')
-    ..writeln('Diskon Promo JSM: ${data.diskonPromo}')
-    ..writeln('Diskon Voucher Toko: ${data.diskonVoucher}')
     ..writeln('Biaya Layanan: ${data.biayaLayanan}')
-    ..writeln('Total Bayar: ${data.totalBayar} (${data.metodeBayar})');
+    ..writeln(
+      'Total Bayar: ${data.totalBayar}'
+      '${data.metodeBayar.isEmpty ? '' : ' (${data.metodeBayar})'}',
+    );
   return buffer.toString();
 }
 
@@ -682,7 +744,13 @@ Future<void> _downloadStruk(BuildContext context, StrukData data) async {
         ),
         pw.Text('Struk ${data.nomor}'),
         pw.Text(data.waktu),
-        pw.Text('Kasir: ${data.kasir} • Kurir: ${data.kurir}'),
+        if (data.kasir.isNotEmpty || data.kurir.isNotEmpty)
+          pw.Text(
+            [
+              if (data.kasir.isNotEmpty) 'Kasir: ${data.kasir}',
+              if (data.kurir.isNotEmpty) 'Kurir: ${data.kurir}',
+            ].join(' • '),
+          ),
         pw.SizedBox(height: 12),
         for (final item in data.items)
           pw.Row(
@@ -710,13 +778,12 @@ Future<void> _downloadStruk(BuildContext context, StrukData data) async {
   final file = File('${dir.path}/$name');
   await file.writeAsBytes(await doc.save());
   if (context.mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Struk tersimpan: $name')),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Struk tersimpan: $name')));
   }
 }
 
 pw.Widget _pdfRow(String label, String value) => pw.Row(
-      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-      children: [pw.Text(label), pw.Text(value)],
-    );
+  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+  children: [pw.Text(label), pw.Text(value)],
+);

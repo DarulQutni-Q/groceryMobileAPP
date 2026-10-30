@@ -10,7 +10,6 @@ import '../application/profil_provider.dart';
 import '../../checkout/presentation/alamat_page.dart';
 import '../../checkout/presentation/checkout_page.dart';
 import '../../checkout/application/checkout_provider.dart';
-import 'chat_driver_page.dart';
 import 'home_page.dart';
 import 'pengaturan_page.dart';
 import 'promo_page.dart';
@@ -18,7 +17,6 @@ import 'pesanan_page.dart';
 import 'scan_qr_page.dart';
 import 'ubah_profil_page.dart';
 import '../../checkout/presentation/metode_pembayaran_page.dart';
-import '../../checkout/presentation/struk_page.dart';
 
 class CustomerShell extends ConsumerStatefulWidget {
   const CustomerShell({super.key, this.now, this.initialTab = 0});
@@ -40,6 +38,7 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
     super.initState();
     tab = widget.initialTab;
   }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     body: SafeArea(
@@ -54,17 +53,7 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
           // Index 2 tidak pernah tampil: onSelect(2) mencegat dan
           // membuka ScanQrPage sebagai route, bukan mengganti tab.
           const SizedBox.shrink(),
-          PesananPage(
-            onLihatStruk: () => Navigator.push<void>(
-              context,
-              MaterialPageRoute(builder: (_) => const StrukPage()),
-            ),
-            onChatDriver: () => Navigator.push<void>(
-              context,
-              MaterialPageRoute(builder: (_) => const ChatDriverPage()),
-            ),
-            onBeliLagi: () => setState(() => tab = 0),
-          ),
+          const PesananPage(),
           const _AkunTab(),
         ],
       ),
@@ -84,7 +73,6 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
     ),
   );
 }
-
 
 /// Tab Akun sebagai layout profil: header avatar + nama + kontak, lalu
 /// menu Alamat, Pengaturan, dan Keluar. Pengaturan dibuat eksplisit agar
@@ -128,7 +116,7 @@ class _AkunTab extends ConsumerWidget {
                     : null,
                 child: lokal.avatarPath == null
                     ? Text(
-                  _initials(displayNama),
+                        _initials(displayNama),
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
@@ -169,32 +157,34 @@ class _AkunTab extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 16),
-        ref.watch(pendingCheckoutProvider).when(
-          data: (pending) => pending
-              ? Column(
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: () => Navigator.push<void>(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const CheckoutPage(items: []),
+        ref
+            .watch(pendingCheckoutProvider)
+            .when(
+              data: (pending) => pending
+                  ? Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton(
+                            onPressed: () => Navigator.push<void>(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const CheckoutPage(items: []),
+                              ),
+                            ),
+                            child: const Text('Lanjutkan Pembayaran'),
                           ),
                         ),
-                        child: const Text('Lanjutkan Pembayaran'),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                  ],
-                )
-              : const SizedBox.shrink(),
-          loading: () => const SizedBox.shrink(),
-          error: (_, _) => TextButton(
-            onPressed: () => ref.invalidate(pendingCheckoutProvider),
-            child: const Text('Periksa Pembayaran Tersimpan'),
-          ),
-        ),
+                        const SizedBox(height: 12),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+              loading: () => const SizedBox.shrink(),
+              error: (_, _) => TextButton(
+                onPressed: () => ref.invalidate(pendingCheckoutProvider),
+                child: const Text('Periksa Pembayaran Tersimpan'),
+              ),
+            ),
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -300,4 +290,3 @@ class _AkunMenuRow extends StatelessWidget {
     ),
   );
 }
-

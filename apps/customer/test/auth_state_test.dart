@@ -35,6 +35,101 @@ class AuthFixture {
     final dio = Dio(BaseOptions(baseUrl: 'https://api.example.com'));
     dio.httpClientAdapter = CustomerAdapter((request) async {
       calls.add(request);
+      if (request.path == '/pesanan') {
+        return response({
+          'data': [
+            {
+              'id': 'o-diantar',
+              'kode': 'GM-1001',
+              'status': 'diantar',
+              'alamat_kirim': 'Jl. Contoh No. 1, Bireuen',
+              'metode_kirim': 'Instant',
+              'slot_waktu': '15 menit',
+              'catatan': null,
+              'tolak_alasan': null,
+              'nama_pembeli': null,
+              'telepon_pembeli': null,
+              'subtotal': 67600,
+              'diskon': 0,
+              'ongkir': 0,
+              'biaya_layanan': 0,
+              'total': 67600,
+              'items': [
+                {
+                  'produk_id': 'p-bimoli',
+                  'nama_snapshot': 'Bimoli 2L',
+                  'harga_snapshot': 33900,
+                  'qty': 1,
+                },
+                {
+                  'produk_id': 'p-ultra',
+                  'nama_snapshot': 'Ultra Milk 1L',
+                  'harga_snapshot': 17500,
+                  'qty': 1,
+                },
+                {
+                  'produk_id': 'p-indomie',
+                  'nama_snapshot': 'Indomie (5)',
+                  'harga_snapshot': 16200,
+                  'qty': 1,
+                },
+              ],
+              'created_at': '2026-10-31T08:00:00Z',
+              'updated_at': '2026-10-31T08:00:00Z',
+              'server_time': null,
+              'undo_until': null,
+            },
+            {
+              'id': 'o-selesai',
+              'kode': 'GM-8921',
+              'status': 'selesai',
+              'alamat_kirim': 'Jl. Contoh No. 2, Lhokseumawe',
+              'metode_kirim': 'Instant',
+              'slot_waktu': '15 menit',
+              'catatan': null,
+              'tolak_alasan': null,
+              'nama_pembeli': null,
+              'telepon_pembeli': null,
+              'subtotal': 89500,
+              'diskon': 0,
+              'ongkir': 0,
+              'biaya_layanan': 0,
+              'total': 89500,
+              'items': [
+                {
+                  'produk_id': 'p-beras',
+                  'nama_snapshot': 'Beras Premium 5kg',
+                  'harga_snapshot': 25000,
+                  'qty': 1,
+                },
+                {
+                  'produk_id': 'p-minyak',
+                  'nama_snapshot': 'Minyak Goreng 2L',
+                  'harga_snapshot': 22000,
+                  'qty': 1,
+                },
+                {
+                  'produk_id': 'p-gula',
+                  'nama_snapshot': 'Gula Pasir 1kg',
+                  'harga_snapshot': 21500,
+                  'qty': 1,
+                },
+                {
+                  'produk_id': 'p-telur',
+                  'nama_snapshot': 'Telur Ayam 1kg',
+                  'harga_snapshot': 21000,
+                  'qty': 1,
+                },
+              ],
+              'created_at': '2026-10-03T08:00:00Z',
+              'updated_at': '2026-10-03T08:00:00Z',
+              'server_time': null,
+              'undo_until': null,
+            },
+          ],
+          'meta': {'page': 1, 'limit': 20, 'total': 2, 'pages': 1},
+        });
+      }
       if (request.path == '/auth/me') {
         if (profileError) {
           return response({'detail': 'Server belum tersedia'}, 503);

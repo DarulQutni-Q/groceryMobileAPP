@@ -6,34 +6,49 @@ class PesananApi {
   final ApiClient client;
 
   Future<List<Pesanan>> list({String? status}) async {
-    final data = (await client.dio.get<List<dynamic>>(
+    final data = (await client.dio.get<dynamic>(
       '/pesanan',
       queryParameters: {'status': ?status},
-    )).data!;
-    return data
+    )).data;
+    // Backend pelanggan selalu mengembalikan Page {"data": [...], "meta":
+    // {...}}; klien lain (dan mock lama) memakai list mentah. Terima
+    // keduanya supaya tidak gagal cast.
+    final rows = data is List
+        ? data
+        : (data as Map<String, dynamic>)['data'] as List<dynamic>;
+    return rows
         .map((item) => Pesanan.fromJson(item as Map<String, dynamic>))
         .toList();
   }
 
-  Future<Pesanan> detail(String id) async => Pesanan.fromJson(
-    (await client.dio.get<Map<String, dynamic>>('/pesanan/$id')).data!,
-  );
+  Future<Pesanan> detail(String id) async {
+    final data = (await client.dio.get<dynamic>('/pesanan/$id')).data;
+    return Pesanan.fromJson(data as Map<String, dynamic>);
+  }
 
-  Future<Pesanan> _patch(
-    String id,
-    String action, [
-    Map<String, dynamic>? data,
-  ]) async => Pesanan.fromJson(
-    (await client.dio.patch<Map<String, dynamic>>(
-      '/pesanan/$id/$action',
-      data: data,
-    )).data!,
-  );
+  Future<Pesanan> terima(String id) async {
+    final data = (await client.dio.patch<dynamic>('/pesanan/$id/terima')).data;
+    return Pesanan.fromJson(data as Map<String, dynamic>);
+  }
 
-  Future<Pesanan> terima(String id) => _patch(id, 'terima');
-  Future<Pesanan> tolak(String id, String alasan) =>
-      _patch(id, 'tolak', {'alasan': alasan});
-  Future<Pesanan> updateStatus(String id, String status) =>
-      _patch(id, 'status', {'status': status});
-  Future<Pesanan> urungkan(String id) => _patch(id, 'urungkan');
+  Future<Pesanan> tolak(String id, String alasan) async {
+    final data = (await client.dio.patch<dynamic>(
+      '/pesanan/$id/tolak',
+      data: {'alasan': alasan},
+    )).data;
+    return Pesanan.fromJson(data as Map<String, dynamic>);
+  }
+
+  Future<Pesanan> updateStatus(String id, String status) async {
+    final data = (await client.dio.patch<dynamic>(
+      '/pesanan/$id/status',
+      data: {'status': status},
+    )).data;
+    return Pesanan.fromJson(data as Map<String, dynamic>);
+  }
+
+  Future<Pesanan> urungkan(String id) async {
+    final data = (await client.dio.patch<dynamic>('/pesanan/$id/urungkan')).data;
+    return Pesanan.fromJson(data as Map<String, dynamic>);
+  }
 }

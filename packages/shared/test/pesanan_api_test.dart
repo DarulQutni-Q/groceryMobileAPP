@@ -95,4 +95,27 @@ void main() {
       ]);
     },
   );
+  test(
+    'order list accepts the paged shape the backend returns',
+    () async {
+      final dio = Dio(BaseOptions(baseUrl: 'https://api.example.com'));
+      dio.httpClientAdapter = TestAdapter((request) async {
+        expect(request.path, '/pesanan');
+        return jsonBody({
+          'data': [sampleOrder()],
+          'meta': {'page': 1, 'limit': 20, 'total': 1, 'pages': 1},
+        }, 200);
+      });
+      final api = PesananApi(
+        ApiClient(
+          baseUrl: dio.options.baseUrl,
+          dio: dio,
+          storage: SecureStorage(),
+        ),
+      );
+      final items = await api.list();
+      expect(items.single.kode, 'DG-12345');
+      expect(items.single.total, 34500);
+    },
+  );
 }

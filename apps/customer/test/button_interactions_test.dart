@@ -49,20 +49,17 @@ void main() {
     // mock via SystemChannels.platform (JSONMethodCodec, BUKAN MethodChannel
     // standar yang merusak decode SystemChrome).
     String? clipboardText;
-    messenger.setMockMethodCallHandler(
-      SystemChannels.platform,
-      (call) async {
-        if (call.method == 'Clipboard.setData') {
-          final args = call.arguments as Map<dynamic, dynamic>?;
-          clipboardText = args?['text'] as String?;
-          return null;
-        }
-        if (call.method == 'Clipboard.getData') {
-          return <String, dynamic>{'text': clipboardText};
-        }
+    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'Clipboard.setData') {
+        final args = call.arguments as Map<dynamic, dynamic>?;
+        clipboardText = args?['text'] as String?;
         return null;
-      },
-    );
+      }
+      if (call.method == 'Clipboard.getData') {
+        return <String, dynamic>{'text': clipboardText};
+      }
+      return null;
+    });
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -127,8 +124,9 @@ void main() {
     });
   });
 
-  testWidgets('login email memanggil /auth/login bukan /auth/login/phone',
-      (tester) async {
+  testWidgets('login email memanggil /auth/login bukan /auth/login/phone', (
+    tester,
+  ) async {
     await open(tester);
     await tap(tester, find.text('Get Started'));
     await tester.enterText(
@@ -168,10 +166,7 @@ void main() {
       fixture.calls.where((call) => call.path == '/auth/login/phone'),
       isNotEmpty,
     );
-    expect(
-      fixture.calls.where((call) => call.path == '/auth/login'),
-      isEmpty,
-    );
+    expect(fixture.calls.where((call) => call.path == '/auth/login'), isEmpty);
   });
 
   testWidgets('daftar pakai HP mengirim phone di payload', (tester) async {
@@ -272,8 +267,9 @@ void main() {
     expect(find.text('Promo Mingguan'), findsOneWidget);
   });
 
-  testWidgets('pesanan: chat kirim, telepon dialog, struk, search',
-      (tester) async {
+  testWidgets('pesanan: chat kirim, telepon dialog, struk, search', (
+    tester,
+  ) async {
     await open(tester);
     await login(tester);
     await tap(tester, find.text('Pesanan'));
@@ -287,13 +283,26 @@ void main() {
     expect(find.text('Halo pak, saya di depan pagar'), findsOneWidget);
     await tap(tester, find.byIcon(Icons.arrow_back));
     await tap(tester, find.byIcon(Icons.phone));
-    expect(find.text('Pak Budi'), findsWidgets);
+    expect(
+      find.text(
+        'Nomor telepon kurir belum tersedia untuk pesanan ini. '
+        'Kamu tetap bisa menghubungi kurir lewat Chat Driver.',
+      ),
+      findsOneWidget,
+    );
     await tap(tester, find.text('Tutup'));
     await tapBottom(tester, find.text('Lihat struk'));
     expect(find.byType(StrukPage), findsOneWidget);
     await tap(tester, find.byIcon(Icons.arrow_back));
     await tap(tester, find.byIcon(Icons.search));
-    expect(find.byType(CatalogPage), findsOneWidget);
+    expect(find.byKey(const Key('pesanan-search-field')), findsOneWidget);
+    await tester.enterText(
+      find.byKey(const Key('pesanan-search-field')),
+      'Indomie',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('1 hasil untuk "Indomie"'), findsOneWidget);
+    expect(find.text('Pesanan dalam perjalanan'), findsOneWidget);
   });
 
   testWidgets('struk: share menyalin dan download menyimpan', (tester) async {
@@ -316,7 +325,7 @@ void main() {
     // Bukti download jalan adalah file PDF-nya (nama dari nomor struk mock).
     // Snackbar tidak bisa dipakai di tes: ScaffoldMessenger + runAsync tidak
     // merendernya di tester, tapi file membuktikan handler selesai penuh.
-    final pdfFile = File('/tmp/struk__GM_8921_20261003.pdf');
+    final pdfFile = File('/tmp/struk__GM_8921.pdf');
     if (pdfFile.existsSync()) pdfFile.deleteSync();
     await tester.tap(find.widgetWithText(FilledButton, 'Download struk'));
     // File IO nyata butuh event loop nyata; tanpa runAsync ia deadlock di
@@ -330,8 +339,9 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  testWidgets('pengaturan: ubah profil tersimpan dan tampil di akun',
-      (tester) async {
+  testWidgets('pengaturan: ubah profil tersimpan dan tampil di akun', (
+    tester,
+  ) async {
     await open(tester);
     await login(tester);
     await tap(tester, find.text('Akun'));
@@ -384,8 +394,9 @@ void main() {
     await tap(tester, find.text('Tutup'));
   });
 
-  testWidgets('metode: pilih Mandiri dan simpan tersimpan di prefs',
-      (tester) async {
+  testWidgets('metode: pilih Mandiri dan simpan tersimpan di prefs', (
+    tester,
+  ) async {
     await open(tester);
     await login(tester);
     await tap(tester, find.text('Akun'));
