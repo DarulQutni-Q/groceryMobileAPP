@@ -85,7 +85,7 @@ Future<AuthFixture> openCheckout(WidgetTester tester) async {
   await tapKey(tester, 'add-cart');
   await tapKey(tester, 'detail-back');
   await tapKey(tester, 'open-cart');
-  await tester.tap(find.text('Checkout (1 Barang) ›'));
+  await tester.tap(find.text('Checkout (1 Barang) >'));
   await tester.pumpAndSettle();
   return fixture;
 }

@@ -41,7 +41,7 @@ class CartPage extends ConsumerWidget {
                   RoundIconButton(
                     key: const Key('cart-back'),
                     icon: Icons.arrow_back,
-                    filled: false,
+                    background: limePale,
                     onPressed: () => Navigator.pop(context),
                   ),
                   const SizedBox(width: 12),
@@ -182,7 +182,7 @@ class CartPage extends ConsumerWidget {
                                         minimumSize: const Size(44, 44),
                                       ),
                                       child: const Text(
-                                        'Ubah ›',
+                                        'Ubah >',
                                         style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w700,
@@ -356,7 +356,7 @@ class CartPage extends ConsumerWidget {
                                     ),
                                     const SizedBox(width: 6),
                                     const Text(
-                                      'Hemat s/d Rp 25rb ›',
+                                      'Hemat s/d Rp 25rb >',
                                       textAlign: TextAlign.right,
                                       style: TextStyle(
                                         fontSize: 11,
@@ -395,23 +395,19 @@ class _CartRow extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 12, 12, 8),
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              width: 40,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: _SquareCheck(
-                  value: item.dipilih,
-                  onChanged: (value) => notifier.pilihItem(p.id, value),
-                ),
-              ),
+            _SquareCheck(
+              key: Key('cart-check-${p.id}'),
+              value: item.dipilih,
+              onChanged: (value) => notifier.pilihItem(p.id, value),
             ),
+            const SizedBox(width: 12),
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: SizedBox(width: 64, height: 64, child: FotoProduk(p)),
+              child: SizedBox(width: 68, height: 80, child: FotoProduk(p)),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -419,7 +415,7 @@ class _CartRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${p.kategori} • 1 ${p.satuan}',
+                    '${p.kategori} • ${p.satuan}',
                     style: const TextStyle(
                       fontSize: 11,
                       color: Color(0xFF7F9275),
@@ -429,7 +425,7 @@ class _CartRow extends StatelessWidget {
                   Text(
                     p.nama,
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 15,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -449,7 +445,7 @@ class _CartRow extends StatelessWidget {
                       final price = Text(
                         rupiah(p.harga),
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 16,
                           fontWeight: FontWeight.w800,
                         ),
                       );
@@ -540,7 +536,7 @@ class _PaymentBar extends StatelessWidget {
                 rupiah(cart.subtotal),
                 key: Key('cart-total-${cart.subtotal}'),
                 style: const TextStyle(
-                  fontSize: 23,
+                  fontSize: 26,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -601,7 +597,7 @@ class _PaymentBar extends StatelessWidget {
                   minimumSize: const Size(0, 44),
                 ),
                 child: const Text(
-                  'Rincian Biaya ⌃',
+                  'Rincian Biaya ^',
                   style: TextStyle(
                     fontSize: 10,
                     decoration: TextDecoration.underline,
@@ -616,9 +612,9 @@ class _PaymentBar extends StatelessWidget {
           // foregroundColor tema tidak kepakai di sini. Pola DarkPillButton
           // (style eksplisit level widget) terbukti merender teks putih.
           final checkout = DarkPillButton(
-            label: 'Checkout (${cart.jumlahDipilih} Barang) ›',
-            height: 48,
-            fontSize: 12,
+            label: 'Checkout (${cart.jumlahDipilih} Barang) >',
+            height: 52,
+            fontSize: 13,
             onPressed: cart.jumlahDipilih == 0
                 ? null
                 : () => Navigator.push<void>(
@@ -639,9 +635,9 @@ class _PaymentBar extends StatelessWidget {
           }
           return Row(
             children: [
-              Expanded(child: info),
+              Expanded(flex: 4, child: info),
               const SizedBox(width: 16),
-              Expanded(child: checkout),
+              Expanded(flex: 5, child: checkout),
             ],
           );
         },

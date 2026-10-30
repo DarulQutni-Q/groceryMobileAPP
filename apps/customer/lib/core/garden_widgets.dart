@@ -117,14 +117,16 @@ class RoundIconButton extends StatelessWidget {
     required this.onPressed,
     this.filled = true,
     this.color = gardenInk,
+    this.background,
   });
   final IconData icon;
   final VoidCallback onPressed;
   final bool filled;
   final Color color;
+  final Color? background;
   @override
   Widget build(BuildContext context) => Material(
-    color: filled ? Colors.white : Colors.transparent,
+    color: filled ? (background ?? Colors.white) : Colors.transparent,
     shape: CircleBorder(
       side: filled ? BorderSide.none : BorderSide(color: color, width: 1.5),
     ),

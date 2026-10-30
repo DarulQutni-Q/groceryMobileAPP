@@ -204,6 +204,21 @@ void main() {
     },
   );
 
+  testWidgets('cart item checkbox toggles only that item', (tester) async {
+    await openCatalog(tester);
+    await tapKey(tester, 'product-p1');
+    await tapKey(tester, 'add-cart');
+    await tapKey(tester, 'detail-back');
+    await tapKey(tester, 'open-cart');
+    expect(find.byKey(const Key('cart-total-16200')), findsOneWidget);
+    await tapKey(tester, 'cart-check-p1');
+    expect(find.byKey(const Key('cart-total-0')), findsOneWidget);
+    await tapKey(tester, 'cart-check-p1');
+    expect(find.byKey(const Key('cart-total-16200')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets(
     'search and category filter real products and small screen does not overflow',
     (tester) async {
