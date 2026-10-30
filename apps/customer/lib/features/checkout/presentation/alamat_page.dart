@@ -6,6 +6,7 @@ import '../../../core/garden_widgets.dart';
 import '../../../core/theme.dart';
 import '../application/checkout_provider.dart';
 import 'alamat_form_page.dart';
+import 'peta_picker_page.dart';
 
 class AlamatPage extends ConsumerStatefulWidget {
   const AlamatPage({super.key, this.pilih = false});
@@ -43,6 +44,25 @@ class _AlamatPageState extends ConsumerState<AlamatPage> {
       MaterialPageRoute(builder: (_) => AlamatFormPage(alamat: address)),
     );
     if (saved == true && mounted) ref.invalidate(alamatProvider);
+  }
+
+  Future<void> aturTitik(Alamat? address) async {
+    if (address == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Belum ada alamat, tambah alamat dulu.')),
+      );
+      return;
+    }
+    final saved = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => PetaPickerPage(address: address)),
+    );
+    if (saved == true && mounted) {
+      ref.invalidate(alamatProvider);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Titik GPS tersimpan untuk ${address.label}.')),
+      );
+    }
   }
 
   @override
@@ -124,7 +144,11 @@ class _AlamatPageState extends ConsumerState<AlamatPage> {
                           ),
                       ],
                       const SizedBox(height: 10),
-                      const _PinpointCard(),
+                      _PinpointCard(
+                        onAturTitik: () => aturTitik(
+                          utama.isEmpty ? null : utama.first,
+                        ),
+                      ),
                     ],
                   );
                 },
@@ -359,10 +383,11 @@ class _LabelChip extends StatelessWidget {
   }
 }
 
-/// Kartu pinpoint GPS: ikon pin hijau, judul, penjelasan, tautan atur titik.
-/// Peta GPS belum ada di aplikasi, jadi tautan menampilkan snackbar.
+/// Kartu pinpoint GPS: ikon pin, judul, penjelasan, tautan atur titik.
+/// Tautan membuka pemilih titik peta (OpenStreetMap) untuk alamat utama.
 class _PinpointCard extends StatelessWidget {
-  const _PinpointCard();
+  const _PinpointCard({required this.onAturTitik});
+  final VoidCallback onAturTitik;
 
   @override
   Widget build(BuildContext context) => Card(
@@ -376,19 +401,19 @@ class _PinpointCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 36,
+            height: 36,
             decoration: const BoxDecoration(
-              color: Color(0xFF75BF26),
+              color: Color(0xFFD5EEC0),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.location_on,
-              color: Colors.white,
+              color: gardenInk,
               size: 20,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -400,27 +425,11 @@ class _PinpointCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 const Text(
                   'Titik akurat mempercepat kurir menemukan gerbang rumah.',
-                  style: TextStyle(fontSize: 11, color: Colors.black54),
+                  style: TextStyle(fontSize: 9, color: Colors.black54),
                 ),
                 const SizedBox(height: 4),
                 InkWell(
-                  onTap: () => showDialog<void>(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      title: const Text('Titik Peta GPS'),
-                      content: const Text(
-                        'Titik peta GPS belum tersedia. Alamat pengantaran '
-                        'tetap bisa diisi manual lewat formulir di atas, '
-                        'dan kurir akan dihubungi lewat nomor HP.',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(ctx),
-                          child: const Text('Tutup'),
-                        ),
-                      ],
-                    ),
-                  ),
+                  onTap: onAturTitik,
                   child: const Text(
                     'Atur Titik Peta GPS Sekarang ›',
                     style: TextStyle(

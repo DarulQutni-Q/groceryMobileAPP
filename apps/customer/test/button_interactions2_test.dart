@@ -140,8 +140,15 @@ void main() {
     await tutupDialog(tester);
   });
 
-  testWidgets('link GPS di Alamat membuka dialog titik peta',
+  testWidgets('link GPS di Alamat membuka pemilih titik peta',
       (tester) async {
+    // Viewport tinggi supaya seluruh halaman pemilih (peta 420px +
+    // tombol) ter-build sekaligus: di viewport default, drag scroll
+    // ditelan gestur peta sehingga tombol tidak pernah muncul di tes.
+    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     // PinpointCard hanya tampil bila alamatProvider ada datanya.
     await open(tester, alamat: [
       const Alamat(
@@ -157,12 +164,14 @@ void main() {
     await tap(tester, find.text('Akun'));
     await tap(tester, find.text('Alamat Pengiriman'));
     await tapBottom(tester, find.textContaining('Atur Titik Peta GPS'));
-    expect(find.text('Titik Peta GPS'), findsOneWidget);
-    expect(
-      find.textContaining('tetap bisa diisi manual'),
-      findsOneWidget,
-    );
-    await tutupDialog(tester);
+    // Dulu tautan ini membuka dialog "belum tersedia"; sekarang membuka
+    // pemilih titik peta OpenStreetMap.
+    expect(find.text('Atur Titik Peta GPS'), findsOneWidget);
+    expect(find.text('Gunakan Lokasi Saya'), findsOneWidget);
+    expect(find.text('Titik peta GPS belum tersedia'), findsNothing);
+    expect(find.text('Simpan Titik Ini'), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
   });
 
   testWidgets('reset password email tak dikenal menampilkan pesan benar',

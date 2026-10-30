@@ -10,6 +10,12 @@ void main() {
   testWidgets('customer creates an address and selects the persisted primary', (
     tester,
   ) async {
+    // Viewport tinggi: formulir baru (peta + field) lebih tinggi dari
+    // viewport default, field bawah lipatan tidak ter-build tanpa ini.
+    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     final fixture = AuthFixture()..installStorage();
     final entries = <Map<String, dynamic>>[];
     fixture.api.client.dio.httpClientAdapter = CustomerAdapter((request) async {
