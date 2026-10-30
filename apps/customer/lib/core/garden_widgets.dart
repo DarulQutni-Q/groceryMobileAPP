@@ -346,7 +346,9 @@ class GardenBottomNav extends StatelessWidget {
                   height: 56,
                   decoration: BoxDecoration(
                     color: gardenInk,
-                    borderRadius: BorderRadius.circular(16),
+                    // Lingkaran penuh sesuai referensi; sebelumnya kotak
+                    // membulat (radius 16) yang bikin nav kelihatan beda.
+                    shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 3),
                   ),
                   child: const Icon(
@@ -382,12 +384,17 @@ class _NavItem extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: active ? const Color(0xFFE4F2D8) : Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
+            // Hijau terang sesuai referensi; sebelumnya hijau pucat.
+            color: active ? const Color(0xFF96E23B) : Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
           ),
-          child: Icon(icon, size: 24, color: gardenInk),
+          child: Icon(
+            icon,
+            size: 24,
+            color: active ? gardenInk : const Color(0xFF6B7F60),
+          ),
         ),
         const SizedBox(height: 2),
         Text(
@@ -395,7 +402,7 @@ class _NavItem extends StatelessWidget {
           style: TextStyle(
             fontSize: 11,
             fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-            color: gardenInk,
+            color: active ? gardenInk : const Color(0xFF6B7F60),
           ),
         ),
       ],

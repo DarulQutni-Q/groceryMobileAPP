@@ -95,6 +95,7 @@ class _SaleCountdownState extends State<SaleCountdown> {
             label: text,
             backgroundColor: const Color(0xFFB22E32),
             side: BorderSide.none,
+            shape: const StadiumBorder(),
             visualDensity: VisualDensity.compact,
             padding: EdgeInsets.zero,
             labelPadding: const EdgeInsets.symmetric(horizontal: 6),

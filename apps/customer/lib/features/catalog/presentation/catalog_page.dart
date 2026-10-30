@@ -10,8 +10,12 @@ import 'product_page.dart';
 /// Kartu produk + halaman katalog. Dipisah dari home_page.dart supaya
 /// halaman lain (mis. Promo) bisa membuka katalog tanpa import cycle.
 class ProductCard extends ConsumerStatefulWidget {
-  const ProductCard(this.produk, {super.key});
+  const ProductCard(this.produk, {super.key, this.home = false});
   final Produk produk;
+
+  /// Varian beranda sesuai referensi: tanpa tombol + Keranjang, dengan
+  /// bilah stok dan "Sisa N pcs". Varian default (katalog) tidak berubah.
+  final bool home;
   @override
   ConsumerState<ProductCard> createState() => _ProductCardState();
 }
@@ -21,8 +25,9 @@ class _ProductCardState extends ConsumerState<ProductCard> {
   @override
   Widget build(BuildContext context) {
     final produk = widget.produk;
+    final home = widget.home;
     return SizedBox(
-      width: 116,
+      width: home ? 100 : 116,
       child: Card(
         margin: EdgeInsets.zero,
         elevation: 0,
@@ -41,7 +46,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               Stack(
                 children: [
                   SizedBox(
-                    height: 88,
+                    height: home ? 110 : 88,
                     width: double.infinity,
                     child: FotoProduk(produk),
                   ),
@@ -51,16 +56,14 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                     child: GestureDetector(
                       onTap: () => setState(() => favorite = !favorite),
                       child: Container(
-                        padding: const EdgeInsets.all(4),
+                        padding: EdgeInsets.all(home ? 6 : 4),
                         decoration: const BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          favorite
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          size: 16,
+                          favorite ? Icons.favorite : Icons.favorite_border,
+                          size: home ? 18 : 16,
                           color: favorite ? Colors.red.shade600 : gardenInk,
                         ),
                       ),
@@ -70,7 +73,9 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(9, 6, 9, 0),
+                  padding: home
+                      ? const EdgeInsets.fromLTRB(8, 6, 8, 8)
+                      : const EdgeInsets.fromLTRB(9, 6, 9, 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -78,8 +83,8 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                         produk.nama,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 11,
+                        style: TextStyle(
+                          fontSize: home ? 11 : 11,
                           fontWeight: FontWeight.w700,
                           height: 1.1,
                         ),
@@ -89,10 +94,10 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                         '1 ${produk.satuan}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 9,
+                        style: TextStyle(
+                          fontSize: home ? 11 : 9,
                           height: 1.1,
-                          color: Color(0xFF78906F),
+                          color: const Color(0xFF78906F),
                         ),
                       ),
                       const SizedBox(height: 3),
@@ -102,56 +107,88 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                         child: Text(
                           rupiah(produk.harga),
                           maxLines: 1,
-                          style: const TextStyle(
-                            fontSize: 14,
+                          style: TextStyle(
+                            fontSize: home ? 16 : 14,
                             height: 1.2,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        produk.stok == 0
-                            ? 'Habis'
-                            : 'Sisa ${produk.stok} ${produk.satuan}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 10,
-                          height: 1.1,
-                          color: produk.stok <= 5
-                              ? Colors.red.shade700
-                              : const Color(0xFF78906F),
+                      if (home) ...[
+                        const Spacer(),
+                        // Bilah stok sesuai referensi. Isinya proporsi stok
+                        // (stok/(stok+10)) karena referensi tidak memberi
+                        // skala; angka stoknya sendiri tetap asli.
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(2),
+                          child: LinearProgressIndicator(
+                            value: produk.stok / (produk.stok + 10),
+                            backgroundColor: const Color(0xFFE7E7E7),
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                              Color(0xFFDD3F47),
+                            ),
+                            minHeight: 4,
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 6),
+                        Text(
+                          produk.stok == 0
+                              ? 'Habis'
+                              : 'Sisa ${produk.stok} pcs',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            height: 1.1,
+                            color: Color(0xFF78906F),
+                          ),
+                        ),
+                      ] else ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          produk.stok == 0
+                              ? 'Habis'
+                              : 'Sisa ${produk.stok} ${produk.satuan}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 10,
+                            height: 1.1,
+                            color: produk.stok <= 5
+                                ? Colors.red.shade700
+                                : const Color(0xFF78906F),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: produk.stok < 1
-                        ? null
-                        : () => tambahKeKeranjang(context, ref, produk),
-                    style: FilledButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: gardenInk,
-                      minimumSize: const Size(0, 44),
-                      padding: EdgeInsets.zero,
-                    ),
-                    child: const Text(
-                      '+ Keranjang',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
+              if (!home)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: produk.stok < 1
+                          ? null
+                          : () => tambahKeKeranjang(context, ref, produk),
+                      style: FilledButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: gardenInk,
+                        minimumSize: const Size(0, 44),
+                        padding: EdgeInsets.zero,
+                      ),
+                      child: const Text(
+                        '+ Keranjang',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ),

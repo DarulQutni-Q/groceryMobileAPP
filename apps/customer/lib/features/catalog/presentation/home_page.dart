@@ -116,10 +116,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                   tooltip: 'Notifikasi',
                   icon: Badge(
-                    isLabelVisible: ref.watch(pendingCheckoutProvider).maybeWhen(
-                      data: (value) => value,
-                      orElse: () => false,
-                    ),
+                    isLabelVisible: ref
+                        .watch(pendingCheckoutProvider)
+                        .maybeWhen(data: (value) => value, orElse: () => false),
                     label: const Text('1'),
                     backgroundColor: dangerRed,
                     child: const Icon(
@@ -159,11 +158,11 @@ class _HomePageState extends ConsumerState<HomePage> {
               key: const Key('catalog-search'),
               controller: search,
               onChanged: ref.read(produkProvider.notifier).cari,
-              style: const TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 13),
               textInputAction: TextInputAction.search,
               decoration: InputDecoration(
                 hintText: 'Cari promo sembako, susu, snack...',
-                prefixIcon: const Icon(Icons.search, size: 19),
+                hintStyle: const TextStyle(fontSize: 13),
                 suffixIcon: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -181,18 +180,23 @@ class _HomePageState extends ConsumerState<HomePage> {
                     IconButton(
                       onPressed: () => Navigator.push<void>(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const ScanQrPage(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const ScanQrPage()),
                       ),
                       tooltip: 'Scan produk',
-                      icon: const Icon(Icons.qr_code_scanner, size: 18),
+                      icon: const Icon(Icons.qr_code_scanner, size: 19),
+                      style: IconButton.styleFrom(
+                        backgroundColor: const Color(0xFFD5EEC0),
+                        foregroundColor: gardenInk,
+                        shape: const CircleBorder(),
+                        fixedSize: const Size(32, 32),
+                        padding: EdgeInsets.zero,
+                      ),
                     ),
                   ],
                 ),
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 13,
+                  horizontal: 20,
+                  vertical: 15,
                 ),
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
@@ -214,16 +218,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                       description:
                           'Ada 4 voucher belanja diskon 50% siap kamu pakai.',
                       buttonLabel: 'Klaim Semua Voucher',
-                      onClaim: () =>
-                          _goToPromoTab(context, widget.onGoToTab),
+                      onClaim: () => _goToPromoTab(context, widget.onGoToTab),
                     )
                   : _PromoBanner(
                       label: values.first.judul,
                       greeting: 'Selamat pagi, ${user.nama}',
                       description: values.first.deskripsi,
                       buttonLabel: values.first.labelTombol,
-                      onClaim: () =>
-                          _goToPromoTab(context, widget.onGoToTab),
+                      onClaim: () => _goToPromoTab(context, widget.onGoToTab),
                     ),
               error: (_, _) => _PromoBanner(
                 label: 'INDOMARET POINKU • PROMO SPESIAL',
@@ -231,8 +233,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 description:
                     'Ada 4 voucher belanja diskon 50% siap kamu pakai.',
                 buttonLabel: 'Klaim Semua Voucher',
-                onClaim: () =>
-                    _goToPromoTab(context, widget.onGoToTab),
+                onClaim: () => _goToPromoTab(context, widget.onGoToTab),
               ),
               loading: () => const LinearProgressIndicator(minHeight: 2),
             ),
@@ -340,7 +341,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     ),
                             ),
                           )
-                        : ProductCard(products.items[index]),
+                        : ProductCard(products.items[index], home: true),
                   ),
                 ),
               ),
@@ -370,9 +371,21 @@ class _PromoBanner extends StatelessWidget {
     color: catalogGreen,
     elevation: 0,
     clipBehavior: Clip.antiAlias,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
     child: Stack(
       children: [
+        Positioned(
+          left: -34,
+          bottom: -46,
+          child: Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withValues(alpha: 0.14),
+            ),
+          ),
+        ),
         Positioned(
           right: -18,
           top: -24,
@@ -404,14 +417,14 @@ class _PromoBanner extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 9,
+                  fontSize: 10,
                   fontWeight: FontWeight.w700,
                   letterSpacing: .8,
                 ),
@@ -420,21 +433,21 @@ class _PromoBanner extends StatelessWidget {
               Text(
                 greeting,
                 style: const TextStyle(
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: FontWeight.w800,
                   height: 1.1,
                 ),
               ),
               const SizedBox(height: 5),
-              Text(description, style: const TextStyle(fontSize: 11)),
+              Text(description, style: const TextStyle(fontSize: 12)),
               const SizedBox(height: 8),
               FilledButton(
                 onPressed: onClaim,
                 style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   foregroundColor: Colors.white,
                   backgroundColor: gardenInk,
-                  minimumSize: const Size(0, 40),
+                  minimumSize: const Size(0, 44),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -443,13 +456,13 @@ class _PromoBanner extends StatelessWidget {
                       child: Text(
                         buttonLabel,
                         style: const TextStyle(
-                          fontSize: 11,
+                          fontSize: 12,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    const Icon(Icons.arrow_forward, size: 14),
+                    const SizedBox(width: 10),
+                    const Icon(Icons.arrow_forward, size: 15),
                   ],
                 ),
               ),
@@ -467,11 +480,13 @@ class _MemberCard extends StatelessWidget {
   Widget build(BuildContext context) => Card(
     margin: EdgeInsets.zero,
     elevation: 0,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     clipBehavior: Clip.antiAlias,
     child: Ink(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [Color(0xFFD5EEC0), Color(0xFF79C549)],
         ),
       ),
@@ -482,171 +497,185 @@ class _MemberCard extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            const Row(
-              children: [
-                CircleAvatar(
-                  radius: 10,
-                  backgroundColor: gardenInk,
-                  child: Text(
-                    'IP',
-                    style: TextStyle(fontSize: 8, color: catalogGreen),
+          child: Column(
+            children: [
+              const Row(
+                children: [
+                  CircleAvatar(
+                    radius: 11,
+                    backgroundColor: gardenInk,
+                    child: Text(
+                      'IP',
+                      style: TextStyle(fontSize: 9, color: catalogGreen),
+                    ),
                   ),
-                ),
-                SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    'Poinku Member',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-                  ),
-                ),
-                Badge(
-                  label: Text(
-                    '★ GOLD TIER',
-                    style: TextStyle(fontSize: 7, color: Color(0xFFF7D96B)),
-                  ),
-                  backgroundColor: gardenInk,
-                  largeSize: 16,
-                  padding: EdgeInsets.symmetric(horizontal: 6),
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'POINKU AKTIF',
-                        style: TextStyle(fontSize: 7, color: Color(0xFF526A42)),
+                  SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      'Poinku Member',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
                       ),
-                      Text(
-                        // Konten demo sesuai referensi Figma; backend belum
-                        // punya endpoint loyalitas, jadi angka ini statis.
-                        '14.850 Poin',
-                        style: TextStyle(
-                          fontSize: 21,
-                          height: 1.15,
-                          fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  Badge(
+                    label: Text(
+                      '★ GOLD TIER',
+                      style: TextStyle(fontSize: 8, color: Color(0xFFF7D96B)),
+                    ),
+                    backgroundColor: gardenInk,
+                    largeSize: 16,
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                  ),
+                ],
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'POINKU AKTIF',
+                          style: TextStyle(
+                            fontSize: 8,
+                            color: Color(0xFF526A42),
+                          ),
                         ),
-                      ),
-                      Text(
-                        '+250 poin baru',
-                        style: TextStyle(fontSize: 7, color: Color(0xFF466B2B)),
-                      ),
-                    ],
+                        Text(
+                          // Konten demo sesuai referensi Figma; backend belum
+                          // punya endpoint loyalitas, jadi angka ini statis.
+                          '14.850 Poin',
+                          style: TextStyle(
+                            fontSize: 24,
+                            height: 1.15,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        Text(
+                          '+250 poin baru',
+                          style: TextStyle(
+                            fontSize: 8,
+                            color: Color(0xFF466B2B),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const Text(
-                        'STEMPEL BELANJA   8/10',
-                        style: TextStyle(fontSize: 7),
-                      ),
-                      const SizedBox(height: 4),
-                      Wrap(
-                        spacing: 2,
-                        runSpacing: 3,
-                        alignment: WrapAlignment.end,
-                        children: [
-                          for (var n = 0; n < 10; n++)
-                            CircleAvatar(
-                              radius: 7,
-                              backgroundColor: n < 8 ? gardenInk : Colors.white,
-                              child: n < 8
-                                  ? const Icon(
-                                      Icons.check,
-                                      size: 9,
-                                      color: Colors.white,
-                                    )
-                                  : Text(
-                                      '${n + 1}',
-                                      style: const TextStyle(
-                                        fontSize: 6,
-                                        color: gardenInk,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text(
+                          'STEMPEL BELANJA   8/10',
+                          style: TextStyle(fontSize: 8),
+                        ),
+                        const SizedBox(height: 4),
+                        Wrap(
+                          spacing: 2,
+                          runSpacing: 3,
+                          alignment: WrapAlignment.end,
+                          children: [
+                            for (var n = 0; n < 10; n++)
+                              CircleAvatar(
+                                radius: 7,
+                                backgroundColor: n < 8
+                                    ? gardenInk
+                                    : Colors.white,
+                                child: n < 8
+                                    ? const Icon(
+                                        Icons.check,
+                                        size: 9,
+                                        color: Colors.white,
+                                      )
+                                    : Text(
+                                        '${n + 1}',
+                                        style: const TextStyle(
+                                          fontSize: 6,
+                                          color: gardenInk,
+                                        ),
                                       ),
-                                    ),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 3),
-                      const Text(
-                        'Min. 50rb = 1 stamp • 2 lagi dapat Kupon',
-                        style: TextStyle(fontSize: 6, color: Color(0xFF50693C)),
-                      ),
-                    ],
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 3),
+                        const Text(
+                          'Min. 50rb = 1 stamp • 2 lagi dapat Kupon',
+                          style: TextStyle(
+                            fontSize: 7,
+                            color: Color(0xFF50693C),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Material(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          for (var n = 0; n < 35; n++)
-                            Flexible(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 1,
-                                ),
-                                child: ColoredBox(
-                                  color: gardenInk,
-                                  child: SizedBox(
-                                    width: n % 3 == 0 ? 3 : 1,
-                                    height: 23,
+                ],
+              ),
+              const SizedBox(height: 10),
+              Material(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            for (var n = 0; n < 35; n++)
+                              Flexible(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 1,
+                                  ),
+                                  child: ColoredBox(
+                                    color: gardenInk,
+                                    child: SizedBox(
+                                      width: n % 3 == 0 ? 3 : 1,
+                                      height: 26,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '9825 0180 1224',
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w600,
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '9825 0180 1224',
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                          Text(
-                            'Tunjukkan ke Kasir',
-                            style: TextStyle(
-                              fontSize: 7,
-                              color: Color(0xFF6B7F60),
+                            Text(
+                              'Tunjukkan ke Kasir',
+                              style: TextStyle(
+                                fontSize: 7,
+                                color: Color(0xFF6B7F60),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     ),
-  ),
   );
 }
 
@@ -701,15 +730,16 @@ class _CategoryGrid extends ConsumerWidget {
   final ValueChanged<int>? onGoToTab;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const entries = <(String, IconData, Color)>[
-      ('Promo JSM', Icons.local_offer, Color(0xFFDD3F47)),
-      ('Tebus Murah', Icons.shopping_basket, Color(0xFFCF933D)),
-      ('Minyak & Beras', Icons.rice_bowl, Color(0xFF959D33)),
-      ('i-Kupon (4)', Icons.confirmation_number, Color(0xFF8B77C0)),
-      ('Fresh Mart', Icons.eco, Color(0xFF76A555)),
-      ('Tagihan PLN', Icons.bolt, Color(0xFFDAAF31)),
-      ('Beli 1 Gratis 1', Icons.redeem, Color(0xFFC16E5E)),
-      ('Lacak Kurir', Icons.local_shipping, Color(0xFF6093AF)),
+    // Ikon outline gelap tunggal sesuai referensi (bukan warna-warni).
+    const entries = <(String, IconData)>[
+      ('Promo JSM', Icons.calendar_today_outlined),
+      ('Tebus Murah', Icons.discount_outlined),
+      ('Minyak & Beras', Icons.rice_bowl),
+      ('i-Kupon (4)', Icons.confirmation_number_outlined),
+      ('Fresh Mart', Icons.schedule_outlined),
+      ('Tagihan PLN', Icons.bolt),
+      ('Beli 1 Gratis 1', Icons.shopping_cart_outlined),
+      ('Lacak Kurir', Icons.local_shipping_outlined),
     ];
     String? categoryFor(int i) {
       final candidates = i == 2
@@ -729,7 +759,7 @@ class _CategoryGrid extends ConsumerWidget {
     return LayoutBuilder(
       builder: (context, constraints) => Wrap(
         spacing: 4,
-        runSpacing: 4,
+        runSpacing: 16,
         children: [
           for (var i = 0; i < entries.length; i++)
             SizedBox(
@@ -754,9 +784,7 @@ class _CategoryGrid extends ConsumerWidget {
                       }
                       Navigator.push<void>(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const CatalogPage(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const CatalogPage()),
                       );
                     case 5:
                       showDialog<void>(
@@ -780,24 +808,57 @@ class _CategoryGrid extends ConsumerWidget {
                   }
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  padding: EdgeInsets.zero,
                   child: Column(
                     children: [
-                      CircleAvatar(
-                        radius: 23,
-                        backgroundColor: Colors.white,
-                        child: Icon(
-                          entries[i].$2,
-                          size: 27,
-                          color: entries[i].$3,
+                      // Kotak membulat hijau muda sesuai referensi, bukan
+                      // lingkaran putih: di referensi tile-nya kotak
+                      // membulat, jadi lingkaran lama yang bikin beranda
+                      // kelihatan beda.
+                      Container(
+                        width: 56,
+                        height: 56,
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(16)),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Color(0xFFDDF0C6), Color(0xFFBEE59C)],
+                          ),
                         ),
+                        child: i == 1
+                            // Lencana % melingkar sesuai referensi (bukan
+                            // ikon tag): lingkaran outline dengan % di tengah.
+                            ? Container(
+                                width: 26,
+                                height: 26,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: gardenInk,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    '%',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w800,
+                                      color: gardenInk,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Icon(entries[i].$2, size: 26, color: gardenInk),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Text(
                         entries[i].$1,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                          fontSize: 10,
+                          fontSize: 11,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
