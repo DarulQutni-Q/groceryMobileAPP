@@ -10,15 +10,17 @@ import 'ubah_profil_page.dart';
 /// Tab Akun: Pengaturan sesuai desain Figma.
 ///
 /// Semua baris berfungsi. KTP belum punya backend verifikasi, jadi
-/// barisnya membuka dialog info + jalan ke Ubah Profil, bukan klaim
-/// verifikasi palsu. Bahasa baru tersedia Bahasa Indonesia. Cache yang
-/// dibersihkan adalah cache gambar dalam memori.
+/// subtitlenya jujur ("Belum tersedia") dan barisnya membuka dialog info
+/// + jalan ke Ubah Profil, bukan klaim verifikasi palsu. Kata sandi
+/// diubah lewat email terdaftar (backend hanya punya endpoint reset
+/// lewat email), jadi subtitlenya menjelaskan jalurnya, bukan tanggal
+/// karangan. Bahasa baru tersedia Bahasa Indonesia dan pilihannya
+/// tersimpan lokal. Cache yang tampil adalah ukuran cache gambar dalam
+/// memori yang terukur, dan yang dibersihkan adalah cache itu juga.
+/// Ikon gerigi membuka dialog Tentang yang jujur (info versi belum
+/// tersedia di aplikasi ini).
 class PengaturanPage extends StatefulWidget {
-  const PengaturanPage({
-    super.key,
-    this.onUbahProfil,
-    this.onMetodeBayar,
-  });
+  const PengaturanPage({super.key, this.onUbahProfil, this.onMetodeBayar});
   final VoidCallback? onUbahProfil;
   final VoidCallback? onMetodeBayar;
 
@@ -28,7 +30,8 @@ class PengaturanPage extends StatefulWidget {
 
 class _PengaturanPageState extends State<PengaturanPage> {
   bool _pinBiometric = true;
-  bool _cacheCleared = false;
+  int _cacheBytes = 0;
+  String _bahasa = 'id';
 
   @override
   void initState() {
@@ -41,7 +44,16 @@ class _PengaturanPageState extends State<PengaturanPage> {
     if (!mounted) return;
     setState(() {
       _pinBiometric = prefs.getBool('metode_biometrik') ?? true;
+      _cacheBytes = imageCache.currentSizeBytes;
+      _bahasa = prefs.getString('bahasa_aplikasi') ?? 'id';
     });
+  }
+
+  /// Format ukuran cache gaya Indonesia: "48,2 MB", nol jadi "0 MB".
+  String _formatCache(int bytes) {
+    if (bytes <= 0) return 'Cache: 0 MB';
+    final mb = bytes / 1048576;
+    return 'Cache: ${mb.toStringAsFixed(1).replaceAll('.', ',')} MB';
   }
 
   Future<void> _setPinBiometric(bool value) async {
@@ -105,17 +117,45 @@ class _PengaturanPageState extends State<PengaturanPage> {
   void _showBahasaDialog() {
     showDialog<void>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Bahasa Aplikasi'),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Icon(Icons.check, color: gardenInk),
-              title: Text('Bahasa Indonesia (ID)'),
+              leading: _bahasa == 'id'
+                  ? const Icon(Icons.check, color: gardenInk)
+                  : const SizedBox(width: 24),
+              title: const Text('Bahasa Indonesia (ID)'),
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString('bahasa_aplikasi', 'id');
+                if (!mounted) return;
+                setState(() => _bahasa = 'id');
+                if (dialogContext.mounted) Navigator.pop(dialogContext);
+              },
             ),
-            Text('Bahasa lain belum tersedia.'),
+            const Text('Bahasa lain belum tersedia.'),
           ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Tutup'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTentangDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Tentang GardenMart'),
+        content: const Text(
+          'GardenMart — aplikasi belanja kebutuhan harian.\n\n'
+          'Info versi belum tersedia di aplikasi ini.',
         ),
         actions: [
           TextButton(
@@ -143,7 +183,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
               Navigator.pop(dialogContext);
               imageCache.clear();
               imageCache.clearLiveImages();
-              setState(() => _cacheCleared = true);
+              setState(() => _cacheBytes = imageCache.currentSizeBytes);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Cache dibersihkan')),
               );
@@ -162,21 +202,13 @@ class _PengaturanPageState extends State<PengaturanPage> {
         LimeHeader(
           title: 'Pengaturan',
           centerTitle: false,
-          height: 200,
+          height: 104,
           topPadding: 38,
+          titleSize: 22,
           actions: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-              ),
-              child: const Icon(
-                Icons.wb_sunny_outlined,
-                size: 20,
-                color: gardenInk,
-              ),
+            RoundIconButton(
+              icon: Icons.settings_outlined,
+              onPressed: _showTentangDialog,
             ),
           ],
         ),
@@ -199,8 +231,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
                     _SettingRow(
                       icon: Icons.verified_user_outlined,
                       title: 'Verifikasi Identitas & KTP',
-                      subtitle: 'Terverifikasi',
-                      subtitleColor: Color(0xFF397A24),
+                      subtitle: 'Belum tersedia',
                       onTap: _showKtpDialog,
                     ),
                   ],
@@ -215,12 +246,10 @@ class _PengaturanPageState extends State<PengaturanPage> {
                     _SettingRow(
                       icon: Icons.key_outlined,
                       title: 'Ganti kata sandi',
-                      subtitle: 'Diubah 3 hari yang lalu',
+                      subtitle: 'Lewat email terdaftar',
                       onTap: () => Navigator.push<void>(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const ResetPage(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const ResetPage()),
                       ),
                     ),
                     const _RowDivider(),
@@ -238,7 +267,6 @@ class _PengaturanPageState extends State<PengaturanPage> {
                       icon: Icons.credit_card_outlined,
                       title: 'Metode Pembayaran',
                       subtitle: 'Manage metode pembayaran',
-                      showChevron: false,
                       onTap: _openMetodeBayar,
                     ),
                   ],
@@ -260,20 +288,17 @@ class _PengaturanPageState extends State<PengaturanPage> {
                     _SettingRow(
                       icon: Icons.storage_outlined,
                       title: 'Penyimpanan & Cache',
-                      subtitle: _cacheCleared
-                          ? 'Cache: 0 MB'
-                          : 'Cache: 48,2 MB',
+                      subtitle: _formatCache(_cacheBytes),
                       trailing: SizedBox(
-                        height: 30,
+                        height: 26,
                         child: FilledButton(
                           onPressed: _confirmClearCache,
                           style: FilledButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                            ),
-                            minimumSize: const Size(0, 30),
+                            foregroundColor: limeBright,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            minimumSize: const Size(0, 26),
                             textStyle: const TextStyle(
-                              fontSize: 12,
+                              fontSize: 11,
                               fontWeight: FontWeight.w700,
                               fontFamily: 'Roboto',
                             ),
@@ -337,23 +362,19 @@ class _SettingRow extends StatelessWidget {
     required this.icon,
     required this.title,
     this.subtitle,
-    this.subtitleColor = textGrey,
     this.trailing,
-    this.showChevron = true,
     required this.onTap,
   });
   final IconData icon;
   final String title;
   final String? subtitle;
-  final Color subtitleColor;
   final Widget? trailing;
-  final bool showChevron;
   final VoidCallback onTap;
   @override
   Widget build(BuildContext context) => InkWell(
     onTap: onTap,
     child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           Icon(icon, size: 26, color: gardenInk),
@@ -374,19 +395,16 @@ class _SettingRow extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle!,
-                    style: TextStyle(fontSize: 12, color: subtitleColor),
+                    style: const TextStyle(fontSize: 12, color: textGrey),
                   ),
                 ],
               ],
             ),
           ),
-          if (trailing != null) trailing!
-          else if (showChevron)
-            const Icon(
-              Icons.chevron_right,
-              size: 22,
-              color: textGrey,
-            ),
+          if (trailing != null)
+            trailing!
+          else
+            const Icon(Icons.chevron_right, size: 22, color: textGrey),
         ],
       ),
     ),
@@ -399,29 +417,28 @@ class _ToggleOn extends StatelessWidget {
   final ValueChanged<bool> onChanged;
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: () => onChanged(!value),
-        child: Container(
-          width: 52,
-          height: 32,
-          padding: const EdgeInsets.all(3),
-          alignment:
-              value ? Alignment.centerRight : Alignment.centerLeft,
-          decoration: BoxDecoration(
-            color: value ? gardenInk : const Color(0xFFB9C4B4),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            width: 26,
-            height: 26,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
-            ),
-            child: value
-                ? const Icon(Icons.check, size: 16, color: gardenInk)
-                : null,
-          ),
+    onTap: () => onChanged(!value),
+    child: Container(
+      width: 40,
+      height: 28,
+      padding: const EdgeInsets.all(3),
+      alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+      decoration: BoxDecoration(
+        color: value ? gardenInk : const Color(0xFFB9C4B4),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Container(
+        width: 22,
+        height: 22,
+        alignment: Alignment.center,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
         ),
-      );
+        child: value
+            ? const Icon(Icons.check, size: 13, color: gardenInk)
+            : null,
+      ),
+    ),
+  );
 }
