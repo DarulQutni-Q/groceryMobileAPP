@@ -346,7 +346,7 @@ class _ChatDriverPageState extends State<ChatDriverPage> {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: const Color(0xFFE4F3D8),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
