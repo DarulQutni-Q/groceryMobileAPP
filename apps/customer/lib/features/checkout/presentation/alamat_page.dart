@@ -189,11 +189,6 @@ class _AddressCard extends StatelessWidget {
     margin: const EdgeInsets.only(bottom: 12),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(16),
-      side: BorderSide(
-        color: address.isUtama
-            ? const Color(0xFF94C563)
-            : Colors.transparent,
-      ),
     ),
     child: Padding(
       padding: const EdgeInsets.all(14),
