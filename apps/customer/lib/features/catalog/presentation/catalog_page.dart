@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grocery_shared/shared.dart';
 
 import '../../../core/theme.dart';
+import '../application/placeholder_diskon.dart';
 import '../application/produk_provider.dart';
 import 'catalog_widgets.dart';
 import 'product_page.dart';
@@ -13,9 +14,10 @@ class ProductCard extends ConsumerStatefulWidget {
   const ProductCard(this.produk, {super.key, this.home = false});
   final Produk produk;
 
-  /// Varian beranda sesuai referensi: dengan bilah stok, "Sisa N pcs",
-  /// dan tombol + Keranjang (fungsional, sama seperti katalog).
-  /// Varian default (katalog) tidak berubah.
+  /// Varian beranda sesuai referensi: badge diskon + harga coret
+  /// (placeholder, lihat placeholder_diskon.dart), bilah stok tipis,
+  /// "Sisa N pcs", dan tombol + Keranjang (fungsional, sama seperti
+  /// katalog). Varian default (katalog) tidak berubah.
   final bool home;
   @override
   ConsumerState<ProductCard> createState() => _ProductCardState();
@@ -27,11 +29,15 @@ class _ProductCardState extends ConsumerState<ProductCard> {
   Widget build(BuildContext context) {
     final produk = widget.produk;
     final home = widget.home;
+    // Diskon placeholder hanya untuk varian beranda; katalog tidak
+    // menampilkan badge/harga coret (lihat placeholder_diskon.dart).
+    final diskon = home ? placeholderDiskonUntuk(produk) : null;
+    final persenDiskon = diskon?.persenDiskon(produk.harga) ?? 0;
     return SizedBox(
       width: home ? 100 : 116,
       child: Card(
         margin: EdgeInsets.zero,
-        elevation: 0,
+        elevation: home ? 2 : 0,
         color: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAlias,
@@ -47,10 +53,34 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               Stack(
                 children: [
                   SizedBox(
-                    height: home ? 110 : 88,
+                    height: home ? 92 : 88,
                     width: double.infinity,
                     child: FotoProduk(produk),
                   ),
+                  if (home && persenDiskon > 0)
+                    Positioned(
+                      top: 6,
+                      left: 6,
+                      child: Container(
+                        key: Key('badge-diskon-${produk.id}'),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFDD3F47),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          '-$persenDiskon%',
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
                   Positioned(
                     top: 6,
                     right: 6,
@@ -75,7 +105,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               Expanded(
                 child: Padding(
                   padding: home
-                      ? const EdgeInsets.fromLTRB(8, 6, 8, 8)
+                      ? const EdgeInsets.fromLTRB(8, 4, 8, 2)
                       : const EdgeInsets.fromLTRB(9, 6, 9, 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,7 +120,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                           height: 1.1,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: home ? 3 : 4),
                       Text(
                         '1 ${produk.satuan}',
                         maxLines: 1,
@@ -101,7 +131,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                           color: const Color(0xFF78906F),
                         ),
                       ),
-                      const SizedBox(height: 3),
+                      SizedBox(height: home ? 2 : 3),
                       FittedBox(
                         fit: BoxFit.scaleDown,
                         alignment: Alignment.centerLeft,
@@ -115,11 +145,26 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                           ),
                         ),
                       ),
+                      if (home && diskon != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          rupiah(diskon.hargaAsli),
+                          maxLines: 1,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            height: 1.1,
+                            color: Color(0xFF78906F),
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
+                      ],
                       if (home) ...[
                         const Spacer(),
-                        // Bilah stok sesuai referensi. Isinya proporsi stok
-                        // (stok/(stok+10)) karena referensi tidak memberi
-                        // skala; angka stoknya sendiri tetap asli.
+                        // Bilah stok tipis sesuai referensi (di screenshot
+                        // referensi bilahnya tipis di bawah harga coret).
+                        // Isinya proporsi stok (stok/(stok+10)) karena
+                        // referensi tidak memberi skala; angka stoknya
+                        // sendiri tetap asli.
                         ClipRRect(
                           borderRadius: BorderRadius.circular(2),
                           child: LinearProgressIndicator(
@@ -128,10 +173,10 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                             valueColor: const AlwaysStoppedAnimation<Color>(
                               Color(0xFFDD3F47),
                             ),
-                            minHeight: 4,
+                            minHeight: 3,
                           ),
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 4),
                         Text(
                           produk.stok == 0
                               ? 'Habis'
@@ -167,7 +212,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               ),
               Padding(
                 padding: home
-                    ? const EdgeInsets.fromLTRB(8, 6, 8, 8)
+                    ? const EdgeInsets.fromLTRB(8, 2, 8, 6)
                     : const EdgeInsets.fromLTRB(8, 4, 8, 4),
                 child: SizedBox(
                   width: double.infinity,
@@ -180,6 +225,13 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                       backgroundColor: gardenInk,
                       minimumSize: Size(0, home ? 34 : 44),
                       padding: EdgeInsets.zero,
+                      // Varian beranda: tombol 34 tanpa padding target
+                      // sentuh 48 bawaan, supaya kartu pendek tetap muat
+                      // (tanpa ini widget tombol memakan 48 walau
+                      // minimumSize 34, dan info kartu meluber 3px).
+                      tapTargetSize: home
+                          ? MaterialTapTargetSize.shrinkWrap
+                          : MaterialTapTargetSize.padded,
                     ),
                     child: const Text(
                       '+ Keranjang',

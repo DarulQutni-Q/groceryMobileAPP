@@ -188,8 +188,9 @@ void main() {
     (w) => w is ListView && w.scrollDirection == Axis.horizontal,
   );
 
-  testWidgets('baris Kilat menampilkan kartu keempat yang mengintip',
-      (tester) async {
+  testWidgets('baris Kilat menampilkan kartu keempat yang mengintip', (
+    tester,
+  ) async {
     await openHome(tester);
     expect(kilatRow(), findsOneWidget);
     // Kartu keempat mulai di dalam viewport tapi ujung kanannya lewat
@@ -211,20 +212,16 @@ void main() {
     expect(after.left, lessThan(before.left));
   });
 
-  testWidgets('tombol + Keranjang di kartu beranda menambah keranjang',
-      (tester) async {
+  testWidgets('tombol + Keranjang di kartu beranda menambah keranjang', (
+    tester,
+  ) async {
     await openHome(tester);
-    // Baris Kilat awalnya di bawah lipatan (tinggi baris 288), jadi
+    // Baris Kilat awalnya di bawah lipatan (tinggi baris 244), jadi
     // halaman discroll dulu sampai tombolnya terlihat dan bisa diketuk.
-    await tester.drag(
-      find.text('Kilat Murah Hari Ini'),
-      const Offset(0, -250),
-    );
+    await tester.drag(find.text('Kilat Murah Hari Ini'), const Offset(0, -250));
     await tester.pump();
     expect(find.widgetWithText(FilledButton, '+ Keranjang'), findsWidgets);
-    await tester.tap(
-      find.widgetWithText(FilledButton, '+ Keranjang').first,
-    );
+    await tester.tap(find.widgetWithText(FilledButton, '+ Keranjang').first);
     await tester.pump();
     await tester.runAsync(
       () async => Future<void>.delayed(const Duration(milliseconds: 500)),
@@ -239,5 +236,38 @@ void main() {
     expect(cart.items.first.qty, 1);
     // Badge tas di header ikut berubah jadi 1.
     expect(find.byKey(const Key('cart-badge-1')), findsOneWidget);
+  });
+
+  testWidgets('kartu Kilat menampilkan badge dan harga coret placeholder', (
+    tester,
+  ) async {
+    await openHome(tester);
+    // Nilai dari placeholder_diskon.dart, bukan angka mock Figma:
+    // p1 -13% / Rp 20.000, p2 -10% / Rp 18.000, p3 -14% / Rp 39.500.
+    expect(find.text('-13%'), findsOneWidget);
+    expect(find.text('-10%'), findsOneWidget);
+    expect(find.text('-14%'), findsOneWidget);
+    expect(find.text('Rp 20.000'), findsOneWidget);
+    expect(find.text('Rp 18.000'), findsOneWidget);
+    expect(find.text('Rp 39.500'), findsOneWidget);
+    // Produk tanpa placeholder (p4) tidak dapat badge.
+    expect(find.byKey(const Key('badge-diskon-p4')), findsNothing);
+  });
+
+  testWidgets('bilah stok kartu Kilat tipis dan tinggi kartu 232', (
+    tester,
+  ) async {
+    await openHome(tester);
+    // Tanpa drag: tinggi kartu alami 232. Drag vertikal mengubah
+    // tinggi terukur kartu menjadi ~235.35 di harness ini, jadi
+    // asersi tinggi dilakukan sebelum scroll.
+    final bar = tester.widget<LinearProgressIndicator>(
+      find.descendant(
+        of: find.byKey(const Key('product-p1')),
+        matching: find.byType(LinearProgressIndicator),
+      ),
+    );
+    expect(bar.minHeight, 3);
+    expect(tester.getRect(find.byKey(const Key('product-p1'))).height, 232.0);
   });
 }
