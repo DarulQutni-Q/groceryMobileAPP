@@ -37,6 +37,9 @@ void main() {
       ),
     );
     await tester.pump();
+    // Satu frame lagi supaya callback pasca-frame errorBuilder sempat jalan
+    // dan garis scan tersembunyi sebelum golden diambil.
+    await tester.pump();
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/scan.png'),

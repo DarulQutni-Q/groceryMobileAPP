@@ -44,6 +44,7 @@ class _ScanQrPageState extends ConsumerState<ScanQrPage> {
   final _controller = MobileScannerController();
   bool _torchOn = false;
   bool _running = true;
+  bool _cameraError = false;
   bool _handling = false;
 
   @override
@@ -106,7 +107,12 @@ class _ScanQrPageState extends ConsumerState<ScanQrPage> {
       } else {
         await _controller.start();
       }
-      if (mounted) setState(() => _running = !_running);
+      if (mounted) {
+        setState(() {
+          _running = !_running;
+          _cameraError = false;
+        });
+      }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -174,7 +180,15 @@ class _ScanQrPageState extends ConsumerState<ScanQrPage> {
                                     ? null
                                     : capture.barcodes.first.rawValue,
                               ),
-                              errorBuilder: (context, error, _) => Center(
+                              errorBuilder: (context, error, _) {
+                                WidgetsBinding.instance.addPostFrameCallback(
+                                  (_) {
+                                    if (mounted && !_cameraError) {
+                                      setState(() => _cameraError = true);
+                                    }
+                                  },
+                                );
+                                return Center(
                                 child: Padding(
                                   padding: const EdgeInsets.all(24),
                                   child: Column(
@@ -203,7 +217,8 @@ class _ScanQrPageState extends ConsumerState<ScanQrPage> {
                                     ],
                                   ),
                                 ),
-                              ),
+                              );
+                              },
                             ),
                           ),
                           const Positioned(
@@ -226,7 +241,8 @@ class _ScanQrPageState extends ConsumerState<ScanQrPage> {
                             right: 0,
                             child: _Corner(top: false, left: false),
                           ),
-                          Positioned(
+                          if (!_cameraError)
+                            Positioned(
                             top: 0,
                             bottom: 0,
                             left: 0,
