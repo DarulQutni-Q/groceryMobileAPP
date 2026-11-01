@@ -48,6 +48,20 @@ void main() {
                     radiusKm: 5,
                     status: 'buka',
                     metodeKirim: ['Kurir'],
+                    latitude: 3.5952,
+                    longitude: 98.6722,
+                  ),
+                  Toko(
+                    id: 't2',
+                    nama: 'Indomaret Setiabudi 10',
+                    alamat: 'Jl. Setiabudi No. 10',
+                    telepon: '0618234567',
+                    kategori: ['Sembako'],
+                    radiusKm: 10,
+                    status: 'buka',
+                    metodeKirim: ['Kurir'],
+                    latitude: 3.7,
+                    longitude: 98.8,
                   ),
                 ],
                 page: 1,
@@ -56,6 +70,20 @@ void main() {
                 totalPages: 1,
               ),
             ),
+          ),
+          alamatProvider.overrideWithValue(
+            const AsyncValue.data([
+              Alamat(
+                id: 'a1',
+                label: 'Rumah',
+                namaPenerima: 'Darul',
+                noHp: '081234567890',
+                alamatLengkap: 'Jl. Diponegoro No. 42',
+                isUtama: true,
+                latitude: 3.6,
+                longitude: 98.68,
+              ),
+            ]),
           ),
           kategoriProvider.overrideWithValue(
             const AsyncValue.data(['Sembako', 'Minuman', 'Snack']),
@@ -109,6 +137,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('Pilih Toko'), findsOneWidget);
     expect(find.byKey(const Key('store-pick-t1')), findsOneWidget);
+    expect(find.byKey(const Key('store-search')), findsOneWidget);
+    expect(find.byKey(const Key('store-pick-t2')), findsOneWidget);
+    expect(find.textContaining('Di luar jangkauan'), findsOneWidget);
     // Subtitle alamat hanya ada di tile sheet (header hanya nama toko).
     expect(find.text('Jl. Diponegoro No. 42'), findsOneWidget);
     await expectLater(

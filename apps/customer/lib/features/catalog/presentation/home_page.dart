@@ -9,6 +9,7 @@ import '../application/produk_provider.dart';
 import 'cart_page.dart';
 import 'catalog_page.dart';
 import 'toko_page.dart';
+import 'pilih_toko_sheet.dart';
 import 'notifications_page.dart';
 import 'pesanan_page.dart';
 import 'promo_page.dart';
@@ -39,66 +40,26 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   /// Pemilih toko dari GET /toko (tokoProvider yang sama dengan header).
-  /// Daftar memakai ListTile standar seperti menu lain di app; tap toko
-  /// menutup sheet lalu membuka TokoPage toko itu.
+  /// Sheet-nya di PilihTokoSheet: kolom cari + gating radius.
   void _pilihToko(BuildContext context, List<Toko> stores) {
     showModalBottomSheet<void>(
       context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(
-                'Pilih Toko',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-              ),
+      isScrollControlled: true,
+      builder: (sheetContext) => PilihTokoSheet(
+        stores: stores,
+        onPilih: (store) {
+          Navigator.pop(sheetContext);
+          Navigator.push<void>(
+            context,
+            MaterialPageRoute(
+              builder: (_) => TokoPage(store.id),
             ),
-            if (stores.isEmpty)
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
-                child: Text('Belum ada toko buka'),
-              )
-            else
-              for (final store in stores)
-                ListTile(
-                  key: Key('store-pick-${store.id}'),
-                  leading: const CircleAvatar(
-                    radius: 17,
-                    backgroundColor: Color(0xFFE9F4DD),
-                    child: Icon(
-                      Icons.house_outlined,
-                      size: 20,
-                      color: gardenInk,
-                    ),
-                  ),
-                  title: Text(
-                    store.nama,
-                    style: const TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  subtitle: Text(store.alamat),
-                  trailing: const Icon(
-                    Icons.chevron_right,
-                    size: 20,
-                    color: textGrey,
-                  ),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    Navigator.push<void>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => TokoPage(store.id),
-                      ),
-                    );
-                  },
-                ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {

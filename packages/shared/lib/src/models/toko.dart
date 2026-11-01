@@ -16,6 +16,8 @@ class Toko {
     this.jamBuka,
     this.jamTutup,
     this.produk,
+    this.latitude,
+    this.longitude,
   });
 
   final String id, nama, alamat, telepon, status;
@@ -27,6 +29,11 @@ class Toko {
   /// Produk toko, hanya ada pada respons GET /toko/{id} (TokoDetail).
   /// Daftar toko (/toko) tidak mengembalikan field ini.
   final List<Produk>? produk;
+
+  /// Koordinat GPS toko, hanya ada kalau backend mengirimkannya.
+  /// Backend hari ini belum punya kolom ini (null) -> jarak tidak
+  /// diketahui dan gating radius tidak memblokir (lihat jarak_toko).
+  final double? latitude, longitude;
 
   factory Toko.fromJson(Map<String, dynamic> json) => Toko(
     id: json['id'] as String,
@@ -49,6 +56,8 @@ class Toko {
               (item) => Produk.fromJson(item as Map<String, dynamic>),
             ),
           ),
+    latitude: (json['latitude'] as num?)?.toDouble(),
+    longitude: (json['longitude'] as num?)?.toDouble(),
   );
 }
 
