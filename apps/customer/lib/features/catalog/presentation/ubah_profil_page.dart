@@ -198,6 +198,7 @@ class _UbahProfilPageState extends ConsumerState<UbahProfilPage> {
                         borderRadius: BorderRadius.circular(24),
                       ),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Expanded(
                             child: GestureDetector(

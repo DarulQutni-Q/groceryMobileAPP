@@ -202,8 +202,10 @@ class _PengaturanPageState extends State<PengaturanPage> {
         LimeHeader(
           title: 'Pengaturan',
           centerTitle: false,
-          height: 104,
-          topPadding: 38,
+          // Tinggi 120 + padding 8: baris judul berakhir jauh di atas
+          // gelombang (92px), jadi tidak tertimpa di HP apa pun.
+          height: 120,
+          topPadding: 8,
           titleSize: 22,
           actions: [
             RoundIconButton(

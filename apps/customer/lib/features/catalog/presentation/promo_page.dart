@@ -3,7 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/garden_widgets.dart';
 import '../../../core/theme.dart';
-import 'catalog_page.dart';
+import 'promo_jsm_page.dart';
+import 'tebus_murah_page.dart';
 
 /// Filter yang tersedia di chip baris atas.
 enum _PromoFilter { semua, diskon, gratis, cashback }
@@ -171,10 +172,17 @@ class _PromoPageState extends State<PromoPage> {
     }
   }
 
-  void _openCatalog() {
+  void _openJsm() {
     Navigator.push<void>(
       context,
-      MaterialPageRoute(builder: (_) => const CatalogPage()),
+      MaterialPageRoute(builder: (_) => const PromoJsmPage()),
+    );
+  }
+
+  void _openTebus() {
+    Navigator.push<void>(
+      context,
+      MaterialPageRoute(builder: (_) => const TebusMurahPage()),
     );
   }
 
@@ -271,7 +279,7 @@ class _PromoPageState extends State<PromoPage> {
                   children: [
                     Expanded(
                       child: InkWell(
-                        onTap: _openCatalog,
+                        onTap: _openJsm,
                         borderRadius: BorderRadius.circular(16),
                         child: _WeeklyCard(
                           background: _weekly[0].background,
@@ -286,7 +294,7 @@ class _PromoPageState extends State<PromoPage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: InkWell(
-                        onTap: _openCatalog,
+                        onTap: _openTebus,
                         borderRadius: BorderRadius.circular(16),
                         child: _WeeklyCard(
                           background: _weekly[1].background,

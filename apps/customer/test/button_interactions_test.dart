@@ -8,11 +8,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gardenmart_customer/app.dart';
 import 'package:gardenmart_customer/features/auth/application/auth_provider.dart';
 import 'package:gardenmart_customer/features/catalog/application/produk_provider.dart';
-import 'package:gardenmart_customer/features/catalog/presentation/catalog_page.dart';
 import 'package:gardenmart_customer/features/catalog/presentation/chat_driver_page.dart';
 import 'package:gardenmart_customer/features/checkout/presentation/metode_pembayaran_page.dart';
 import 'package:gardenmart_customer/features/catalog/presentation/pengaturan_page.dart';
 import 'package:gardenmart_customer/features/catalog/presentation/promo_page.dart';
+import 'package:gardenmart_customer/features/catalog/presentation/beli_satu_gratis_satu_page.dart';
+import 'package:gardenmart_customer/features/catalog/presentation/fresh_mart_page.dart';
+import 'package:gardenmart_customer/features/catalog/presentation/lacak_kurir_page.dart';
+import 'package:gardenmart_customer/features/catalog/presentation/minyak_beras_page.dart';
+import 'package:gardenmart_customer/features/catalog/presentation/promo_jsm_page.dart';
+import 'package:gardenmart_customer/features/catalog/presentation/tebus_murah_page.dart';
 import 'package:gardenmart_customer/features/catalog/presentation/scan_qr_page.dart';
 import 'package:gardenmart_customer/features/checkout/presentation/struk_page.dart';
 import 'package:gardenmart_customer/features/catalog/presentation/ubah_profil_page.dart';
@@ -216,36 +221,107 @@ void main() {
     expect(find.byType(ScanQrPage), findsOneWidget);
   });
 
-  testWidgets('kategori Promo JSM membuka tab Promo', (tester) async {
+  testWidgets('kategori Promo JSM membuka halaman Promo JSM', (tester) async {
     await open(tester, kategori: ['Beras', 'Minyak', 'Sayur', 'Buah']);
     await login(tester);
     await tap(tester, find.text('Promo JSM'));
+    expect(find.byType(PromoJsmPage), findsOneWidget);
+    expect(find.text('Promo JSM'), findsOneWidget);
+  });
+
+  testWidgets('kategori Minyak dan Beras membuka halaman sendiri', (
+    tester,
+  ) async {
+    await open(tester, kategori: ['Beras', 'Minyak', 'Sayur', 'Buah']);
+    await login(tester);
+    await tap(tester, find.text('Minyak & Beras'));
+    expect(find.byType(MinyakBerasPage), findsOneWidget);
+    expect(find.text('Minyak & Beras'), findsOneWidget);
+  });
+
+  testWidgets('kategori Tagihan PLN sudah dihapus dari grid', (tester) async {
+    await open(tester, kategori: ['Beras', 'Minyak', 'Sayur', 'Buah']);
+    await login(tester);
+    expect(find.text('Tagihan PLN'), findsNothing);
+    for (final label in [
+      'Promo JSM',
+      'Tebus Murah',
+      'Minyak & Beras',
+      'i-Kupon (4)',
+      'Fresh Mart',
+      'Beli 1 Gratis 1',
+      'Lacak Kurir',
+    ]) {
+      expect(find.text(label), findsOneWidget);
+    }
+  });
+
+  testWidgets('kategori Lacak Kurir membuka halaman Lacak Kurir', (
+    tester,
+  ) async {
+    await open(tester, kategori: ['Beras', 'Minyak', 'Sayur', 'Buah']);
+    await login(tester);
+    await tap(tester, find.text('Lacak Kurir'));
+    expect(find.byType(LacakKurirPage), findsOneWidget);
+    expect(find.text('Lacak Kurir'), findsOneWidget);
+  });
+
+  testWidgets('kategori Tebus Murah membuka halaman Tebus Murah', (
+    tester,
+  ) async {
+    await open(tester, kategori: ['Beras', 'Minyak', 'Sayur', 'Buah']);
+    await login(tester);
+    await tap(tester, find.text('Tebus Murah'));
+    expect(find.byType(TebusMurahPage), findsOneWidget);
+    expect(find.text('Tebus Murah'), findsOneWidget);
+  });
+
+  testWidgets('kategori Fresh Mart membuka halaman Fresh Mart', (
+    tester,
+  ) async {
+    await open(tester, kategori: ['Beras', 'Minyak', 'Sayur', 'Buah']);
+    await login(tester);
+    await tap(tester, find.text('Fresh Mart'));
+    expect(find.byType(FreshMartPage), findsOneWidget);
+    expect(find.text('Fresh Mart'), findsOneWidget);
+  });
+
+  testWidgets('kategori Beli 1 Gratis 1 membuka halaman sendiri', (
+    tester,
+  ) async {
+    await open(tester, kategori: ['Beras', 'Minyak', 'Sayur', 'Buah']);
+    await login(tester);
+    await tap(tester, find.text('Beli 1 Gratis 1'));
+    expect(find.byType(BeliSatuGratisSatuPage), findsOneWidget);
+    expect(find.text('Beli 1 Gratis 1'), findsOneWidget);
+  });
+
+  testWidgets('kategori i-Kupon tetap membuka Promo & Kupon', (tester) async {
+    await open(tester, kategori: ['Beras', 'Minyak', 'Sayur', 'Buah']);
+    await login(tester);
+    await tap(tester, find.text('i-Kupon (4)'));
     expect(find.byType(PromoPage), findsOneWidget);
     expect(find.text('Promo & Kupon'), findsOneWidget);
   });
 
-  testWidgets('kategori Minyak dan Beras membuka katalog', (tester) async {
+  testWidgets('kartu mingguan JSM membuka halaman Promo JSM', (tester) async {
     await open(tester, kategori: ['Beras', 'Minyak', 'Sayur', 'Buah']);
     await login(tester);
-    await tap(tester, find.text('Minyak & Beras'));
-    expect(find.byType(CatalogPage), findsOneWidget);
+    await tap(tester, find.text('Promo'));
+    await tap(tester, find.text('Promo JSM Akhir Pekan'));
+    expect(find.byType(PromoJsmPage), findsOneWidget);
+    expect(find.text('Promo JSM'), findsOneWidget);
   });
 
-  testWidgets('kategori Tagihan PLN membuka dialog jujur', (tester) async {
+  testWidgets('kartu mingguan Tebus membuka halaman Tebus Murah', (
+    tester,
+  ) async {
     await open(tester, kategori: ['Beras', 'Minyak', 'Sayur', 'Buah']);
     await login(tester);
-    await tap(tester, find.text('Tagihan PLN'));
-    expect(find.text('Tagihan PLN'), findsWidgets);
-    expect(find.text('Tutup'), findsOneWidget);
-    await tap(tester, find.text('Tutup'));
-    expect(find.byType(AlertDialog), findsNothing);
-  });
-
-  testWidgets('kategori Lacak Kurir membuka tab Pesanan', (tester) async {
-    await open(tester, kategori: ['Beras', 'Minyak', 'Sayur', 'Buah']);
-    await login(tester);
-    await tap(tester, find.text('Lacak Kurir'));
-    expect(find.text('Pesanan Saya'), findsOneWidget);
+    await tap(tester, find.text('Promo'));
+    await tap(tester, find.text('Tebus Murah Serba 5rb'));
+    expect(find.byType(TebusMurahPage), findsOneWidget);
+    expect(find.text('Tebus Murah'), findsOneWidget);
   });
 
   testWidgets('promo: filter, klaim, dan voucher saya', (tester) async {

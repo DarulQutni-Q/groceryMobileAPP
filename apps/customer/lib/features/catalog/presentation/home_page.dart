@@ -11,8 +11,13 @@ import 'catalog_page.dart';
 import 'toko_page.dart';
 import 'pilih_toko_dialog.dart';
 import 'notifications_page.dart';
-import 'pesanan_page.dart';
 import 'promo_page.dart';
+import 'beli_satu_gratis_satu_page.dart';
+import 'fresh_mart_page.dart';
+import 'lacak_kurir_page.dart';
+import 'minyak_beras_page.dart';
+import 'promo_jsm_page.dart';
+import 'tebus_murah_page.dart';
 import 'scan_qr_page.dart';
 import 'catalog_widgets.dart';
 import 'poinku_page.dart';
@@ -24,7 +29,7 @@ class HomePage extends ConsumerStatefulWidget {
   /// oleh golden test supaya teks countdown tidak berubah tiap detik.
   final DateTime Function()? now;
 
-  /// Pindah tab shell (1 = Promo, 3 = Pesanan). Null kalau Home
+  /// Pindah tab shell (1 = Promo). Null kalau Home
   /// dipakai mandiri (golden test): tombol pakai fallback dorong halaman.
   final ValueChanged<int>? onGoToTab;
   @override
@@ -759,19 +764,6 @@ void _goToPromoTab(BuildContext context, ValueChanged<int>? onGoToTab) {
 
 /// Pindah ke tab Pesanan (index 3). Di luar shell, dorong halaman
 /// Pesanan mandiri dengan tombol kembali.
-void _goToPesananTab(BuildContext context, ValueChanged<int>? onGoToTab) {
-  final go = onGoToTab;
-  if (go != null) {
-    go(3);
-    return;
-  }
-  Navigator.push<void>(
-    context,
-    MaterialPageRoute(
-      builder: (_) => Scaffold(body: const PesananPage(showBack: true)),
-    ),
-  );
-}
 
 class _CategoryGrid extends ConsumerWidget {
   const _CategoryGrid({required this.categories, this.onGoToTab});
@@ -786,7 +778,6 @@ class _CategoryGrid extends ConsumerWidget {
       ('Minyak & Beras', Icons.rice_bowl),
       ('i-Kupon (4)', Icons.confirmation_number_outlined),
       ('Fresh Mart', Icons.schedule_outlined),
-      ('Tagihan PLN', Icons.bolt),
       ('Beli 1 Gratis 1', Icons.shopping_cart_outlined),
       ('Lacak Kurir', Icons.local_shipping_outlined),
     ];
@@ -819,41 +810,49 @@ class _CategoryGrid extends ConsumerWidget {
                 onTap: () {
                   switch (i) {
                     case 0:
-                    case 1:
-                    case 3:
-                    case 6:
-                      _goToPromoTab(context, onGoToTab);
-                    case 2:
-                    case 4:
-                      final category = categoryFor(i);
-                      if (category != null) {
-                        ref
-                            .read(produkProvider.notifier)
-                            .filterKategori(category);
-                      }
                       Navigator.push<void>(
                         context,
-                        MaterialPageRoute(builder: (_) => const CatalogPage()),
-                      );
-                    case 5:
-                      showDialog<void>(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                          title: const Text('Tagihan PLN'),
-                          content: const Text(
-                            'Pembayaran tagihan belum tersedia di GardenMart '
-                            'karena belum ada layanan tagihan di backend.',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('Tutup'),
-                            ),
-                          ],
+                        MaterialPageRoute(
+                          builder: (_) => const PromoJsmPage(),
                         ),
                       );
-                    case 7:
-                      _goToPesananTab(context, onGoToTab);
+                    case 1:
+                      Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const TebusMurahPage(),
+                        ),
+                      );
+                    case 2:
+                      Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const MinyakBerasPage(),
+                        ),
+                      );
+                    case 3:
+                      _goToPromoTab(context, onGoToTab);
+                    case 4:
+                      Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const FreshMartPage(),
+                        ),
+                      );
+                    case 5:
+                      Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const BeliSatuGratisSatuPage(),
+                        ),
+                      );
+                    case 6:
+                      Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LacakKurirPage(),
+                        ),
+                      );
                   }
                 },
                 child: Padding(

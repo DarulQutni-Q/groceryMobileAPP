@@ -7,9 +7,103 @@ import 'package:grocery_shared/shared.dart';
 
 import '../../auth/application/auth_provider.dart';
 
+import '../../../core/theme.dart';
+
 const catalogGreen = Color(0xFF96E23B);
 const cartBackground = Color(0xFFE8F1E2);
 const totalGreen = Color(0xFF9FDD56);
+
+/// Spanduk promo untuk halaman promo khusus (JSM, Tebus Murah, Minyak &
+/// Beras, Fresh Mart, Beli 1 Gratis 1): judul + subjudul + catatan jujur
+/// opsional. Bukan klaim diskon per produk: harga produk tetap harga toko.
+class PromoBanner extends StatelessWidget {
+  const PromoBanner({
+    super.key,
+    required this.warna,
+    required this.tag,
+    required this.judul,
+    required this.subjudul,
+    this.catatan,
+  });
+  final Color warna;
+  final String tag, judul, subjudul;
+  final String? catatan;
+  @override
+  Widget build(BuildContext context) => Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: warna,
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          tag,
+          style: const TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w700,
+            color: textGrey,
+            letterSpacing: 0.4,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          judul,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: gardenInk,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(subjudul, style: const TextStyle(fontSize: 12, color: textGrey)),
+        if (catatan != null) ...[
+          const SizedBox(height: 8),
+          Text(catatan!, style: const TextStyle(fontSize: 11, color: textGrey)),
+        ],
+      ],
+    ),
+  );
+}
+
+/// Keadaan kosong halaman promo: ikon + pesan + tombol ke katalog.
+class PromoEmptyState extends StatelessWidget {
+  const PromoEmptyState({
+    super.key,
+    required this.pesan,
+    this.onLihatSemua,
+  });
+  final String pesan;
+  final VoidCallback? onLihatSemua;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(32),
+    child: Column(
+      children: [
+        const Icon(
+          Icons.shopping_basket_outlined,
+          size: 40,
+          color: textGrey,
+        ),
+        const SizedBox(height: 12),
+        Text(
+          pesan,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 13, color: textGrey),
+        ),
+        if (onLihatSemua != null) ...[
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: onLihatSemua,
+            child: const Text('Lihat semua produk'),
+          ),
+        ],
+      ],
+    ),
+  );
+}
 
 String rupiah(int value) =>
     'Rp ${value.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}';
