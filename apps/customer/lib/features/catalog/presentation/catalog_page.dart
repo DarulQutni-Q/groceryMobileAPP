@@ -38,7 +38,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
     final diskon = home ? placeholderDiskonUntuk(produk) : null;
     final persenDiskon = diskon?.persenDiskon(produk.harga) ?? 0;
     return SizedBox(
-      width: home ? 100 : 116,
+      width: home ? 108 : 116,
       child: Card(
         margin: EdgeInsets.zero,
         elevation: home ? 2 : 0,
@@ -91,7 +91,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                     child: GestureDetector(
                       onTap: () => setState(() => favorite = !favorite),
                       child: Container(
-                        padding: EdgeInsets.all(home ? 4 : 4),
+                        padding: EdgeInsets.all(home ? 5 : 4),
                         decoration: const BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
@@ -127,7 +127,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                           height: 1.1,
                         ),
                       ),
-                      SizedBox(height: home ? 2 : 4),
+                      SizedBox(height: home ? 1 : 4),
                       Text(
                         '1 ${produk.satuan}',
                         maxLines: 1,
@@ -183,7 +183,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                             minHeight: 4,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 1),
                         Text(
                           produk.stok == 0
                               ? 'Habis'
@@ -230,12 +230,12 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                     style: FilledButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: gardenInk,
-                      minimumSize: Size(0, home ? 24 : 44),
+                      minimumSize: Size(0, home ? 23 : 44),
                       padding: EdgeInsets.zero,
-                      // Varian beranda: tombol 34 tanpa padding target
+                      // Varian beranda: tombol 23 tanpa padding target
                       // sentuh 48 bawaan, supaya kartu pendek tetap muat
                       // (tanpa ini widget tombol memakan 48 walau
-                      // minimumSize 34, dan info kartu meluber 3px).
+                      // minimumSize 23, dan info kartu meluber).
                       tapTargetSize: home
                           ? MaterialTapTargetSize.shrinkWrap
                           : MaterialTapTargetSize.padded,

@@ -188,20 +188,34 @@ void main() {
     (w) => w is ListView && w.scrollDirection == Axis.horizontal,
   );
 
-  testWidgets('baris Kilat menampilkan kartu keempat yang mengintip', (
-    tester,
-  ) async {
-    await openHome(tester);
-    expect(kilatRow(), findsOneWidget);
-    // Kartu keempat mulai di dalam viewport tapi ujung kanannya lewat
-    // dari lebar layar: persis efek "mengintip" di referensi.
-    final card = tester.getRect(find.byKey(const Key('product-p4')));
-    expect(card.left, lessThan(390));
-    expect(card.right, greaterThan(390));
-  });
+  testWidgets(
+    'baris Kilat menampilkan tiga kartu penuh, kartu keempat muncul saat discroll',
+    (tester) async {
+      await openHome(tester);
+      expect(kilatRow(), findsOneWidget);
+      // Keadaan awal menyerupai referensi (3 kartu penuh, tanpa mengintip):
+      // kartu keempat mulai 4 logical lewat tepi viewport (370 = 20 padding
+      // kiri + 350 lebar viewport), jadi belum dibangun ListView.
+      expect(find.byKey(const Key('product-p4')), findsNothing);
+      expect(
+        tester.getRect(find.byKey(const Key('product-p3'))).right,
+        lessThanOrEqualTo(370),
+      );
+      // Setelah digeser sedikit, kartu keempat muncul dalam keadaan mengintip.
+      await tester.drag(kilatRow(), const Offset(-50, 0));
+      await tester.pump();
+      final card = tester.getRect(find.byKey(const Key('product-p4')));
+      expect(card.left, lessThan(390));
+      expect(card.right, greaterThan(390));
+    },
+  );
 
   testWidgets('baris Kilat bisa discroll ke samping', (tester) async {
     await openHome(tester);
+    // Kartu keempat baru dibangun setelah baris digeser (keadaan awal
+    // 3 kartu penuh, tanpa mengintip), jadi geser dulu sampai muncul.
+    await tester.drag(kilatRow(), const Offset(-50, 0));
+    await tester.pump();
     final before = tester.getRect(find.byKey(const Key('product-p4')));
     expect(before.right, greaterThan(390));
     await tester.drag(kilatRow(), const Offset(-200, 0));
@@ -242,32 +256,35 @@ void main() {
     tester,
   ) async {
     await openHome(tester);
-    // Nilai dari placeholder_diskon.dart, bukan angka mock Figma:
-    // p1 -13% / Rp 20.000, p2 -10% / Rp 18.000, p3 -14% / Rp 39.500.
-    expect(find.text('-13%'), findsOneWidget);
-    expect(find.text('-10%'), findsOneWidget);
+    // Nilai dari placeholder_diskon.dart (tetap PLACEHOLDER, bukan
+    // data seller; nilainya kini selaras dengan desain referensi):
+    // p1 -20% / Rp 21.900, p2 -17% / Rp 19.500, p3 -14% / Rp 39.500.
+    expect(find.text('-20%'), findsOneWidget);
+    expect(find.text('-17%'), findsOneWidget);
     expect(find.text('-14%'), findsOneWidget);
-    expect(find.text('Rp 20.000'), findsOneWidget);
-    expect(find.text('Rp 18.000'), findsOneWidget);
+    expect(find.text('Rp 21.900'), findsOneWidget);
+    expect(find.text('Rp 19.500'), findsOneWidget);
     expect(find.text('Rp 39.500'), findsOneWidget);
     // Produk tanpa placeholder (p4) tidak dapat badge.
     expect(find.byKey(const Key('badge-diskon-p4')), findsNothing);
   });
 
-  testWidgets('bilah stok kartu Kilat tipis dan tinggi kartu 178', (
-    tester,
-  ) async {
-    await openHome(tester);
-    // Tanpa drag: tinggi kartu alami 178. Drag vertikal mengubah
-    // tinggi terukur kartu di harness ini, jadi asersi tinggi
-    // dilakukan sebelum scroll.
-    final bar = tester.widget<LinearProgressIndicator>(
-      find.descendant(
-        of: find.byKey(const Key('product-p1')),
-        matching: find.byType(LinearProgressIndicator),
-      ),
-    );
-    expect(bar.minHeight, 4);
-    expect(tester.getRect(find.byKey(const Key('product-p1'))).height, 178.0);
-  });
+  testWidgets(
+    'bilah stok kartu Kilat tipis, tinggi kartu 178, dan lebar kartu 108',
+    (tester) async {
+      await openHome(tester);
+      // Tanpa drag: tinggi kartu alami 178. Drag vertikal mengubah
+      // tinggi terukur kartu di harness ini, jadi asersi tinggi
+      // dilakukan sebelum scroll.
+      final bar = tester.widget<LinearProgressIndicator>(
+        find.descendant(
+          of: find.byKey(const Key('product-p1')),
+          matching: find.byType(LinearProgressIndicator),
+        ),
+      );
+      expect(bar.minHeight, 4);
+      expect(tester.getRect(find.byKey(const Key('product-p1'))).height, 178.0);
+      expect(tester.getRect(find.byKey(const Key('product-p1'))).width, 108.0);
+    },
+  );
 }

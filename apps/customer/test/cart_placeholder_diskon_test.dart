@@ -50,8 +50,8 @@ void main() {
     test('persen dan hemat dihitung dari harga asli placeholder', () {
       expect(placeholderDiskonUntuk(_bimoli)?.persenDiskon(33900), 14);
       expect(placeholderDiskonUntuk(_bimoli)?.hematPerItem(33900), 5600);
-      expect(placeholderDiskonUntuk(_ultra)?.persenDiskon(17500), 13);
-      expect(placeholderDiskonUntuk(_indomie)?.persenDiskon(16200), 10);
+      expect(placeholderDiskonUntuk(_ultra)?.persenDiskon(17500), 20);
+      expect(placeholderDiskonUntuk(_indomie)?.persenDiskon(16200), 17);
     });
 
     test('produk tanpa placeholder tidak punya diskon', () {
@@ -74,8 +74,8 @@ void main() {
         const KeranjangItem(produk: _ultra, qty: 1, dipilih: true),
         const KeranjangItem(produk: _indomie, qty: 1, dipilih: false),
       ];
-      // 5600 x 2 + 2500 = 13700; Indomie tidak dipilih, tidak dihitung.
-      expect(totalHematPlaceholder(items), 13700);
+      // 5600 x 2 + 4400 = 15600; Indomie tidak dipilih, tidak dihitung.
+      expect(totalHematPlaceholder(items), 15600);
     });
   });
 
@@ -133,10 +133,10 @@ void main() {
       await pumpCart(tester);
       expect(find.text('-14%'), findsOneWidget);
       expect(find.text('Rp 39.500'), findsOneWidget);
-      expect(find.text('-13%'), findsOneWidget);
-      expect(find.text('Rp 20.000'), findsOneWidget);
-      expect(find.text('-10%'), findsOneWidget);
-      expect(find.text('Rp 18.000'), findsOneWidget);
+      expect(find.text('-20%'), findsOneWidget);
+      expect(find.text('Rp 21.900'), findsOneWidget);
+      expect(find.text('-17%'), findsOneWidget);
+      expect(find.text('Rp 19.500'), findsOneWidget);
       // Harga coret benar-benar dicoret, bukan teks harga biasa.
       final coret = tester.widget<Text>(find.text('Rp 39.500'));
       expect(coret.style?.decoration, TextDecoration.lineThrough);
@@ -146,9 +146,9 @@ void main() {
       tester,
     ) async {
       await pumpCart(tester);
-      // 5600 x 2 + 2500 + 1800 = 15500.
+      // 5600 x 2 + 4400 + 3300 = 18900.
       expect(
-        find.text('Total kamu hemat Rp 15.500 di pesanan ini!'),
+        find.text('Total kamu hemat Rp 18.900 di pesanan ini!'),
         findsOneWidget,
       );
       expect(find.byKey(const Key('cart-savings-banner')), findsOneWidget);
@@ -159,9 +159,9 @@ void main() {
       await tester.tap(find.byKey(const Key('cart-check-p3')));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
-      // Bimoli keluar dari hitungan: 2500 + 1800 = 4300.
+      // Bimoli keluar dari hitungan: 4400 + 3300 = 7700.
       expect(
-        find.text('Total kamu hemat Rp 4.300 di pesanan ini!'),
+        find.text('Total kamu hemat Rp 7.700 di pesanan ini!'),
         findsOneWidget,
       );
     });

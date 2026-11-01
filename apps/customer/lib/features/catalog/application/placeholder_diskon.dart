@@ -33,10 +33,10 @@ class PlaceholderDiskon {
 const Map<String, PlaceholderDiskon> placeholderDiskonPerProduk = {
   // Harga jual 33900, harga asli placeholder 39500 -> -14%.
   'p3': PlaceholderDiskon(hargaAsli: 39500),
-  // Harga jual 17500, harga asli placeholder 20000 -> -13%.
-  'p1': PlaceholderDiskon(hargaAsli: 20000),
-  // Harga jual 16200, harga asli placeholder 18000 -> -10%.
-  'p2': PlaceholderDiskon(hargaAsli: 18000),
+  // Harga jual 17500, harga asli placeholder 21900 -> -20% (nilai desain referensi; tetap PLACEHOLDER).
+  'p1': PlaceholderDiskon(hargaAsli: 21900),
+  // Harga jual 16200, harga asli placeholder 19500 -> -17% (nilai desain referensi; tetap PLACEHOLDER).
+  'p2': PlaceholderDiskon(hargaAsli: 19500),
 };
 
 PlaceholderDiskon? placeholderDiskonUntuk(Produk produk) =>

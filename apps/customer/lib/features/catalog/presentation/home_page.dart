@@ -309,9 +309,11 @@ class _HomePageState extends ConsumerState<HomePage> {
             else
               SizedBox(
                 // Tinggi baris = tinggi kartu 178 + padding vertikal
-                // list 6+6. Kartu dipendekkan dari 232 (referensi
-                // diukur ~175): foto 92->70, tombol 34->24, celah
-                // info dirapatkan, hati 18->14, bilah 3->4.
+                // list 6+6. Kartu disamakan ke referensi (diukur
+                // programatis ~175±4, lebar ~108): lebar 100->108,
+                // celah antar kartu 12->10, foto 92->70, tombol
+                // 34->23, celah info dirapatkan, hati 18->14
+                // (lingkaran 22->24), bilah 3->4.
                 height:
                     190 + (MediaQuery.textScalerOf(context).scale(100) - 100),
                 child: NotificationListener<ScrollNotification>(
@@ -327,7 +329,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     itemCount:
                         products.items.length +
                         (products.memuatLagi || products.pesan != null ? 1 : 0),
-                    separatorBuilder: (_, _) => const SizedBox(width: 12),
+                    separatorBuilder: (_, _) => const SizedBox(width: 10),
                     itemBuilder: (context, index) =>
                         index == products.items.length
                         ? SizedBox(
