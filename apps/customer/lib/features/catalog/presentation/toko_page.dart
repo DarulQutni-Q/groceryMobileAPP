@@ -13,13 +13,20 @@ import 'catalog_page.dart';
 /// berperilaku persis seperti di katalog. Hanya field yang benar-benar
 /// dikembalikan TokoDetail yang ditampilkan; field kosong disembunyikan,
 /// tidak ada rating, pengikut, atau foto buatan.
-class TokoPage extends ConsumerWidget {
+class TokoPage extends ConsumerStatefulWidget {
   const TokoPage(this.tokoId, {super.key});
   final String tokoId;
+  @override
+  ConsumerState<TokoPage> createState() => _TokoPageState();
+}
+
+class _TokoPageState extends ConsumerState<TokoPage> {
+  /// Kategori terpilih; null = Semua.
+  String? _kategori;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final toko = ref.watch(detailTokoProvider(tokoId));
+  Widget build(BuildContext context) {
+    final toko = ref.watch(detailTokoProvider(widget.tokoId));
     return toko.when(
       loading: () => const Scaffold(
         body: Column(
@@ -47,7 +54,7 @@ class TokoPage extends ConsumerWidget {
                       TextButton(
                         key: const Key('toko-retry'),
                         onPressed: () =>
-                            ref.invalidate(detailTokoProvider(tokoId)),
+                            ref.invalidate(detailTokoProvider(widget.tokoId)),
                         child: const Text('Coba lagi'),
                       ),
                     ],
@@ -60,6 +67,18 @@ class TokoPage extends ConsumerWidget {
       ),
       data: (value) {
         final produk = value.produk ?? const <Produk>[];
+        // Kategori asli toko ini saja, urutan kemunculan pertama;
+        // tidak ada kategori karangan. Kosong berarti tidak ada
+        // yang bisa difilter, jadi baris chip disembunyikan.
+        final kategori = <String>[];
+        for (final p in produk) {
+          if (p.kategori.isNotEmpty && !kategori.contains(p.kategori)) {
+            kategori.add(p.kategori);
+          }
+        }
+        final tampil = _kategori == null
+            ? produk
+            : produk.where((p) => p.kategori == _kategori).toList();
         return Scaffold(
           body: Column(
             children: [
@@ -160,7 +179,7 @@ class TokoPage extends ConsumerWidget {
                             ),
                             const Spacer(),
                             Text(
-                              '${produk.length} produk',
+                              '${tampil.length} produk',
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: textGrey,
@@ -170,7 +189,42 @@ class TokoPage extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    if (produk.isEmpty)
+                    // Chip kategori dengan pola yang sama seperti
+                    // CatalogPage (FilterChip, font 11, scroll
+                    // horizontal); hanya kategori yang benar-benar
+                    // ada di produk toko ini, plus "Semua".
+                    if (kategori.isNotEmpty)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                for (final k in <String?>[null, ...kategori])
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 6),
+                                    child: FilterChip(
+                                      key: Key(
+                                        k == null
+                                            ? 'toko-category-all'
+                                            : 'toko-category-$k',
+                                      ),
+                                      label: Text(
+                                        k ?? 'Semua',
+                                        style: const TextStyle(fontSize: 11),
+                                      ),
+                                      selected: _kategori == k,
+                                      onSelected: (_) =>
+                                          setState(() => _kategori = k),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (tampil.isEmpty)
                       const SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.all(24),
@@ -188,20 +242,26 @@ class TokoPage extends ConsumerWidget {
                       SliverPadding(
                         padding: const EdgeInsets.all(16),
                         sliver: SliverGrid.builder(
-                          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 190,
-                            mainAxisExtent:
-                                260 +
-                                (MediaQuery.textScalerOf(
-                                      context,
-                                    ).scale(100) -
-                                    100),
-                            mainAxisSpacing: 12,
-                            crossAxisSpacing: 12,
+                          gridDelegate:
+                              SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 190,
+                                mainAxisExtent:
+                                    260 +
+                                    (MediaQuery.textScalerOf(context)
+                                            .scale(100) -
+                                        100),
+                                mainAxisSpacing: 12,
+                                crossAxisSpacing: 12,
+                              ),
+                          itemCount: tampil.length,
+                          itemBuilder: (_, index) => ProductCard(
+                            tampil[index],
+                            // Foto toko sedikit lebih besar dari katalog
+                            // (88 → 110) dan foto asli mengisi area
+                            // dengan cover; placeholder tetap sama.
+                            tinggiFoto: 110,
+                            fitFoto: BoxFit.cover,
                           ),
-                          itemCount: produk.length,
-                          itemBuilder: (_, index) =>
-                              ProductCard(produk[index]),
                         ),
                       ),
                   ],

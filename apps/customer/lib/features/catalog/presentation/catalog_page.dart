@@ -11,7 +11,13 @@ import 'product_page.dart';
 /// Kartu produk + halaman katalog. Dipisah dari home_page.dart supaya
 /// halaman lain (mis. Promo) bisa membuka katalog tanpa import cycle.
 class ProductCard extends ConsumerStatefulWidget {
-  const ProductCard(this.produk, {super.key, this.home = false});
+  const ProductCard(
+    this.produk, {
+    super.key,
+    this.home = false,
+    this.tinggiFoto,
+    this.fitFoto,
+  });
   final Produk produk;
 
   /// Varian beranda sesuai referensi: badge diskon + harga coret
@@ -22,7 +28,14 @@ class ProductCard extends ConsumerStatefulWidget {
   /// Tinggi kartu 178, diukur dari referensi secara programatis:
   /// kartu referensi atas 620–bawah ~808 pada lebar layar foto 432px
   /// → ~175 logical pada lebar 390. Foto 70, tombol 24, hati 14.
+  ///
+  /// tinggiFoto/fitFoto hanya di-override halaman toko (110 dan
+  /// cover); default null mempertahankan 70 beranda / 88 katalog
+  /// dan fit contain, jadi piksel beranda dan CatalogPage tidak
+  /// berubah.
   final bool home;
+  final double? tinggiFoto;
+  final BoxFit? fitFoto;
   @override
   ConsumerState<ProductCard> createState() => _ProductCardState();
 }
@@ -57,9 +70,12 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               Stack(
                 children: [
                   SizedBox(
-                    height: home ? 70 : 88,
+                    height: widget.tinggiFoto ?? (home ? 70 : 88),
                     width: double.infinity,
-                    child: FotoProduk(produk),
+                    child: FotoProduk(
+                      produk,
+                      fit: widget.fitFoto ?? BoxFit.contain,
+                    ),
                   ),
                   if (home && persenDiskon > 0)
                     Positioned(
