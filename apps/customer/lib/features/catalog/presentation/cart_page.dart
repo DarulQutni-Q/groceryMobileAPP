@@ -9,6 +9,7 @@ import '../../checkout/presentation/alamat_page.dart';
 import '../../checkout/presentation/checkout_page.dart';
 import 'promo_page.dart';
 import '../application/produk_provider.dart';
+import 'toko_page.dart';
 import '../application/placeholder_diskon.dart';
 import 'catalog_widgets.dart';
 
@@ -143,11 +144,21 @@ class CartPage extends ConsumerWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            'Dikirim dari ${value.nama}',
-                                            style: const TextStyle(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w800,
+                                          InkWell(
+                                            key: const Key('cart-store-name'),
+                                            onTap: () => Navigator.push<void>(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) =>
+                                                    TokoPage(storeId!),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              'Dikirim dari ${value.nama}',
+                                              style: const TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w800,
+                                              ),
                                             ),
                                           ),
                                           const SizedBox(height: 3),

@@ -8,6 +8,7 @@ import '../../checkout/application/checkout_provider.dart';
 import '../application/produk_provider.dart';
 import 'cart_page.dart';
 import 'catalog_page.dart';
+import 'toko_page.dart';
 import 'notifications_page.dart';
 import 'pesanan_page.dart';
 import 'promo_page.dart';
@@ -35,6 +36,68 @@ class _HomePageState extends ConsumerState<HomePage> {
   void dispose() {
     search.dispose();
     super.dispose();
+  }
+
+  /// Pemilih toko dari GET /toko (tokoProvider yang sama dengan header).
+  /// Daftar memakai ListTile standar seperti menu lain di app; tap toko
+  /// menutup sheet lalu membuka TokoPage toko itu.
+  void _pilihToko(BuildContext context, List<Toko> stores) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(
+                'Pilih Toko',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+              ),
+            ),
+            if (stores.isEmpty)
+              const Padding(
+                padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: Text('Belum ada toko buka'),
+              )
+            else
+              for (final store in stores)
+                ListTile(
+                  key: Key('store-pick-${store.id}'),
+                  leading: const CircleAvatar(
+                    radius: 17,
+                    backgroundColor: Color(0xFFE9F4DD),
+                    child: Icon(
+                      Icons.house_outlined,
+                      size: 20,
+                      color: gardenInk,
+                    ),
+                  ),
+                  title: Text(
+                    store.nama,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  subtitle: Text(store.alamat),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    size: 20,
+                    color: textGrey,
+                  ),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => TokoPage(store.id),
+                      ),
+                    );
+                  },
+                ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -78,21 +141,38 @@ class _HomePageState extends ConsumerState<HomePage> {
                         data: (value) => Row(
                           children: [
                             Expanded(
-                              child: Text(
-                                value.data.firstOrNull?.nama ??
-                                    'Belum ada toko buka',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 16,
+                              child: InkWell(
+                                key: const Key('store-name'),
+                                onTap: value.data.firstOrNull == null
+                                    ? null
+                                    : () => Navigator.push<void>(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => TokoPage(
+                                            value.data.first.id,
+                                          ),
+                                        ),
+                                      ),
+                                child: Text(
+                                  value.data.firstOrNull?.nama ??
+                                      'Belum ada toko buka',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
                             ),
-                            const Icon(
-                              Icons.keyboard_arrow_down,
-                              size: 18,
-                              color: gardenInk,
+                            GestureDetector(
+                              key: const Key('store-picker'),
+                              onTap: () => _pilihToko(context, value.data),
+                              child: const Icon(
+                                Icons.keyboard_arrow_down,
+                                size: 18,
+                                color: gardenInk,
+                              ),
                             ),
                           ],
                         ),

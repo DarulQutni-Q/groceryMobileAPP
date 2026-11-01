@@ -1,3 +1,5 @@
+import 'produk.dart';
+
 class Toko {
   const Toko({
     required this.id,
@@ -13,6 +15,7 @@ class Toko {
     this.rekeningBank,
     this.jamBuka,
     this.jamTutup,
+    this.produk,
   });
 
   final String id, nama, alamat, telepon, status;
@@ -20,6 +23,10 @@ class Toko {
   final String? jamBuka, jamTutup;
   final List<String> kategori, metodeKirim;
   final int radiusKm;
+
+  /// Produk toko, hanya ada pada respons GET /toko/{id} (TokoDetail).
+  /// Daftar toko (/toko) tidak mengembalikan field ini.
+  final List<Produk>? produk;
 
   factory Toko.fromJson(Map<String, dynamic> json) => Toko(
     id: json['id'] as String,
@@ -35,6 +42,13 @@ class Toko {
     radiusKm: json['radius_km'] as int,
     status: json['status'] as String,
     metodeKirim: List<String>.from(json['metode_kirim'] as List),
+    produk: json['produk'] == null
+        ? null
+        : List<Produk>.unmodifiable(
+            (json['produk'] as List).map(
+              (item) => Produk.fromJson(item as Map<String, dynamic>),
+            ),
+          ),
   );
 }
 
