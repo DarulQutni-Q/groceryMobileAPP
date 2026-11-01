@@ -130,7 +130,7 @@ void main() {
     final picker = find.byKey(const Key('store-picker'));
     await tester.ensureVisible(picker);
     await tester.tap(picker);
-    // Animasi sheet (~300ms) diselesaikan dengan pump manual, bukan
+    // Animasi dialog (~300ms) diselesaikan dengan pump manual, bukan
     // pumpAndSettle (tidak pernah settle karena Timer.periodic countdown).
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
@@ -146,5 +146,38 @@ void main() {
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/picker_toko.png'),
     );
+  });
+
+  testWidgets('dialog pilih toko di tengah dan lega', (tester) async {
+    await openShell(tester);
+    final picker = find.byKey(const Key('store-picker'));
+    await tester.ensureVisible(picker);
+    await tester.tap(picker);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byType(Dialog), findsOneWidget);
+    // Kotak Dialog luar memenuhi layar; kartu yang terlihat adalah
+    // Material di dalamnya, jadi itulah yang diukur.
+    final dialogRect = tester.getRect(
+      find
+          .descendant(
+            of: find.byType(Dialog),
+            matching: find.byType(Material),
+          )
+          .first,
+    );
+    final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
+    // Tengah layar, bukan menempel bawah seperti bottom sheet.
+    expect(dialogRect.center.dx, closeTo(screen.width / 2, 8));
+    expect(
+      dialogRect.center.dy,
+      closeTo(screen.height / 2, screen.height * 0.15),
+    );
+    // Lega: lebar = layar - 48 (inset 24 kiri-kanan), tinggi maks 80%.
+    expect(dialogRect.width, closeTo(screen.width - 48, 8));
+    expect(dialogRect.height, lessThanOrEqualTo(screen.height * 0.8 + 1));
+    expect(dialogRect.top, greaterThan(24));
+    expect(dialogRect.bottom, lessThan(screen.height - 24));
   });
 }

@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gardenmart_customer/features/catalog/application/jarak_toko.dart';
 import 'package:gardenmart_customer/features/catalog/application/produk_provider.dart';
-import 'package:gardenmart_customer/features/catalog/presentation/pilih_toko_sheet.dart';
+import 'package:gardenmart_customer/features/catalog/presentation/pilih_toko_dialog.dart';
 import 'package:gardenmart_customer/features/catalog/presentation/toko_page.dart';
 import 'package:gardenmart_customer/features/checkout/application/checkout_provider.dart';
 import 'package:grocery_shared/shared.dart';
@@ -133,12 +133,13 @@ void main() {
               body: Builder(
                 builder: (context) => TextButton(
                   key: const Key('open-picker'),
-                  onPressed: () => showModalBottomSheet<void>(
+                  onPressed: () => showDialog<void>(
                     context: context,
-                    isScrollControlled: true,
-                    builder: (_) => PilihTokoSheet(
-                      stores: stores,
-                      onPilih: onPilih ?? (store) => picked.add(store),
+                    builder: (_) => Dialog(
+                      child: PilihTokoDialog(
+                        stores: stores,
+                        onPilih: onPilih ?? (store) => picked.add(store),
+                      ),
                     ),
                   ),
                   child: const Text('Buka picker'),
@@ -376,20 +377,21 @@ void main() {
               body: Builder(
                 builder: (context) => TextButton(
                   key: const Key('open-picker'),
-                  onPressed: () => showModalBottomSheet<void>(
+                  onPressed: () => showDialog<void>(
                     context: context,
-                    isScrollControlled: true,
-                    builder: (sheetContext) => PilihTokoSheet(
-                      stores: [near],
-                      onPilih: (store) {
-                        Navigator.pop(sheetContext);
-                        Navigator.push<void>(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => TokoPage(store.id),
-                          ),
-                        );
-                      },
+                    builder: (dialogContext) => Dialog(
+                      child: PilihTokoDialog(
+                        stores: [near],
+                        onPilih: (store) {
+                          Navigator.pop(dialogContext);
+                          Navigator.push<void>(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => TokoPage(store.id),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                   child: const Text('Buka picker'),

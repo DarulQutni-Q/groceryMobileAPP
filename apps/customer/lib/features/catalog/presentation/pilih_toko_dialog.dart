@@ -6,7 +6,12 @@ import '../../../core/theme.dart';
 import '../../checkout/application/checkout_provider.dart';
 import '../application/jarak_toko.dart';
 
-/// Bottom sheet "Pilih Toko": daftar toko buka + kolom cari + gating radius.
+/// Dialog tengah "Pilih Toko": daftar toko buka + kolom cari + gating radius.
+///
+/// Disajikan sebagai Dialog di tengah layar (bukan bottom sheet):
+/// lebar = layar - 48, tinggi maks 80% layar, daftar di dalamnya
+/// bisa di-scroll. Semua perilaku (cari, gating radius, navigasi)
+/// sama persis seperti sebelumnya; yang berubah hanya wadahnya.
 ///
 /// - Cari: ketik nama/alamat (case-insensitive contains). Kosongkan =
 ///   kembali ke daftar penuh. Tidak ada yang cocok = teks jujur, bukan
@@ -23,21 +28,21 @@ import '../application/jarak_toko.dart';
 ///   selalu tidak diketahui sampai backend menambahkannya. Field
 ///   latitude/longitude di model Dart sudah disiapkan (nullable) supaya
 ///   gating langsung aktif begitu backend mengirimkannya, tanpa ubah UI.
-class PilihTokoSheet extends ConsumerStatefulWidget {
-  const PilihTokoSheet({super.key, required this.stores, required this.onPilih});
+class PilihTokoDialog extends ConsumerStatefulWidget {
+  const PilihTokoDialog({super.key, required this.stores, required this.onPilih});
 
   /// Daftar toko buka dari GET /toko (sudah difilter status buka).
   final List<Toko> stores;
 
   /// Dipanggil saat toko yang BOLEH dipilih diketuk. Pemanggil yang
-  /// menutup sheet dan membuka TokoPage (butuh context luar sheet).
+  /// menutup dialog dan membuka TokoPage (butuh context luar dialog).
   final ValueChanged<Toko> onPilih;
 
   @override
-  ConsumerState<PilihTokoSheet> createState() => _PilihTokoSheetState();
+  ConsumerState<PilihTokoDialog> createState() => _PilihTokoDialogState();
 }
 
-class _PilihTokoSheetState extends ConsumerState<PilihTokoSheet> {
+class _PilihTokoDialogState extends ConsumerState<PilihTokoDialog> {
   final _search = TextEditingController();
 
   @override
@@ -165,12 +170,7 @@ class _PilihTokoSheetState extends ConsumerState<PilihTokoSheet> {
                   store.alamat.toLowerCase().contains(query),
             )
             .toList();
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: Column(
+    return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -239,8 +239,6 @@ class _PilihTokoSheetState extends ConsumerState<PilihTokoSheet> {
                 ),
               ),
           ],
-        ),
-      ),
-    );
+        );
   }
 }

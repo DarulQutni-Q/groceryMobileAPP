@@ -9,7 +9,7 @@ import '../application/produk_provider.dart';
 import 'cart_page.dart';
 import 'catalog_page.dart';
 import 'toko_page.dart';
-import 'pilih_toko_sheet.dart';
+import 'pilih_toko_dialog.dart';
 import 'notifications_page.dart';
 import 'pesanan_page.dart';
 import 'promo_page.dart';
@@ -40,23 +40,40 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   /// Pemilih toko dari GET /toko (tokoProvider yang sama dengan header).
-  /// Sheet-nya di PilihTokoSheet: kolom cari + gating radius.
+  /// Dialog tengahnya di PilihTokoDialog: kolom cari + gating radius.
+  /// Ukuran murah hati: lebar = layar - 48, tinggi maks 80% layar.
   void _pilihToko(BuildContext context, List<Toko> stores) {
-    showModalBottomSheet<void>(
+    showDialog<void>(
       context: context,
-      isScrollControlled: true,
-      builder: (sheetContext) => PilihTokoSheet(
-        stores: stores,
-        onPilih: (store) {
-          Navigator.pop(sheetContext);
-          Navigator.push<void>(
-            context,
-            MaterialPageRoute(
-              builder: (_) => TokoPage(store.id),
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        final size = MediaQuery.of(dialogContext).size;
+        return Dialog(
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: size.width - 48,
+              maxHeight: size.height * 0.8,
             ),
-          );
-        },
-      ),
+            child: PilihTokoDialog(
+              stores: stores,
+              onPilih: (store) {
+                Navigator.pop(dialogContext);
+                Navigator.push<void>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TokoPage(store.id),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
