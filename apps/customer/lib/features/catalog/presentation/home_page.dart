@@ -308,11 +308,12 @@ class _HomePageState extends ConsumerState<HomePage> {
               )
             else
               SizedBox(
-                // Tinggi baris = tinggi kartu 232 + padding vertikal
-                // list 6+6. Kartu dipendekkan dari 276: gambar 110->92,
-                // celah info dirapatkan, bilah stok ditipiskan.
+                // Tinggi baris = tinggi kartu 178 + padding vertikal
+                // list 6+6. Kartu dipendekkan dari 232 (referensi
+                // diukur ~175): foto 92->70, tombol 34->24, celah
+                // info dirapatkan, hati 18->14, bilah 3->4.
                 height:
-                    244 + (MediaQuery.textScalerOf(context).scale(100) - 100),
+                    190 + (MediaQuery.textScalerOf(context).scale(100) - 100),
                 child: NotificationListener<ScrollNotification>(
                   onNotification: (notification) {
                     if (notification.metrics.extentAfter < 180) {

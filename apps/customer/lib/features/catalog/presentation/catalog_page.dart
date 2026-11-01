@@ -18,6 +18,10 @@ class ProductCard extends ConsumerStatefulWidget {
   /// (placeholder, lihat placeholder_diskon.dart), bilah stok tipis,
   /// "Sisa N pcs", dan tombol + Keranjang (fungsional, sama seperti
   /// katalog). Varian default (katalog) tidak berubah.
+  ///
+  /// Tinggi kartu 178, diukur dari referensi secara programatis:
+  /// kartu referensi atas 620–bawah ~808 pada lebar layar foto 432px
+  /// → ~175 logical pada lebar 390. Foto 70, tombol 24, hati 14.
   final bool home;
   @override
   ConsumerState<ProductCard> createState() => _ProductCardState();
@@ -53,7 +57,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               Stack(
                 children: [
                   SizedBox(
-                    height: home ? 92 : 88,
+                    height: home ? 70 : 88,
                     width: double.infinity,
                     child: FotoProduk(produk),
                   ),
@@ -87,14 +91,14 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                     child: GestureDetector(
                       onTap: () => setState(() => favorite = !favorite),
                       child: Container(
-                        padding: EdgeInsets.all(home ? 6 : 4),
+                        padding: EdgeInsets.all(home ? 4 : 4),
                         decoration: const BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           favorite ? Icons.favorite : Icons.favorite_border,
-                          size: home ? 18 : 16,
+                          size: home ? 14 : 16,
                           color: favorite ? Colors.red.shade600 : gardenInk,
                         ),
                       ),
@@ -105,14 +109,17 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               Expanded(
                 child: Padding(
                   padding: home
-                      ? const EdgeInsets.fromLTRB(8, 4, 8, 2)
+                      ? const EdgeInsets.fromLTRB(8, 2, 8, 0)
                       : const EdgeInsets.fromLTRB(9, 6, 9, 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         produk.nama,
-                        maxLines: 2,
+                        // Varian beranda: 1 baris saja — kartu pendek
+                        // (178) tidak muat untuk nama 2 baris; katalog
+                        // tetap 2 baris.
+                        maxLines: home ? 1 : 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: home ? 11 : 11,
@@ -120,7 +127,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                           height: 1.1,
                         ),
                       ),
-                      SizedBox(height: home ? 3 : 4),
+                      SizedBox(height: home ? 2 : 4),
                       Text(
                         '1 ${produk.satuan}',
                         maxLines: 1,
@@ -131,7 +138,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                           color: const Color(0xFF78906F),
                         ),
                       ),
-                      SizedBox(height: home ? 2 : 3),
+                      SizedBox(height: home ? 1 : 3),
                       FittedBox(
                         fit: BoxFit.scaleDown,
                         alignment: Alignment.centerLeft,
@@ -140,13 +147,13 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                           maxLines: 1,
                           style: TextStyle(
                             fontSize: home ? 16 : 14,
-                            height: 1.2,
+                            height: home ? 1.1 : 1.2,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
                       if (home && diskon != null) ...[
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 1),
                         Text(
                           rupiah(diskon.hargaAsli),
                           maxLines: 1,
@@ -173,10 +180,10 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                             valueColor: const AlwaysStoppedAnimation<Color>(
                               Color(0xFFDD3F47),
                             ),
-                            minHeight: 3,
+                            minHeight: 4,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 2),
                         Text(
                           produk.stok == 0
                               ? 'Habis'
@@ -212,7 +219,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               ),
               Padding(
                 padding: home
-                    ? const EdgeInsets.fromLTRB(8, 2, 8, 6)
+                    ? const EdgeInsets.fromLTRB(8, 0, 8, 4)
                     : const EdgeInsets.fromLTRB(8, 4, 8, 4),
                 child: SizedBox(
                   width: double.infinity,
@@ -223,7 +230,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                     style: FilledButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: gardenInk,
-                      minimumSize: Size(0, home ? 34 : 44),
+                      minimumSize: Size(0, home ? 24 : 44),
                       padding: EdgeInsets.zero,
                       // Varian beranda: tombol 34 tanpa padding target
                       // sentuh 48 bawaan, supaya kartu pendek tetap muat
