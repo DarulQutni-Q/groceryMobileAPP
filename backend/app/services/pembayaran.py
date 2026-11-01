@@ -7,6 +7,7 @@ from app.models.pembayaran import Pembayaran
 from app.models.pesanan import Pesanan
 from app.models.produk import Produk
 from app.models.user import now_utc
+from app.schemas.pembayaran import InvoiceEvent
 
 
 def release_stock(db, order, payment):
@@ -67,6 +68,26 @@ def apply_invoice(db, event):
         release_stock(db, order, payment)
     db.commit()
     return payment
+
+
+def reconcile_with_xendit(db, payment, gateway):
+    """Samakan status pembayaran tertunda dengan invoice Xendit.
+
+    Dipakai saat webhook tidak sampai (mis. URL webhook di dashboard belum
+    diarahkan ke backend): status check tetap bisa menemukan pembayaran yang
+    sudah paid di Xendit. Best-effort: gagal apa pun -> status tersimpan
+    dikembalikan, jadi baca status tidak pernah gagal karena Xendit.
+    """
+    if payment.status != "pending" or payment.metode == "cod":
+        return payment
+    pid = payment.id
+    try:
+        invoice = gateway(payment.metode).find_invoice(payment.external_id)
+        event = InvoiceEvent.model_validate(invoice)
+        return apply_invoice(db, event)
+    except Exception:
+        db.rollback()
+        return db.get(Pembayaran, pid) or payment
 
 
 def record_orphan_invoice(db, event):

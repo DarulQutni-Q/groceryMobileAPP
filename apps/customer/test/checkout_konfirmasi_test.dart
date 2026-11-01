@@ -84,11 +84,13 @@ Future<AuthFixture> bukaKonfirmasi(
   WidgetTester tester, {
   bool pakaiTombol = false,
   Map<String, Object> prefsAwal = const {},
+  Future<void> Function(AuthFixture fixture)? seed,
 }) async {
   final fixture = AuthFixture()..installStorage();
   // Halaman checkout kini membaca preferensi metode dari
   // SharedPreferences; tanpa mock, load() menggantung di tes.
   SharedPreferences.setMockInitialValues(prefsAwal);
+  if (seed != null) await seed(fixture);
   final original = fixture.api.client.dio.httpClientAdapter as CustomerAdapter;
   fixture.api.client.dio.httpClientAdapter = CustomerAdapter((request) async {
     if (request.path == '/alamat') {

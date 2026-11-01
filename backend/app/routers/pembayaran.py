@@ -15,7 +15,7 @@ from app.models.user import User
 from app.schemas.pembayaran import CheckoutInput, CheckoutResponse, InvoiceEvent, PembayaranResponse
 from app.services.alamat import get_customer
 from app.services.checkout import perform_checkout, quote
-from app.services.pembayaran import apply_invoice
+from app.services.pembayaran import apply_invoice, reconcile_with_xendit
 from app.services.xendit import get_gateway
 
 router = APIRouter(tags=["Pembayaran"])
@@ -58,11 +58,16 @@ def webhook(event: InvoiceEvent, db: Session = Depends(get_db)):
 
 
 @router.get("/pembayaran/{payment_id}/status", response_model=PembayaranResponse)
-def status(payment_id: UUID, user: User = Depends(get_customer), db: Session = Depends(get_db)):
+def status(
+    payment_id: UUID,
+    user: User = Depends(get_customer),
+    db: Session = Depends(get_db),
+    gateway=Depends(get_gateway),
+):
     payment = db.get(Pembayaran, payment_id)
     if payment is None:
         raise HTTPException(404, "Pembayaran tidak ditemukan")
     owner = db.scalar(select(Pesanan.customer_id).where(Pesanan.id == payment.pesanan_id))
     if owner != user.id:
         raise HTTPException(403, "Pembayaran bukan milik akun ini")
-    return payment
+    return reconcile_with_xendit(db, payment, gateway)

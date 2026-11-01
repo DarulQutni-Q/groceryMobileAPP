@@ -246,6 +246,47 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     await load();
   }
 
+  /// Konfirmasi keluar dari checkout tersimpan. True kalau pengguna
+  /// memilih mulai ulang.
+  Future<bool> _confirmRestart() async {
+    final restart = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Checkout tersimpan'),
+        content: const Text(
+          'Mengubah ini akan menghapus checkout tersimpan dan memulai '
+          'checkout baru. Kalau kamu sudah bayar di Xendit, batalkan dulu '
+          'dan lanjutkan pembayaran, lalu tekan Periksa Status.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Batal'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Hapus & Ubah'),
+          ),
+        ],
+      ),
+    );
+    return restart == true;
+  }
+
+  /// Jalankan edit; kalau ada session tersimpan, minta konfirmasi mulai
+  /// ulang dulu supaya tap tidak pernah diam saja.
+  Future<void> _editOrRestart(Future<void> Function() edit) async {
+    if (busy) return;
+    if (session == null) {
+      await edit();
+      return;
+    }
+    if (!await _confirmRestart() || !mounted) return;
+    await reset();
+    if (!mounted) return;
+    await edit();
+  }
+
 
   bool _showAll = false;
 
@@ -431,7 +472,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   Widget _addressCard() {
     final a = address;
     return _card(
-      onTap: busy || session != null ? null : chooseAddress,
+      onTap: busy ? null : () => _editOrRestart(chooseAddress),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -500,7 +541,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   }
 
   Widget _shippingCard() => _card(
-    onTap: busy || session != null ? null : _chooseShipping,
+    onTap: busy ? null : () => _editOrRestart(_chooseShipping),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -689,7 +730,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
               Expanded(
                 child: InkWell(
                   key: const Key('checkout-note-strip'),
-                  onTap: busy || session != null ? null : _editNote,
+                  onTap: busy ? null : () => _editOrRestart(_editNote),
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
@@ -754,7 +795,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     final hematVoucher = _voucherDiskon + _voucherOngkirDiskon;
     return _card(
       key: const Key('choose-voucher'),
-      onTap: busy || session != null ? null : _chooseVoucher,
+      onTap: busy ? null : () => _editOrRestart(_chooseVoucher),
       child: Row(
         children: [
           const Icon(
@@ -803,18 +844,18 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     );
   }
 
+  Future<void> _choosePayment() async {
+    final value = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MetodeBayarPage(selected: method),
+      ),
+    );
+    if (mounted && value != null) setState(() => method = value);
+  }
+
   Widget _paymentCard() => _card(
-    onTap: busy || session != null
-        ? null
-        : () async {
-            final value = await Navigator.push<String>(
-              context,
-              MaterialPageRoute(
-                builder: (_) => MetodeBayarPage(selected: method),
-              ),
-            );
-            if (mounted && value != null) setState(() => method = value);
-          },
+    onTap: busy ? null : () => _editOrRestart(_choosePayment),
     child: Row(
       key: const Key('choose-payment'),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -946,10 +987,22 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                       children: [
                         if (session != null)
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 12),
-                            child: Text(
-                              'Checkout sebelumnya tersimpan. Periksa atau lanjutkan pembayaran yang sama.',
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Checkout sebelumnya tersimpan. Periksa atau lanjutkan pembayaran yang sama.',
+                                ),
+                                TextButton(
+                                  // Mulai ulang tanpa membuka editor: reset saja.
+                                  onPressed: busy
+                                      ? null
+                                      : () => _editOrRestart(() async {}),
+                                  child: const Text('Mulai ulang checkout'),
+                                ),
+                              ],
                             ),
                           ),
                         if (error != null)
