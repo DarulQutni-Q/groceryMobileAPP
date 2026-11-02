@@ -77,21 +77,38 @@ void main() {
   });
 
   test(
-    'default catalog pagination categories and demo promos use existing client',
+    'default catalog pagination categories and real promos use existing client',
     () async {
       final calls = <String>[];
       final dio = Dio(BaseOptions(baseUrl: 'https://api.example.com'));
       dio.httpClientAdapter = TestAdapter((request) async {
         calls.add(request.path);
         if (request.path == '/kategori') return jsonBody(['Beras', 'Mie'], 200);
-        if (request.path == '/promo') {
+        if (request.path == '/promo/aktif') {
           return jsonBody([
             {
-              'id': 'demo',
-              'judul': 'Promo Spesial',
-              'deskripsi': 'Voucher demo',
-              'label_tombol': 'Klaim Semua Voucher',
-              'is_demo': true,
+              'id': 'pr1',
+              'toko_id': 't1',
+              'toko_nama': 'Toko Uji',
+              'produk_id': 'p1',
+              'judul': 'Tebus Beras',
+              'jenis': 'tebus',
+              'harga_promo': 5000,
+              'min_belanja': 0,
+              'aktif': true,
+              'berakhir_at': null,
+              'created_at': '2026-11-02T00:00:00Z',
+              'produk': {
+                'id': 'p1',
+                'toko_id': 't1',
+                'nama': 'Beras',
+                'harga': 15000,
+                'foto_url': null,
+                'satuan': 'kg',
+                'kategori': 'Sembako',
+                'stok': 10,
+                'is_tersedia': true,
+              },
             },
           ], 200);
         }
@@ -109,9 +126,11 @@ void main() {
       expect((await ProdukApi(client).listHalaman()).adaBerikutnya, isFalse);
       expect(await ProdukApi(client).kategori(), ['Beras', 'Mie']);
       final promo = (await PromoApi(client).list()).single;
-      expect(promo.isDemo, isTrue);
-      expect(promo.labelTombol, 'Klaim Semua Voucher');
-      expect(calls, ['/produk', '/kategori', '/promo']);
+      expect(promo.isDemo, isFalse);
+      expect(promo.judul, 'Tebus Beras');
+      expect(promo.deskripsi, 'Beras • Rp 5000 • Toko Uji');
+      expect(promo.labelTombol, 'Lihat Promo');
+      expect(calls, ['/produk', '/kategori', '/promo/aktif']);
     },
   );
 

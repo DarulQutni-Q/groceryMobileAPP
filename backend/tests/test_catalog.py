@@ -138,16 +138,16 @@ def test_public_store_schema_excludes_owner_and_bank_and_paginates_products(cata
     )
 
 
-def test_categories_and_explicit_demo_promos_are_authenticated(catalog):
+def test_categories_and_real_promos_are_authenticated(catalog):
     client, _, _, buyer, _, _, _ = catalog
     result = client.get("/kategori", headers=buyer)
     assert result.status_code == 200
     assert result.json() == ["Beras", "Mie", "Susu"]
-    promos = client.get("/promo", headers=buyer)
-    assert promos.status_code == 200 and promos.json()
-    assert all(p["is_demo"] is True for p in promos.json())
-    assert promos.json()[0]["label_tombol"] == "Klaim Semua Voucher"
-    for path in ["/produk", "/toko", "/kategori", "/promo"]:
+    # Demo promo dihapus (item 6): banner kini dari promo toko aktif,
+    # dan fixture ini tidak membuat promo apa pun, jadi daftarnya kosong.
+    promos = client.get("/promo/aktif", headers=buyer)
+    assert promos.status_code == 200 and promos.json() == []
+    for path in ["/produk", "/toko", "/kategori", "/promo/aktif"]:
         assert client.get(path).status_code == 401
 
 

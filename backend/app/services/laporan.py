@@ -62,7 +62,11 @@ def daily_sales(db, sales, start):
     local_day = (
         func.date(func.timezone("Asia/Jakarta", sales.c.updated_at))
         if db.bind.dialect.name == "postgresql"
-        else func.date(sales.c.updated_at, "+7 hours")
+        # SQLite menghitung tanggal lewat bilangan Julian (float): nilai
+        # 23:59:59.999999 + 7 jam bisa membulat jadi tengah malam berikut.
+        # Potong mikrodetik dulu (substr 19 karakter pertama = detik) supaya
+        # pengelompokan hari tidak pernah meleset satu hari.
+        else func.date(func.substr(sales.c.updated_at, 1, 19), "+7 hours")
     )
     return (
         select(local_day.label("tanggal"), func.sum(sales.c.total).label("harian"))

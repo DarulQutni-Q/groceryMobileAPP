@@ -5,6 +5,11 @@ from app.core.config import Settings
 from app.db.base import Base
 from app.models.alamat import Alamat  # noqa: F401
 from app.models.checkout_attempt import CheckoutAttempt  # noqa: F401
+from app.models.chat import ChatPesan  # noqa: F401
+from app.models.notifikasi import Notifikasi  # noqa: F401
+from app.models.promo import Promo  # noqa: F401
+from app.models.riwayat import RiwayatStatus  # noqa: F401
+from app.models.voucher import Voucher  # noqa: F401
 from app.models.jam_buka import JamBuka
 from app.models.password_reset_otp import PasswordResetOtp  # noqa: F401
 from app.models.pembayaran import Pembayaran  # noqa: F401
@@ -17,6 +22,10 @@ target_metadata = Base.metadata
 assert User.__table__.metadata is target_metadata
 assert all(model.__table__.metadata is target_metadata for model in (Toko, JamBuka, Produk))
 assert all(model.__table__.metadata is target_metadata for model in (Pesanan, PesananItem))
+assert all(
+    model.__table__.metadata is target_metadata
+    for model in (Notifikasi, Voucher, Promo, ChatPesan, RiwayatStatus)
+)
 
 
 def run_migrations():
