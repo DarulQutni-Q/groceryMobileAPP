@@ -158,11 +158,21 @@ await tester.pumpAndSettle();
     expect(find.text('Batalkan pesanan'), findsOneWidget);
   });
 
-  testWidgets('tombol batalkan tidak muncul untuk pesanan diantar', (
+  testWidgets('tombol batalkan juga muncul untuk pesanan diantar', (
     tester,
   ) async {
     final patchCalls = <String>[];
     await _pump(tester, statusAwal: 'diantar', patchCalls: patchCalls);
+    expect(find.text('Batalkan pesanan'), findsOneWidget);
+
+    await tester.tap(find.text('Batalkan pesanan'));
+    await tester.pumpAndSettle();
+    expect(find.text('Batalkan pesanan GM-2001?'), findsOneWidget);
+
+    await tester.tap(find.text('Batalkan'));
+    await tester.pumpAndSettle();
+    expect(patchCalls, ['/pesanan/o-baru/batalkan']);
+    expect(find.text('Pesanan GM-2001 dibatalkan.'), findsOneWidget);
     expect(find.text('Batalkan pesanan'), findsNothing);
   });
 }

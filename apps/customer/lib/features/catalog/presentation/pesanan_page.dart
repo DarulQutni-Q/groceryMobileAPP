@@ -698,7 +698,8 @@ class _TrackingCard extends StatelessWidget {
           if (onBatalkan != null &&
               (order.status == 'baru' ||
                   order.status == 'diproses' ||
-                  order.status == 'dikemas')) ...[
+                  order.status == 'dikemas' ||
+                  order.status == 'diantar')) ...[
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
