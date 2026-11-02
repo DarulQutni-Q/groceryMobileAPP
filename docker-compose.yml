@@ -3,6 +3,11 @@ services:
   db:
     image: postgres:16
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     environment:
       POSTGRES_USER: grocery
       POSTGRES_DB: grocery
@@ -19,6 +24,11 @@ services:
   backend:
     build: ./backend
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     volumes:
       - uploads_data:/srv/uploads
     environment:
