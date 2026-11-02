@@ -465,9 +465,6 @@ void main() {
     );
     expect(find.text('Bahasa lain belum tersedia.'), findsOneWidget);
     await tap(tester, find.text('Tutup'));
-    await tap(tester, find.text('Verifikasi Identitas & KTP'));
-    expect(find.text('Verifikasi Identitas & KTP'), findsWidgets);
-    await tap(tester, find.text('Tutup'));
   });
 
   testWidgets('metode: pilih Mandiri dan simpan tersimpan di prefs', (

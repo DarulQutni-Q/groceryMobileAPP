@@ -9,9 +9,7 @@ import 'ubah_profil_page.dart';
 
 /// Tab Akun: Pengaturan sesuai desain Figma.
 ///
-/// Semua baris berfungsi. KTP belum punya backend verifikasi, jadi
-/// subtitlenya jujur ("Belum tersedia") dan barisnya membuka dialog info
-/// + jalan ke Ubah Profil, bukan klaim verifikasi palsu. Kata sandi
+/// Semua baris berfungsi. Kata sandi
 /// diubah lewat email terdaftar (backend hanya punya endpoint reset
 /// lewat email), jadi subtitlenya menjelaskan jalurnya, bukan tanggal
 /// karangan. Bahasa baru tersedia Bahasa Indonesia dan pilihannya
@@ -85,33 +83,6 @@ class _PengaturanPageState extends State<PengaturanPage> {
         MaterialPageRoute(builder: (_) => const MetodePembayaranPage()),
       );
     }
-  }
-
-  void _showKtpDialog() {
-    showDialog<void>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Verifikasi Identitas & KTP'),
-        content: const Text(
-          'Verifikasi KTP belum tersedia di GardenMart karena belum '
-          'ada layanan verifikasi di backend. Data identitas yang '
-          'tampil di profil bisa diubah lewat Ubah Profil.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _openUbahProfil();
-            },
-            child: const Text('Ubah Profil'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup'),
-          ),
-        ],
-      ),
-    );
   }
 
   void _showBahasaDialog() {
@@ -229,13 +200,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
                       subtitle: 'Nama, No. HP, Email',
                       onTap: _openUbahProfil,
                     ),
-                    const _RowDivider(),
-                    _SettingRow(
-                      icon: Icons.verified_user_outlined,
-                      title: 'Verifikasi Identitas & KTP',
-                      subtitle: 'Belum tersedia',
-                      onTap: _showKtpDialog,
-                    ),
+
                   ],
                 ),
               ),

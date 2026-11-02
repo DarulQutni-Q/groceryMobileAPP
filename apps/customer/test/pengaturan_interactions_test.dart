@@ -111,16 +111,12 @@ void main() {
     expect(find.byType(UbahProfilPage), findsOneWidget);
   });
 
-  testWidgets('pengaturan: KTP jujur, bukan klaim terverifikasi', (
+  testWidgets('pengaturan: baris KTP dihapus, tidak ada placeholder', (
     tester,
   ) async {
     await bukaPengaturan(tester);
-    expect(find.text('Belum tersedia'), findsOneWidget);
-    expect(find.text('Terverifikasi'), findsNothing);
-    await tap(tester, find.text('Verifikasi Identitas & KTP'));
-    expect(find.text('Verifikasi Identitas & KTP'), findsWidgets);
-    await tap(tester, find.text('Tutup'));
-    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.text('Verifikasi Identitas & KTP'), findsNothing);
+    expect(find.text('Belum tersedia'), findsNothing);
   });
 
   testWidgets('pengaturan: ganti kata sandi membuka reset email', (
