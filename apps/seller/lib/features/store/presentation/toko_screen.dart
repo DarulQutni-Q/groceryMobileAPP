@@ -5,6 +5,7 @@ import 'package:grocery_shared/shared.dart';
 import '../../auth/application/auth_provider.dart';
 import '../application/store_provider.dart';
 import 'toko_editor.dart';
+import 'voucher_page.dart';
 import 'hours_editor.dart';
 import 'store_widgets.dart';
 
@@ -128,6 +129,11 @@ class TokoScreen extends ConsumerWidget {
               ],
             ),
           ),
+        ),
+        _menu(
+          'Voucher',
+          Icons.confirmation_number_outlined,
+          () => _open(context, const VoucherPage()),
         ),
         _menu(
           'Keluar',

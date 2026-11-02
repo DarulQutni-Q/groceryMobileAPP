@@ -18,6 +18,7 @@ from app.schemas.pembayaran import CheckoutResponse, InvoiceEvent
 from app.services.alamat import lock_customer, owned_address
 from app.services.fcm import notify_order_owner
 from app.services.notifikasi import catat_pesanan_baru
+from app.services.voucher import terapkan_voucher
 from app.services.xendit import safe_payment_url
 
 
@@ -68,7 +69,23 @@ def quote(db, user, data):
     subtotal = sum(i["harga_snapshot"] * i["qty"] for i in items)
     if subtotal + 1000 > 2147483647:
         raise HTTPException(422, "Total tagihan melebihi batas pembayaran")
-    costs = dict(subtotal=subtotal, diskon=0, ongkir=0, biaya_layanan=1000, total=subtotal + 1000)
+    diskon = 0
+    ongkir = 0
+    voucher_kode = None
+    if data.voucher_kode:
+        voucher, diskon, potongan_ongkir = terapkan_voucher(
+            db, store.id, data.voucher_kode, subtotal, ongkir
+        )
+        ongkir -= potongan_ongkir
+        voucher_kode = voucher.kode
+    costs = dict(
+        subtotal=subtotal,
+        diskon=diskon,
+        ongkir=ongkir,
+        biaya_layanan=1000,
+        total=subtotal - diskon + ongkir + 1000,
+        voucher_kode=voucher_kode,
+    )
     if data.total_dikonfirmasi is not None and data.total_dikonfirmasi != costs["total"]:
         raise HTTPException(409, "Harga berubah. Periksa rincian biaya sebelum membayar")
     return address, store, products, items, costs

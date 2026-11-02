@@ -1,165 +1,123 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:grocery_shared/shared.dart';
 
 import '../../../core/theme.dart';
 import '../../catalog/presentation/catalog_widgets.dart';
+import '../application/voucher_provider.dart';
 
-/// Jenis voucher lokal (klaim dan potongan hanya berlaku di aplikasi,
-/// belum ada backend voucher/loyalty).
-enum VoucherJenis { persen, gratisOngkir, tanpa }
-
-/// Satu voucher lokal yang bisa dipilih di checkout.
-///
-/// [potonganTagihan] dan [potonganOngkir] adalah aturan hitung voucher
-/// ini; keduanya dipakai halaman checkout untuk menampilkan rincian.
-/// Nilai-nilai di [vouchersCheckout] adalah data lokal yang sama dengan
-/// kartu promo (judul dan syaratnya), bukan data backend.
-class VoucherLocal {
-  const VoucherLocal({
-    required this.id,
-    required this.title,
-    required this.subtitle,
-    required this.jenis,
-    this.persen = 0,
-    this.cap = 0,
-    this.minBelanja = 0,
-    this.maxOngkir = 0,
-  });
-
-  /// Sentinel untuk "Tanpa voucher" (menghapus pilihan).
-  static const tanpa = VoucherLocal(
-    id: 'tanpa',
-    title: 'Tanpa voucher',
-    subtitle: '',
-    jenis: VoucherJenis.tanpa,
-  );
-
-  final String id;
-  final String title;
-  final String subtitle;
-  final VoucherJenis jenis;
-  final int persen;
-  final int cap;
-  final int minBelanja;
-  final int maxOngkir;
-
-  /// True untuk sentinel [tanpa].
-  bool get isTanpa => jenis == VoucherJenis.tanpa;
-  int potonganTagihan(int subtotal) {
-    if (jenis != VoucherJenis.persen) return 0;
-    if (subtotal < minBelanja) return 0;
-    final hitung = subtotal * persen ~/ 100;
-    return hitung > cap ? cap : hitung;
-  }
-
-  /// Potongan ke ongkos kirim. Voucher gratis ongkir menanggung ongkir
-  /// sampai [maxOngkir].
-  int potonganOngkir(int ongkir) {
-    if (jenis != VoucherJenis.gratisOngkir) return 0;
-    return ongkir > maxOngkir ? maxOngkir : ongkir;
-  }
-
-  /// Apakah voucher ini bisa dipakai untuk [subtotal] sekarang.
-  bool memenuhiSyarat(int subtotal) =>
-      jenis != VoucherJenis.persen || subtotal >= minBelanja;
-}
-
-/// Voucher yang menghemat belanja (yang tampil di kartu checkout
-/// "Ada 2 voucher aktif hemat belanja"). Voucher cashback poin tidak
-/// masuk sini karena poin bukan potongan tagihan; voucher itu tetap
-/// ada di halaman Promo.
-const vouchersCheckout = [
-  VoucherLocal(
-    id: 'diskon30',
-    title: 'Diskon 30% Produk Segar',
-    subtitle: 'Min. belanja Rp 75rb • Maks. Rp 25rb',
-    jenis: VoucherJenis.persen,
-    persen: 30,
-    cap: 25000,
-    minBelanja: 75000,
-  ),
-  VoucherLocal(
-    id: 'gratisOngkir',
-    title: 'Gratis Ongkir Instan s/d Rp 15.000',
-    subtitle: 'Khusus pengiriman toko 15 menit',
-    jenis: VoucherJenis.gratisOngkir,
-    maxOngkir: 15000,
-  ),
-];
-
-/// Halaman pemilih voucher di checkout.
+/// Halaman pemilih voucher di checkout, dari voucher aktif toko.
 ///
 /// Mengetuk voucher langsung kembali dengan voucher itu (pola yang sama
 /// dengan halaman pilih metode bayar). "Tanpa voucher" mengembalikan
-/// [VoucherLocal.tanpa] supaya pemanggil bisa membedakan "tidak berubah"
+/// [Voucher.tanpa] supaya pemanggil bisa membedakan "tidak berubah"
 /// (kembali biasa, null) dari "hapus pilihan".
-class VoucherPickerPage extends StatelessWidget {
+class VoucherPickerPage extends ConsumerWidget {
   const VoucherPickerPage({
     super.key,
+    required this.tokoId,
     required this.subtotal,
     required this.ongkir,
     this.selected,
   });
+  final String tokoId;
   final int subtotal;
   final int ongkir;
-  final VoucherLocal? selected;
+  final Voucher? selected;
+
+  String _subtitle(Voucher voucher) {
+    if (voucher.jenis == 'persen') {
+      final syarat = <String>[];
+      if (voucher.minBelanja > 0) {
+        syarat.add('Min. belanja ${rupiah(voucher.minBelanja)}');
+      }
+      if (voucher.cap > 0) syarat.add('Maks. ${rupiah(voucher.cap)}');
+      return syarat.join(' • ');
+    }
+    return 'Gratis ongkir s/d ${rupiah(voucher.maxOngkir)}';
+  }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xFFEFF4EB),
-    appBar: AppBar(
-      backgroundColor: const Color(0xFFB5E27E),
-      title: const Text('Pilih Voucher'),
-    ),
-    body: SafeArea(
-      child: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const Text(
-            'Voucher yang menghemat belanja',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            'Potongan dihitung dari keranjang saat ini.',
-            style: TextStyle(fontSize: 12, color: Colors.black54),
-          ),
-          const SizedBox(height: 16),
-          _VoucherTile(
-            key: const Key('voucher-tanpa'),
-            big: '—',
-            title: 'Tanpa voucher',
-            subtitle: 'Tidak memakai voucher untuk pesanan ini.',
-            preview: null,
-            disabled: false,
-            chosen: selected == null,
-            onTap: () => Navigator.pop(context, VoucherLocal.tanpa),
-          ),
-          const SizedBox(height: 10),
-          for (final voucher in vouchersCheckout) ...[
-            _VoucherTile(
-              key: Key('voucher-${voucher.id}'),
-              big: voucher.jenis == VoucherJenis.persen
-                  ? '${voucher.persen}%'
-                  : 'FREE',
-              title: voucher.title,
-              subtitle: voucher.subtitle,
-              preview: voucher.jenis == VoucherJenis.persen
-                  ? (voucher.memenuhiSyarat(subtotal)
-                        ? 'Hemat ${rupiah(voucher.potonganTagihan(subtotal))}'
-                        : 'Min. belanja ${rupiah(voucher.minBelanja)} belum tercapai')
-                  : (ongkir > 0
-                        ? 'Hemat ongkir ${rupiah(voucher.potonganOngkir(ongkir))}'
-                        : 'Ongkir pesanan ini sudah gratis'),
-              disabled: !voucher.memenuhiSyarat(subtotal),
-              chosen: selected?.id == voucher.id,
-              onTap: () => Navigator.pop(context, voucher),
-            ),
-            const SizedBox(height: 10),
-          ],
-        ],
+  Widget build(BuildContext context, WidgetRef ref) {
+    final async = ref.watch(voucherListProvider(tokoId));
+    return Scaffold(
+      backgroundColor: const Color(0xFFEFF4EB),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFB5E27E),
+        title: const Text('Pilih Voucher'),
       ),
-    ),
-  );
+      body: SafeArea(
+        child: async.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (_, _) => Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Gagal memuat voucher.'),
+                const SizedBox(height: 12),
+                FilledButton(
+                  onPressed: () => ref.invalidate(voucherListProvider(tokoId)),
+                  child: const Text('Muat ulang'),
+                ),
+              ],
+            ),
+          ),
+          data: (vouchers) => ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              const Text(
+                'Voucher yang menghemat belanja',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Potongan dihitung server dari keranjang saat ini.',
+                style: TextStyle(fontSize: 12, color: Colors.black54),
+              ),
+              const SizedBox(height: 16),
+              _VoucherTile(
+                key: const Key('voucher-tanpa'),
+                big: '—',
+                title: 'Tanpa voucher',
+                subtitle: 'Tidak memakai voucher untuk pesanan ini.',
+                preview: null,
+                disabled: false,
+                chosen: selected == null,
+                onTap: () => Navigator.pop(context, Voucher.tanpa),
+              ),
+              const SizedBox(height: 10),
+              if (vouchers.isEmpty)
+                const Text(
+                  'Toko ini belum punya voucher aktif.',
+                  style: TextStyle(fontSize: 12, color: Colors.black54),
+                ),
+              for (final voucher in vouchers) ...[
+                _VoucherTile(
+                  key: Key('voucher-${voucher.id}'),
+                  big: voucher.jenis == 'persen'
+                      ? '${voucher.persen}%'
+                      : 'FREE',
+                  title: voucher.judul,
+                  subtitle: _subtitle(voucher),
+                  preview: voucher.jenis == 'persen'
+                      ? (voucher.memenuhiSyarat(subtotal)
+                            ? 'Hemat ${rupiah(voucher.potonganTagihan(subtotal))}'
+                            : 'Min. belanja ${rupiah(voucher.minBelanja)} belum tercapai')
+                      : (ongkir > 0
+                            ? 'Hemat ongkir ${rupiah(voucher.potonganOngkir(ongkir))}'
+                            : 'Ongkir pesanan ini sudah gratis'),
+                  disabled: !voucher.memenuhiSyarat(subtotal),
+                  chosen: selected?.id == voucher.id,
+                  onTap: () => Navigator.pop(context, voucher),
+                ),
+                const SizedBox(height: 10),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _VoucherTile extends StatelessWidget {

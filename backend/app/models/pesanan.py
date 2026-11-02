@@ -44,6 +44,7 @@ class Pesanan(Base):
     biaya_layanan: Mapped[int] = mapped_column(Integer, default=0)
     total: Mapped[int] = mapped_column(Integer)
     tolak_alasan: Mapped[str | None] = mapped_column(Text)
+    voucher_kode: Mapped[str | None] = mapped_column(String(40))
     accepted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
     updated_at: Mapped[datetime] = mapped_column(

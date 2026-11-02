@@ -36,7 +36,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   bool loading = true, busy = false;
   String shipping = 'Instant', method = 'qris';
   String? error;
-  VoucherLocal? voucher;
+  Voucher? voucher;
   final note = TextEditingController();
   String get userId => ref.read(authProvider).user!.id;
   SecureStorage get storage => ref.read(storageProvider);
@@ -62,6 +62,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     'items': [
       for (final item in items) {'produk_id': item.produk.id, 'qty': item.qty},
     ],
+    'voucher_kode': voucher?.kode,
   };
 
   Future<void> load() async {
@@ -141,34 +142,6 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
 
   Future<void> pay() async {
     if (busy || costs == null) return;
-    // Penagihan toko belum mendukung voucher: total yang dikirim ke
-    // backend harus sama dengan total preview backend, kalau tidak
-    // backend menolak (409). Kalau voucher membuat total tampil beda
-    // dari total toko, beri tahu dulu sebelum menagih.
-    if (voucher != null && _total != (costs!['total'] as int)) {
-      final lanjut = await showDialog<bool>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text('Voucher belum didukung penagihan toko'),
-          content: Text(
-            'Potongan voucher tampil di aplikasi, tapi penagihan toko '
-            'belum mendukung voucher. Total yang ditagih adalah '
-            '${rupiah(costs!['total'] as int)}.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Batal'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Lanjut Bayar'),
-            ),
-          ],
-        ),
-      );
-      if (lanjut != true || !mounted) return;
-    }
     setState(() {
       busy = true;
       error = null;
@@ -304,15 +277,11 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   int get _biayaLayanan =>
       costs == null ? 0 : costs!['biaya_layanan'] as int;
 
-  /// Potongan dari voucher lokal yang dipilih. Potongan produk (harga
-  /// coret placeholder di keranjang) sudah tercermin di harga jual, jadi
-  /// tidak dihitung lagi di sini; baris voucher hanya berisi voucher.
-  int get _voucherDiskon =>
-      voucher == null ? 0 : voucher!.potonganTagihan(_subtotal);
-  int get _voucherOngkirDiskon =>
-      voucher == null ? 0 : voucher!.potonganOngkir(_backendOngkir);
-  int get _diskon => _backendDiskon + _voucherDiskon;
-  int get _ongkir => _backendOngkir - _voucherOngkirDiskon;
+  /// Potongan voucher sudah termasuk di angka backend (preview memakai
+  /// voucher_kode yang sama dengan penagihan), jadi tidak dihitung lagi
+  /// di sini supaya tidak ganda.
+  int get _diskon => _backendDiskon;
+  int get _ongkir => _backendOngkir;
   int get _total => _subtotal - _diskon + _ongkir + _biayaLayanan;
 
   /// Promo gratis ongkir toko berlaku kalau backend mengembalikan
@@ -352,11 +321,12 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   }
 
   Future<void> _chooseVoucher() async {
-    if (busy || session != null) return;
-    final result = await Navigator.push<VoucherLocal>(
+    if (busy || session != null || items.isEmpty) return;
+    final result = await Navigator.push<Voucher>(
       context,
       MaterialPageRoute(
         builder: (_) => VoucherPickerPage(
+          tokoId: items.first.produk.tokoId,
           subtotal: _subtotal,
           ongkir: _backendOngkir,
           selected: voucher,
@@ -365,6 +335,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     );
     if (!mounted || result == null) return;
     setState(() => voucher = result.isTanpa ? null : result);
+    // Preview ulang supaya angka tagihan memakai voucher yang baru dipilih.
+    await load();
   }
 
   Future<void> _editNote() async {
@@ -792,7 +764,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
 
   Widget _voucherCard() {
     final dipilih = voucher;
-    final hematVoucher = _voucherDiskon + _voucherOngkirDiskon;
+    final hematVoucher = dipilih == null ? 0 : _backendDiskon;
     return _card(
       key: const Key('choose-voucher'),
       onTap: busy ? null : () => _editOrRestart(_chooseVoucher),
@@ -815,8 +787,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                 const SizedBox(height: 3),
                 Text(
                   dipilih == null
-                      ? 'Ada 2 voucher aktif hemat belanja'
-                      : 'Terpilih: ${dipilih.title}',
+                      ? 'Pilih voucher dari toko ini'
+                      : 'Terpilih: ${dipilih.judul}',
                   style: const TextStyle(
                     fontSize: 11,
                     color: Color(0xFF73876B),
@@ -828,7 +800,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           const SizedBox(width: 6),
           Text(
             dipilih == null
-                ? 'Hemat s/d Rp 25rb >'
+                ? 'Pilih >'
                 : (hematVoucher > 0
                       ? 'Hemat ${rupiah(hematVoucher)} >'
                       : 'Ganti >'),

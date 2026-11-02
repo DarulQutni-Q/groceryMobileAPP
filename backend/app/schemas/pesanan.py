@@ -80,6 +80,7 @@ class PesananResponse(BaseModel):
     biaya_layanan: int
     total: int
     tolak_alasan: str | None
+    voucher_kode: str | None
     nama_pembeli: str | None
     telepon_pembeli: str | None
     accepted_at: datetime | None

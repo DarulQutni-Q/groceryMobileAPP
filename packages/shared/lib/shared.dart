@@ -22,3 +22,5 @@ export 'src/api/alamat_api.dart';
 export 'src/api/checkout_api.dart';
 export 'src/models/notifikasi.dart';
 export 'src/api/notifikasi_api.dart';
+export 'src/models/voucher.dart';
+export 'src/api/voucher_api.dart';

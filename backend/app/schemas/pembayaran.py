@@ -18,6 +18,7 @@ class CheckoutInput(InputModel):
     catatan: str | None = Field(default=None, max_length=3000)
     items: list[ItemTest] = Field(min_length=1, max_length=100)
     total_dikonfirmasi: int | None = Field(default=None, strict=True, gt=0, le=2147483647)
+    voucher_kode: str | None = Field(default=None, max_length=40)
 
     @model_validator(mode="after")
     def unique_items(self):
