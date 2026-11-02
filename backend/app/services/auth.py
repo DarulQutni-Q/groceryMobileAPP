@@ -1,4 +1,5 @@
 import logging
+import smtplib
 import random
 from datetime import datetime, timedelta, timezone
 from uuid import UUID
@@ -18,6 +19,7 @@ from app.models.password_reset_otp import PasswordResetOtp
 from app.models.user import User
 from app.schemas.auth import RegisterRequest, TokenResponse
 from app.services.toko import create_store
+from app.services.email import EmailNotConfigured, send_otp_email
 
 
 def token_response(user: User, secret: str) -> TokenResponse:
@@ -145,13 +147,24 @@ def _mask_phone(phone: str | None) -> str | None:
     return phone[:4] + " **** " + phone[-4:]
 
 
-def request_otp(email: str, db: Session) -> tuple[str, int, str | None]:
+def request_otp(email: str, db: Session, settings=None) -> tuple[str, int, str | None]:
     email = email.lower()
     user = db.scalar(select(User).where(User.email == email))
     if user is None:
         raise HTTPException(404, "Alamat email belum terdaftar")
     code = f"{random.randint(0, 999999):06d}"
     _log.info("OTP untuk %s: %s", email, code)
+    try:
+        send_otp_email(email, code, settings)
+    except EmailNotConfigured as exc:
+        raise HTTPException(
+            503, "Layanan email belum dikonfigurasi, kode verifikasi tidak dapat dikirim"
+        ) from exc
+    except (smtplib.SMTPException, OSError) as exc:
+        _log.warning("Gagal mengirim OTP ke %s: %s", email, exc)
+        raise HTTPException(
+            503, "Gagal mengirim kode verifikasi, coba lagi sesaat lagi"
+        ) from exc
     expires_at = datetime.now(timezone.utc) + timedelta(seconds=300)
     otp = PasswordResetOtp(email=email, code=code, expires_at=expires_at)
     db.add(otp)

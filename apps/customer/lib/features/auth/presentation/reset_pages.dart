@@ -40,7 +40,13 @@ class _ResetPageState extends ConsumerState<ResetPage> {
     setState(() => busy = true);
     try {
       await ref.read(authApiProvider).requestPasswordReset(email.text.trim());
-      if (mounted) Navigator.pushReplacementNamed(context, '/email-sent');
+      if (mounted) {
+        Navigator.pushReplacementNamed(
+          context,
+          '/email-sent',
+          arguments: email.text.trim(),
+        );
+      }
     } on DioException catch (error) {
       if (mounted) {
         _message(
@@ -143,6 +149,16 @@ class _ResetPageState extends ConsumerState<ResetPage> {
               ],
             ),
           ),
+          if (widget.sent)
+            TextButton(
+              onPressed: () => Navigator.pushNamed(
+                context,
+                '/reset-verify',
+                arguments:
+                    ModalRoute.of(context)?.settings.arguments as String? ?? '',
+              ),
+              child: const Text('Sudah dapat kode? Masukkan kode'),
+            ),
           const SizedBox(height: 22),
           _help(),
         ],

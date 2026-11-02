@@ -7,6 +7,7 @@ import 'core/theme.dart';
 import 'features/auth/application/auth_provider.dart';
 import 'features/auth/presentation/auth_page.dart';
 import 'features/auth/presentation/reset_pages.dart';
+import 'features/auth/presentation/reset_verify_page.dart';
 import 'features/auth/presentation/splash_page.dart';
 import 'features/catalog/presentation/customer_shell.dart';
 
@@ -56,6 +57,10 @@ class _CustomerAppState extends ConsumerState<CustomerApp> {
           '/register': (_) => const AuthPage(register: true),
           '/forgot-password': (_) => const ResetPage(),
           '/email-sent': (_) => const ResetPage(sent: true),
+          '/reset-verify': (context) => ResetVerifyPage(
+                email:
+                    ModalRoute.of(context)?.settings.arguments as String? ?? '',
+              ),
         },
         home: auth.status == AuthStatus.authenticated
             ? const CustomerShell()

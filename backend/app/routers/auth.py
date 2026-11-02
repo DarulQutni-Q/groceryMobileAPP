@@ -105,8 +105,14 @@ def google(data: GoogleLoginRequest, request: Request, db: Session = Depends(get
 
 
 @router.post("/forgot-password", response_model=ForgotPasswordResponse)
-def forgot_password(data: ForgotPasswordRequest, db: Session = Depends(get_db)):
-    _, expires_in, masked_phone = request_otp(str(data.email), db)
+def forgot_password(
+    data: ForgotPasswordRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    _, expires_in, masked_phone = request_otp(
+        str(data.email), db, request.app.state.settings
+    )
     return ForgotPasswordResponse(
         message="Kode verifikasi telah dikirim",
         email=str(data.email),

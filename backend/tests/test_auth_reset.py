@@ -1,5 +1,7 @@
 """Tes alur lupa sandi, verifikasi OTP, dan reset kata sandi."""
 
+import pytest
+
 from datetime import timedelta, timezone
 
 # ---------------------------------------------------------------------------
@@ -33,6 +35,15 @@ def _get_otp(client, email=SELLER["email"]):
     r = _forgot(client, email)
     assert r.status_code == 200
     return r
+
+
+@pytest.fixture(autouse=True)
+def _email_terkirim(monkeypatch):
+    """Alur lama mengasumsikan email terkirim; palsukan pengirimnya supaya
+    tes-tes reset yang sudah ada tetap menguji logika OTP, bukan SMTP."""
+    monkeypatch.setattr(
+        "app.services.auth.send_otp_email", lambda email, code, settings=None: None
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -147,6 +158,10 @@ def test_verify_otp_kedaluwarsa_400(client, monkeypatch):
 
     monkeypatch.setattr("random.randint", lambda a, b: 222222)
     monkeypatch.setattr("app.services.auth.datetime", FakeDatetimeForCreate)
+    # undo() di atas juga menghapus fake pengirim dari fixture, pasang ulang.
+    monkeypatch.setattr(
+        "app.services.auth.send_otp_email", lambda email, code, settings=None: None
+    )
     _forgot(client)  # OTP 222222 dengan expires_at 5 menit lalu
 
     monkeypatch.setattr("app.services.auth.datetime", real_datetime)
