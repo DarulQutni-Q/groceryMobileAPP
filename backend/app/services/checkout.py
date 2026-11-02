@@ -19,6 +19,7 @@ from app.services.alamat import lock_customer, owned_address
 from app.services.fcm import notify_order_owner
 from app.services.notifikasi import catat_pesanan_baru
 from app.services.voucher import terapkan_voucher
+from app.services.promo import potongan_promo
 from app.services.xendit import safe_payment_url
 
 
@@ -78,6 +79,8 @@ def quote(db, user, data):
         )
         ongkir -= potongan_ongkir
         voucher_kode = voucher.kode
+    promo_diskon, _ = potongan_promo(db, store.id, items, subtotal)
+    diskon += promo_diskon
     costs = dict(
         subtotal=subtotal,
         diskon=diskon,
@@ -85,6 +88,7 @@ def quote(db, user, data):
         biaya_layanan=1000,
         total=subtotal - diskon + ongkir + 1000,
         voucher_kode=voucher_kode,
+        promo_diskon=promo_diskon,
     )
     if data.total_dikonfirmasi is not None and data.total_dikonfirmasi != costs["total"]:
         raise HTTPException(409, "Harga berubah. Periksa rincian biaya sebelum membayar")

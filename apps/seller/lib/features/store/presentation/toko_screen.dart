@@ -6,6 +6,7 @@ import '../../auth/application/auth_provider.dart';
 import '../application/store_provider.dart';
 import 'toko_editor.dart';
 import 'voucher_page.dart';
+import 'promo_page.dart';
 import 'hours_editor.dart';
 import 'store_widgets.dart';
 
@@ -134,6 +135,11 @@ class TokoScreen extends ConsumerWidget {
           'Voucher',
           Icons.confirmation_number_outlined,
           () => _open(context, const VoucherPage()),
+        ),
+        _menu(
+          'Promo Harga',
+          Icons.local_offer_outlined,
+          () => _open(context, PromoPage(userId: userId)),
         ),
         _menu(
           'Keluar',

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grocery_shared/shared.dart';
 
 import '../../../core/theme.dart';
-import '../application/placeholder_diskon.dart';
 import '../application/produk_provider.dart';
 import 'catalog_widgets.dart';
 import 'product_page.dart';
@@ -17,13 +16,18 @@ class ProductCard extends ConsumerStatefulWidget {
     this.home = false,
     this.tinggiFoto,
     this.fitFoto,
+    this.hargaPromo,
   });
   final Produk produk;
 
-  /// Varian beranda sesuai referensi: badge diskon + harga coret
-  /// (placeholder, lihat placeholder_diskon.dart), bilah stok tipis,
-  /// "Sisa N pcs", dan tombol + Keranjang (fungsional, sama seperti
-  /// katalog). Varian default (katalog) tidak berubah.
+  /// Harga promo dari backend (tebus/kilat). Kalau diisi dan lebih murah
+  /// dari harga jual, kartu menampilkan badge persen + harga coret.
+  /// Tanpa harga promo, kartu tidak menampilkan diskon apa pun.
+  final int? hargaPromo;
+
+  /// Varian beranda sesuai referensi: bilah stok tipis, "Sisa N pcs",
+  /// dan tombol + Keranjang (fungsional, sama seperti katalog).
+  /// Varian default (katalog) tidak berubah.
   ///
   /// Tinggi kartu 178, diukur dari referensi secara programatis:
   /// kartu referensi atas 620–bawah ~808 pada lebar layar foto 432px
@@ -46,10 +50,10 @@ class _ProductCardState extends ConsumerState<ProductCard> {
   Widget build(BuildContext context) {
     final produk = widget.produk;
     final home = widget.home;
-    // Diskon placeholder hanya untuk varian beranda; katalog tidak
-    // menampilkan badge/harga coret (lihat placeholder_diskon.dart).
-    final diskon = home ? placeholderDiskonUntuk(produk) : null;
-    final persenDiskon = diskon?.persenDiskon(produk.harga) ?? 0;
+    final hargaPromo = widget.hargaPromo;
+    final persenDiskon = hargaPromo != null && hargaPromo < produk.harga
+        ? ((produk.harga - hargaPromo) * 100 / produk.harga).round()
+        : 0;
     return SizedBox(
       width: home ? 108 : 116,
       child: Card(
@@ -77,7 +81,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                       fit: widget.fitFoto ?? BoxFit.contain,
                     ),
                   ),
-                  if (home && persenDiskon > 0)
+                  if (persenDiskon > 0)
                     Positioned(
                       top: 6,
                       left: 6,
@@ -159,7 +163,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                         fit: BoxFit.scaleDown,
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          rupiah(produk.harga),
+                          rupiah(hargaPromo ?? produk.harga),
                           maxLines: 1,
                           style: TextStyle(
                             fontSize: home ? 16 : 14,
@@ -168,10 +172,10 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                           ),
                         ),
                       ),
-                      if (home && diskon != null) ...[
+                      if (persenDiskon > 0) ...[
                         const SizedBox(height: 1),
                         Text(
-                          rupiah(diskon.hargaAsli),
+                          rupiah(produk.harga),
                           maxLines: 1,
                           style: const TextStyle(
                             fontSize: 11,

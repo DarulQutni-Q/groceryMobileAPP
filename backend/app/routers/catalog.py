@@ -8,7 +8,7 @@ from app.core.security import get_authenticated_user
 from app.db.session import get_db
 from app.models.produk import Produk
 from app.models.toko import Toko
-from app.schemas.catalog import PromoResponse, TokoDetail, TokoPublic
+from app.schemas.catalog import TokoDetail, TokoPublic
 from app.schemas.pagination import Page
 from app.services.catalog import store_detail, stores_page
 from app.services.pagination import Pagination, pagination_params
@@ -42,16 +42,3 @@ def kategori(db: Session = Depends(get_db)):
         .order_by(Produk.kategori)
     ).all()
 
-
-@router.get("/promo", response_model=list[PromoResponse])
-def promo():
-    # TODO: Ganti promo demo B2 dengan promo aktif dari database.
-    return [
-        {
-            "id": "b2-voucher-demo",
-            "judul": "INDOMARET POINKU • PROMO SPESIAL",
-            "deskripsi": "Ada 4 voucher belanja diskon 50% siap kamu pakai.",
-            "label_tombol": "Klaim Semua Voucher",
-            "is_demo": True,
-        }
-    ]

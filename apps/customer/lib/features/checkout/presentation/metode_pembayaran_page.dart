@@ -3,11 +3,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/garden_widgets.dart';
 import '../../../core/theme.dart';
-import '../application/placeholder_metode.dart';
+import 'metode_bayar_page.dart';
 
 /// Kelola metode pembayaran (layar Pengaturan > Metode Pembayaran).
 /// Beda dengan [MetodeBayarPage] yang dipakai sebagai picker saat checkout:
-/// halaman ini menampilkan dompet dan kartu yang sudah tersimpan.
+/// halaman ini memilih preferensi metode dari metode yang benar-benar
+/// didukung backend, bukan dompet/kartu tersimpan (tidak ada yang
+/// terhubung).
 class MetodePembayaranPage extends StatefulWidget {
   const MetodePembayaranPage({super.key});
 
@@ -15,6 +17,23 @@ class MetodePembayaranPage extends StatefulWidget {
   State<MetodePembayaranPage> createState() =>
       _MetodePembayaranPageState();
 }
+
+/// Metode yang benar-benar didukung checkout (sama dengan kunci
+/// [metodeBayar] di picker checkout).
+class _Metode {
+  const _Metode(this.key, this.label, this.deskripsi);
+  final String key, label, deskripsi;
+}
+
+const _metode = [
+  _Metode('qris', 'QRIS', 'Scan QR saat checkout'),
+  _Metode('gopay', 'GoPay', 'E-wallet saat checkout'),
+  _Metode('shopeepay', 'ShopeePay', 'E-wallet saat checkout'),
+  _Metode('va_bca', 'VA BCA', 'Transfer bank saat checkout'),
+  _Metode('va_bri', 'VA BRI', 'Transfer bank saat checkout'),
+  _Metode('va_mandiri', 'VA Mandiri', 'Transfer bank saat checkout'),
+  _Metode('cod', 'COD (Bayar di Tempat)', 'Bayar tunai saat pesanan sampai'),
+];
 
 class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
   int _selected = -1;
@@ -39,7 +58,9 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('metode_utama', _selected);
     await prefs.setBool('metode_biometrik', _biometric);
-    final preferensi = metodeBayarDariKartu(_selected);
+    final preferensi = _selected >= 0 && _selected < _metode.length
+        ? _metode[_selected].key
+        : null;
     if (preferensi != null) {
       await prefs.setString('metode_bayar_preferensi', preferensi);
     } else {
@@ -52,21 +73,6 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
     Navigator.maybePop(context);
   }
 
-  void _honestDialog(String title, String message) {
-    showDialog<void>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup'),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -83,248 +89,61 @@ class _MetodePembayaranPageState extends State<MetodePembayaranPage> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
             children: [
-              const _SectionLabel('DOMPET DIGITAL TERHUBUNG'),
+              const _SectionLabel('METODE YANG DIDUKUNG'),
+              const SizedBox(height: 6),
+              const Text(
+                'Belum ada dompet atau kartu yang terhubung. Metode di '
+                'bawah ini adalah yang benar-benar didukung saat checkout; '
+                'pilihan di sini hanya menjadi preferensi awal.',
+                style: TextStyle(fontSize: 12, color: Colors.black54),
+              ),
               const SizedBox(height: 10),
-              _Card(
-                child: Column(
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const _BrandBox(
-                          color: Color(0xFFE31E24),
-                          label: 'GoPay',
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                placeholderDompet[0].nama,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                  color: gardenInk,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                placeholderDompet[0].status,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w800,
-                                  color: gardenInk,
-                                ),
-                              ),
-                            ],
+              for (var i = 0; i < _metode.length; i++)
+                _Card(
+                  child: InkWell(
+                    key: Key('metode-${_metode[i].key}'),
+                    onTap: () => setState(() => _selected = i),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Icon(
+                            ikonBayar(_metode[i].key),
+                            color: gardenInk,
+                            size: 28,
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            _Pill(
-                              text: placeholderDompet[0].terhubung ? 'Terhubung' : 'Belum Terhubung',
-                              background: Color(0xFFE4F3D8),
-                              foreground: Color(0xFF397A24),
-                            ),
-                            const SizedBox(height: 8),
-                            SizedBox(
-                              height: 30,
-                              child: FilledButton(
-                                onPressed: () => _honestDialog(
-                                  'Top Up GoPay',
-                                  'Top Up GoPay belum tersedia di GardenMart '
-                                  'karena belum ada integrasi e-wallet di backend.',
-                                ),
-                                style: FilledButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                  minimumSize: const Size(0, 30),
-                                  textStyle: const TextStyle(
-                                    fontSize: 12,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _metode[i].label,
+                                  style: TextStyle(
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w700,
-                                    fontFamily: 'Roboto',
+                                    color: gardenInk,
                                   ),
                                 ),
-                                child: Text(placeholderDompet[0].tombol),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 14),
-                      child: Divider(height: 1, color: gardenBorder),
-                    ),
-                    Row(
-                      children: [
-                        const _BrandBox(
-                          color: Color(0xFFEE4D2D),
-                          label: 'S Pay',
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                placeholderDompet[1].nama,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                  color: gardenInk,
+                                const SizedBox(height: 2),
+                                Text(
+                                  _metode[i].deskripsi,
+                                  style: const TextStyle(fontSize: 12),
                                 ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                placeholderDompet[1].status,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: textGrey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 30,
-                          child: OutlinedButton(
-                            onPressed: () => _honestDialog(
-                              'Hubungkan ShopeePay',
-                              'Menghubungkan ShopeePay belum tersedia di GardenMart '
-                              'karena belum ada integrasi e-wallet di backend.',
+                              ],
                             ),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                              ),
-                              minimumSize: const Size(0, 30),
-                              side: const BorderSide(color: gardenInk),
-                              foregroundColor: gardenInk,
-                              textStyle: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'Roboto',
-                              ),
-                            ),
-                            child: Text(placeholderDompet[1].tombol),
                           ),
-                        ),
-                      ],
+                          if (_selected == i)
+                            const Icon(
+                              Icons.check_circle,
+                              color: Color(0xFF397A24),
+                            ),
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              const _SectionLabel('KARTU DEBIT & KREDIT'),
               const SizedBox(height: 10),
-              _Card(
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        const _BrandBox(
-                          color: Color(0xFF0060AF),
-                          label: 'BCA',
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    placeholderKartu[0].judul,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                      color: gardenInk,
-                                    ),
-                                  ),
-                                  if (placeholderKartu[0].utama) ...[
-                                    const SizedBox(width: 8),
-                                    _Pill(
-                                      text: 'Utama',
-                                      background: gardenInk,
-                                      foreground: Colors.white,
-                                    ),
-                                  ],
-                                ],
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                placeholderKartu[0].tersamar,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: textGrey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        _NetworkMark(placeholderKartu[0].network),
-                        const SizedBox(width: 10),
-                        _RadioDot(
-                          key: const Key('metode-bca'),
-                          selected: _selected == 0,
-                          onTap: () => setState(() => _selected = 0),
-                        ),
-                      ],
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 14),
-                      child: Divider(height: 1, color: gardenBorder),
-                    ),
-                    Row(
-                      children: [
-                        const _BrandBox(
-                          color: Color(0xFF003A70),
-                          label: 'mandiri',
-                          labelColor: Color(0xFFF7C948),
-                          italic: true,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                placeholderKartu[1].judul,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: gardenInk,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                placeholderKartu[1].tersamar,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: textGrey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        _NetworkMark(placeholderKartu[1].network),
-                        const SizedBox(width: 10),
-                        _RadioDot(
-                          key: const Key('metode-mandiri'),
-                          selected: _selected == 1,
-                          onTap: () => setState(() => _selected = 1),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
               _Card(
                 child: Row(
                   children: [
@@ -422,144 +241,9 @@ class _Card extends StatelessWidget {
   );
 }
 
-class _BrandBox extends StatelessWidget {
-  const _BrandBox({
-    required this.color,
-    required this.label,
-    this.labelColor = Colors.white,
-    this.italic = false,
-  });
-  final Color color;
-  final String label;
-  final Color labelColor;
-  final bool italic;
-  @override
-  Widget build(BuildContext context) => Container(
-    width: 44,
-    height: 44,
-    alignment: Alignment.center,
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: Text(
-      label,
-      style: TextStyle(
-        fontSize: 9,
-        fontWeight: FontWeight.w800,
-        fontStyle: italic ? FontStyle.italic : FontStyle.normal,
-        color: labelColor,
-      ),
-    ),
-  );
-}
 
-class _Pill extends StatelessWidget {
-  const _Pill({
-    required this.text,
-    required this.background,
-    required this.foreground,
-  });
-  final String text;
-  final Color background;
-  final Color foreground;
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-    decoration: BoxDecoration(
-      color: background,
-      borderRadius: BorderRadius.circular(20),
-    ),
-    child: Text(
-      text,
-      style: TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-        color: foreground,
-      ),
-    ),
-  );
-}
 
-class _RadioDot extends StatelessWidget {
-  const _RadioDot({super.key, required this.selected, required this.onTap});
-  final bool selected;
-  final VoidCallback onTap;
-  @override
-  Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: Container(
-          width: 22,
-          height: 22,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFFB9C4B4), width: 2),
-            color: Colors.white,
-          ),
-          child: selected
-              ? Container(
-                  width: 11,
-                  height: 11,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: gardenInk,
-                  ),
-                )
-              : null,
-        ),
-      );
-}
 
-class _MastercardMark extends StatelessWidget {
-  const _MastercardMark();
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    width: 30,
-    height: 18,
-    child: Stack(
-      children: [
-        Container(
-          width: 18,
-          height: 18,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Color(0xFFEB001B),
-          ),
-        ),
-        Positioned(
-          left: 12,
-          child: Container(
-            width: 18,
-            height: 18,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFFF79E1B),
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-class _NetworkMark extends StatelessWidget {
-  const _NetworkMark(this.network);
-  final String network;
-  @override
-  Widget build(BuildContext context) => network == 'visa'
-      ? const Text(
-          'VISA',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w800,
-            fontStyle: FontStyle.italic,
-            color: Color(0xFF1A1F71),
-          ),
-        )
-      : const _MastercardMark();
-}
 
 class _ToggleOn extends StatelessWidget {
   const _ToggleOn({super.key, required this.value, required this.onChanged});

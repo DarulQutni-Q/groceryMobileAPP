@@ -10,7 +10,6 @@ import '../../checkout/presentation/checkout_page.dart';
 import 'promo_page.dart';
 import '../application/produk_provider.dart';
 import 'toko_page.dart';
-import '../application/placeholder_diskon.dart';
 import 'catalog_widgets.dart';
 
 class CartPage extends ConsumerWidget {
@@ -378,8 +377,6 @@ class CartPage extends ConsumerWidget {
                     ),
             ),
             _PaymentBar(cart),
-            if (totalHematPlaceholder(cart.items) > 0)
-              _SavingsBanner(totalHematPlaceholder(cart.items)),
           ],
         ),
       ),
@@ -448,49 +445,12 @@ class _CartRow extends StatelessWidget {
                   const SizedBox(height: 7),
                   LayoutBuilder(
                     builder: (context, constraints) {
-                      final diskon = placeholderDiskonUntuk(p);
-                      final persen = diskon?.persenDiskon(p.harga) ?? 0;
-                      final price = Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 6,
-                        runSpacing: 2,
-                        children: [
-                          Text(
-                            rupiah(p.harga),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          if (diskon != null && persen > 0) ...[
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: dangerRed,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                '-$persen%',
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              rupiah(diskon.hargaAsli),
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF8A9A82),
-                                decoration: TextDecoration.lineThrough,
-                              ),
-                            ),
-                          ],
-                        ],
+                      final price = Text(
+                        rupiah(p.harga),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
                       );
                       final stepper = Row(
                         mainAxisSize: MainAxisSize.min,
@@ -553,38 +513,6 @@ class _CartRow extends StatelessWidget {
 
 /// Banner hemat di bawah tombol checkout: kartu putih membulat dengan
 /// ikon sparkle, nilainya dihitung dari diskon placeholder (bukan literal).
-class _SavingsBanner extends StatelessWidget {
-  const _SavingsBanner(this.totalHemat);
-  final int totalHemat;
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-    child: Container(
-      key: const Key('cart-savings-banner'),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.auto_awesome, size: 20, color: Color(0xFF5E872F)),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              'Total kamu hemat ${rupiah(totalHemat)} di pesanan ini!',
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: gardenInk,
-              ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
 
 class _PaymentBar extends StatelessWidget {
   const _PaymentBar(this.cart);
@@ -631,8 +559,10 @@ class _PaymentBar extends StatelessWidget {
                           for (final row in [
                             ('Subtotal', rupiah(cart.subtotal)),
                             (
+                              // Diskon (voucher/promo) baru dihitung server
+                              // saat preview checkout, jadi di keranjang 0.
                               'Diskon',
-                              rupiah(totalHematPlaceholder(cart.items)),
+                              rupiah(0),
                             ),
                             ('Ongkir', rupiah(0)),
                           ])

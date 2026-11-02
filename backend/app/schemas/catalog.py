@@ -29,9 +29,3 @@ class TokoDetail(TokoPublic):
     meta: PageMeta
 
 
-class PromoResponse(BaseModel):
-    id: str
-    judul: str
-    deskripsi: str
-    label_tombol: str
-    is_demo: bool

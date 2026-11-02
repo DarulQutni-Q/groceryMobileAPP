@@ -11,6 +11,7 @@ import 'toko_page.dart';
 import 'pilih_toko_dialog.dart';
 import '../application/notifikasi_provider.dart';
 import 'notifications_page.dart';
+import 'kilat_murah_page.dart';
 import 'promo_page.dart';
 import 'beli_satu_gratis_satu_page.dart';
 import 'fresh_mart_page.dart';
@@ -285,11 +286,10 @@ class _HomePageState extends ConsumerState<HomePage> {
             promo.when(
               data: (values) => values.isEmpty
                   ? _PromoBanner(
-                      label: 'INDOMARET POINKU • PROMO SPESIAL',
+                      label: 'PROMO TOKO',
                       greeting: 'Selamat pagi, ${user.nama}',
-                      description:
-                          'Ada 4 voucher belanja diskon 50% siap kamu pakai.',
-                      buttonLabel: 'Klaim Semua Voucher',
+                      description: 'Belum ada promo aktif dari toko.',
+                      buttonLabel: 'Lihat Promo',
                       onClaim: () => _goToPromoTab(context, widget.onGoToTab),
                     )
                   : _PromoBanner(
@@ -300,11 +300,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                       onClaim: () => _goToPromoTab(context, widget.onGoToTab),
                     ),
               error: (_, _) => _PromoBanner(
-                label: 'INDOMARET POINKU • PROMO SPESIAL',
+                label: 'PROMO TOKO',
                 greeting: 'Selamat pagi, ${user.nama}',
-                description:
-                    'Ada 4 voucher belanja diskon 50% siap kamu pakai.',
-                buttonLabel: 'Klaim Semua Voucher',
+                description: 'Promo gagal dimuat. Coba lagi nanti.',
+                buttonLabel: 'Lihat Promo',
                 onClaim: () => _goToPromoTab(context, widget.onGoToTab),
               ),
               loading: () => const LinearProgressIndicator(minHeight: 2),
@@ -348,7 +347,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute<void>(
-                      builder: (_) => const CatalogPage(),
+                      builder: (_) => const KilatMurahPage(),
                     ),
                   ),
                   child: const Text(
