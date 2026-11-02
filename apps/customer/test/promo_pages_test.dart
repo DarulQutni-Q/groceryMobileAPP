@@ -168,30 +168,6 @@ void main() {
     expect(find.text('Fresh Mart'), findsNWidgets(2));
   });
 
-  testWidgets('Tebus Murah: hanya Camilan', (tester) async {
-    await _pumpPage(tester, const TebusMurahPage());
-    expect(find.text('Biskuit Cokelat'), findsOneWidget);
-    expect(find.text('Beras Pulen'), findsNothing);
-    expect(find.text('Tebus Murah Serba 5rb'), findsOneWidget);
-    expect(
-      find.text('Total akhir mengikuti hitungan toko saat checkout.'),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('Tebus Murah kosong: pesan jujur + tombol ke katalog', (
-    tester,
-  ) async {
-    await _pumpPage(tester, const TebusMurahPage(), kategori: ['Mie']);
-    expect(
-      find.text('Belum ada produk tebus murah di toko ini.'),
-      findsOneWidget,
-    );
-    await tester.tap(find.text('Lihat semua produk'));
-    await tester.pumpAndSettle();
-    expect(find.byType(CatalogPage), findsOneWidget);
-  });
-
   testWidgets('Promo JSM: spanduk + semua produk + catatan harga', (
     tester,
   ) async {

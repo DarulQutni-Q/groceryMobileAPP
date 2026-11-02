@@ -148,6 +148,7 @@ void main() {
         });
       }
       if (request.path == '/kategori') return response(<String>[]);
+      if (request.path == '/promo/aktif') return response([]);
       return response({'detail': 'Not Found'}, 404);
     });
     tester.view.devicePixelRatio = 2.0;
@@ -174,7 +175,7 @@ void main() {
     await tester.tap(find.text('Lihat Produk >'));
     await tester.pumpAndSettle();
     expect(find.byType(TebusMurahPage), findsOneWidget);
-    expect(find.text('Tebus Murah'), findsOneWidget);
-    expect(find.text('Tebus Murah Serba 5rb'), findsOneWidget);
+    expect(find.text('Tebus Murah'), findsWidgets);
+    expect(find.text('Belum ada promo tebus aktif.'), findsOneWidget);
   });
 }

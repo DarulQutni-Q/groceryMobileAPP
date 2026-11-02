@@ -25,7 +25,7 @@ void main() {
     );
     await tester.pump();
     expect(find.text('Metode Pembayaran'), findsOneWidget);
-    expect(find.text('Saldo GoPay'), findsOneWidget);
+    expect(find.text('METODE YANG DIDUKUNG'), findsOneWidget);
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/metode_bayar.png'),

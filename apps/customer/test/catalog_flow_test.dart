@@ -87,14 +87,21 @@ Future<AuthFixture> openCatalog(WidgetTester tester) async {
         return response(page([store]));
       case '/toko/t1':
         return response({...store, 'produk': products});
-      case '/promo':
+      case '/promo/aktif':
         return response([
           {
-            'id': 'demo',
-            'judul': 'INDOMARET POINKU • PROMO SPESIAL',
-            'deskripsi': 'Ada 4 voucher belanja diskon 50% siap kamu pakai.',
-            'label_tombol': 'Klaim Semua Voucher',
-            'is_demo': true,
+            'id': 'pr1',
+            'toko_id': 't1',
+            'toko_nama': 'Toko Diponegoro',
+            'produk_id': null,
+            'judul': 'Promo Toko',
+            'jenis': 'tebus',
+            'harga_promo': 5000,
+            'min_belanja': 0,
+            'aktif': true,
+            'berakhir_at': null,
+            'created_at': '2026-11-02T00:00:00Z',
+            'produk': null,
           },
         ]);
       default:
@@ -161,13 +168,13 @@ void main() {
     expect(find.text('Detail Produk'), findsOneWidget);
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
-    expect(find.text('Klaim Semua Voucher'), findsOneWidget);
+    expect(find.text('Lihat Promo'), findsOneWidget);
     expect(find.text('Detail Produk'), findsNothing);
     await tapKey(tester, 'open-cart');
     expect(find.text('Keranjang Belanja'), findsOneWidget);
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
-    expect(find.text('Klaim Semua Voucher'), findsOneWidget);
+    expect(find.text('Lihat Promo'), findsOneWidget);
     expect(find.text('Keranjang Belanja'), findsNothing);
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -176,7 +183,7 @@ void main() {
     'home detail cart badge qty selections deletion and persisted restore',
     (tester) async {
       final fixture = await openCatalog(tester);
-      expect(find.text('Klaim Semua Voucher'), findsOneWidget);
+      expect(find.text('Lihat Promo'), findsOneWidget);
       expect(find.text('Poinku Member'), findsOneWidget);
       expect(find.text('Minyak & Beras'), findsOneWidget);
       await tapKey(tester, 'product-p1');

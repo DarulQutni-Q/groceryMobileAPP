@@ -126,13 +126,45 @@ Future<AuthFixture> bukaKonfirmasi(
         'is_utama': true,
       });
     }
+    if (request.path == '/voucher/toko/t1') {
+      return response([
+        {
+          'id': 'diskon30',
+          'toko_id': 't1',
+          'kode': 'DISKON30',
+          'judul': 'Diskon 30% Produk Segar',
+          'jenis': 'persen',
+          'persen': 30,
+          'cap': 25000,
+          'min_belanja': 75000,
+          'max_ongkir': 0,
+          'aktif': true,
+          'created_at': '2026-11-02T00:00:00Z',
+        },
+        {
+          'id': 'gratisOngkir',
+          'toko_id': 't1',
+          'kode': 'GRATISONGKIR',
+          'judul': 'Gratis Ongkir Instan s/d Rp 15.000',
+          'jenis': 'gratis_ongkir',
+          'persen': 0,
+          'cap': 0,
+          'min_belanja': 0,
+          'max_ongkir': 15000,
+          'aktif': true,
+          'created_at': '2026-11-02T00:00:00Z',
+        },
+      ]);
+    }
     if (request.path == '/checkout/preview') {
+      final body = request.data as Map<String, dynamic>?;
+      final pakaiDiskon30 = body?['voucher_kode'] == 'DISKON30';
       return response({
         'subtotal': 85100,
-        'diskon': 0,
+        'diskon': pakaiDiskon30 ? 25000 : 0,
         'ongkir': 0,
         'biaya_layanan': 1000,
-        'total': 86100,
+        'total': pakaiDiskon30 ? 61100 : 86100,
       });
     }
     if (request.path == '/checkout') {
@@ -241,15 +273,29 @@ void main() {
   setUpAll(loadTestFonts);
 
   test('voucher diskon30 caps at 25000 and respects min spend', () {
-    final diskon = vouchersCheckout.firstWhere((v) => v.id == 'diskon30');
+    const diskon = Voucher(
+      id: 'diskon30',
+      tokoId: 't1',
+      kode: 'DISKON30',
+      judul: 'Diskon 30%',
+      jenis: 'persen',
+      persen: 30,
+      cap: 25000,
+      minBelanja: 75000,
+    );
     expect(diskon.potonganTagihan(85100), 25000);
     expect(diskon.potonganTagihan(100000), 25000);
     expect(diskon.potonganTagihan(75000), 22500);
     expect(diskon.potonganTagihan(74999), 0);
     expect(diskon.memenuhiSyarat(75000), isTrue);
     expect(diskon.memenuhiSyarat(74999), isFalse);
-    final ongkir = vouchersCheckout.firstWhere(
-      (v) => v.id == 'gratisOngkir',
+    const ongkir = Voucher(
+      id: 'gratisOngkir',
+      tokoId: 't1',
+      kode: 'GRATISONGKIR',
+      judul: 'Gratis Ongkir',
+      jenis: 'gratis_ongkir',
+      maxOngkir: 15000,
     );
     expect(ongkir.potonganTagihan(85100), 0);
     expect(ongkir.potonganOngkir(20000), 15000);
@@ -337,7 +383,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('voucher-tanpa')));
     await tester.pumpAndSettle();
-    expect(find.text('Ada 2 voucher aktif hemat belanja'), findsOneWidget);
+    expect(find.text('Pilih voucher dari toko ini'), findsOneWidget);
     expect(find.text('Rp 86.100'), findsNWidgets(2));
   });
 
@@ -366,7 +412,7 @@ void main() {
     expect(find.text('ShopeePay'), findsOneWidget);
   });
 
-  testWidgets('bayar with voucher warns then proceeds for cod', (
+  testWidgets('bayar with voucher proceeds for cod without warning', (
     tester,
   ) async {
     final fixture = await bukaKonfirmasi(tester);
@@ -378,18 +424,7 @@ void main() {
     expect(find.text('Buat Pesanan'), findsOneWidget);
     await tester.tap(find.byKey(const Key('checkout-pay')));
     await tester.pumpAndSettle();
-    expect(
-      find.text('Voucher belum didukung penagihan toko'),
-      findsOneWidget,
-    );
-    await tester.tap(find.text('Batal'));
-    await tester.pumpAndSettle();
-    expect(find.text('Konfirmasi Pesanan'), findsOneWidget);
-    expect(find.text('Pesanan Berhasil Dibuat'), findsNothing);
-    await tester.tap(find.byKey(const Key('checkout-pay')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Lanjut Bayar'));
-    await tester.pumpAndSettle();
+    expect(find.text('Voucher belum didukung penagihan toko'), findsNothing);
     expect(find.text('Pesanan Berhasil Dibuat'), findsOneWidget);
     final cart = jsonDecode(fixture.saved['customer_cart_u1']!) as Map;
     expect(cart['items'], isEmpty);

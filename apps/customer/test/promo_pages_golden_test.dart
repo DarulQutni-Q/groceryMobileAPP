@@ -95,6 +95,25 @@ Future<void> _pumpGolden(
   SharedPreferences.setMockInitialValues({});
   final fixture = AuthFixture()..installStorage();
   fixture.api.client.dio.httpClientAdapter = CustomerAdapter((request) async {
+    if (request.path.startsWith('/pesanan/') &&
+        request.path.endsWith('/riwayat')) {
+      return response([
+        {
+          'id': 'r1',
+          'pesanan_id': 'o1',
+          'status': 'baru',
+          'keterangan': null,
+          'created_at': '2026-11-02T08:00:00Z',
+        },
+        {
+          'id': 'r2',
+          'pesanan_id': 'o1',
+          'status': 'diproses',
+          'keterangan': null,
+          'created_at': '2026-11-02T09:30:00Z',
+        },
+      ]);
+    }
     switch (request.path) {
       case '/auth/me':
         return response({
@@ -105,6 +124,33 @@ Future<void> _pumpGolden(
         });
       case '/kategori':
         return response(['Beras', 'Minyak', 'Sayur', 'Buah', 'Camilan', 'Mie']);
+      case '/promo/aktif':
+        return response([
+          {
+            'id': 'pr-tebus',
+            'toko_id': 't1',
+            'toko_nama': 'Toko Diponegoro',
+            'produk_id': 'p6',
+            'judul': 'Tebus Biskuit 5rb',
+            'jenis': 'tebus',
+            'harga_promo': 5000,
+            'min_belanja': 0,
+            'aktif': true,
+            'berakhir_at': null,
+            'created_at': '2026-11-02T00:00:00Z',
+            'produk': {
+              'id': 'p6',
+              'toko_id': 't1',
+              'nama': 'Biskuit Cokelat',
+              'harga': 12000,
+              'foto_url': null,
+              'satuan': 'pcs',
+              'kategori': 'Camilan',
+              'stok': 30,
+              'is_tersedia': true,
+            },
+          },
+        ]);
       case '/produk':
         final category = request.queryParameters['kategori'] as String?;
         final q = (request.queryParameters['q'] as String? ?? '').toLowerCase();

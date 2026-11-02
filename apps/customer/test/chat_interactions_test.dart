@@ -1,37 +1,107 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gardenmart_customer/core/theme.dart';
+import 'package:gardenmart_customer/features/catalog/application/chat_provider.dart';
 import 'package:gardenmart_customer/features/catalog/presentation/chat_driver_page.dart';
 import 'package:gardenmart_customer/features/checkout/presentation/struk_page.dart';
+import 'package:grocery_shared/shared.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'golden_test.dart' show loadTestFonts;
 import 'pesanan_fixture.dart';
 
+class _Adapter implements HttpClientAdapter {
+  _Adapter(this.respond);
+  final Future<ResponseBody> Function(RequestOptions) respond;
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? stream,
+    Future<void>? cancelFuture,
+  ) => respond(options);
+  @override
+  void close({bool force = false}) {}
+}
+
+ResponseBody _json(Object data, [int status = 200]) => ResponseBody.fromString(
+  jsonEncode(data),
+  status,
+  headers: {Headers.contentTypeHeader: ['application/json']},
+);
+
+/// Halaman chat dengan API chat stub (GET kosong, POST menggemakan pesan).
+Future<void> _pumpChat(
+  WidgetTester tester, {
+  Pesanan? order,
+  List<String>? calls,
+}) async {
+  final riwayat = <Map<String, dynamic>>[];
+  final dio = Dio(BaseOptions(baseUrl: 'https://api.example.com'));
+  dio.httpClientAdapter = _Adapter((request) async {
+    calls?.add('${request.method} ${request.path}');
+    if (request.method == 'GET') return _json(riwayat);
+    if (request.method == 'POST') {
+      final body = request.data as Map<String, dynamic>;
+      final pesan = {
+        'id': 'm-baru',
+        'pesanan_id': order?.id ?? 'order-1',
+        'pengirim_id': 'u-customer',
+        'pengirim_peran': 'customer',
+        'isi': body['isi'],
+        'created_at': '2026-11-02T10:00:00Z',
+      };
+      riwayat.add(pesan);
+      return _json(pesan, 201);
+    }
+    return _json({'detail': 'Tidak ditemukan'}, 404);
+  });
+  final client = ApiClient(
+    baseUrl: dio.options.baseUrl,
+    storage: SecureStorage(),
+    dio: dio,
+  );
+  client.dio.options.connectTimeout = null;
+  client.dio.options.receiveTimeout = null;
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [chatApiProvider.overrideWith((ref) => ChatApi(client))],
+      child: MaterialApp(
+        theme: customerTheme(),
+        debugShowCheckedModeBanner: false,
+        home: ChatDriverPage(order: order),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
 void main() {
   setUpAll(loadTestFonts);
-  setUp(() => SharedPreferences.setMockInitialValues({}));
-
-  Widget wrap(Widget child) => MaterialApp(
-    theme: customerTheme(),
-    debugShowCheckedModeBanner: false,
-    home: child,
-  );
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+          (_) async => null,
+        );
+  });
 
   testWidgets('header generik + kartu pesanan asli, bukan data referensi', (
     tester,
   ) async {
     final order = pesananFixture().first; // GM-1001, diantar, Rp 67.600
-    await tester.pumpWidget(wrap(ChatDriverPage(order: order)));
-    await tester.pump();
+    await _pumpChat(tester, order: order);
 
     expect(find.text('Kurir Toko'), findsOneWidget);
     expect(find.text('Sedang mengantar pesananmu'), findsOneWidget);
     expect(find.text('Pesanan #GM-1001'), findsOneWidget);
-    expect(
-      find.text('Pesanan dalam perjalanan • Rp 67.600'),
-      findsOneWidget,
-    );
+    expect(find.text('Diantar • Rp 67.600'), findsOneWidget);
     // Data referensi Figma tidak boleh muncul sebagai data.
     expect(find.textContaining('Pak Budi'), findsNothing);
     expect(find.textContaining('BK 4122'), findsNothing);
@@ -48,8 +118,7 @@ void main() {
     tester,
   ) async {
     final order = pesananFixture()[1]; // GM-0998, selesai
-    await tester.pumpWidget(wrap(ChatDriverPage(order: order)));
-    await tester.pump();
+    await _pumpChat(tester, order: order);
 
     expect(find.text('Pesanan #GM-0998'), findsOneWidget);
     expect(
@@ -61,32 +130,45 @@ void main() {
   testWidgets('tanpa pesanan: kartu disembunyikan, chat tetap jalan', (
     tester,
   ) async {
-    await tester.pumpWidget(wrap(const ChatDriverPage()));
-    await tester.pump();
+    await _pumpChat(tester);
 
     expect(find.text('Kurir Toko'), findsOneWidget);
-    expect(find.text('Kurir GardenMart'), findsOneWidget);
     expect(find.textContaining('Pesanan #'), findsNothing);
-    expect(find.textContaining('Belum ada pesan'), findsOneWidget);
+    expect(
+      find.textContaining('Belum ada pesan untuk pesanan ini.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('tombol kembali kembali ke layar sebelumnya', (tester) async {
     final order = pesananFixture().first;
+    final dio = Dio(BaseOptions(baseUrl: 'https://api.example.com'));
+    dio.httpClientAdapter = _Adapter((_) async => _json([]));
+    final client = ApiClient(
+      baseUrl: dio.options.baseUrl,
+      storage: SecureStorage(),
+      dio: dio,
+    );
+    client.dio.options.connectTimeout = null;
+    client.dio.options.receiveTimeout = null;
     await tester.pumpWidget(
-      MaterialApp(
-        theme: customerTheme(),
-        debugShowCheckedModeBanner: false,
-        home: Builder(
-          builder: (context) => Scaffold(
-            body: Center(
-              child: TextButton(
-                onPressed: () => Navigator.push<void>(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (_) => ChatDriverPage(order: order),
+      ProviderScope(
+        overrides: [chatApiProvider.overrideWith((ref) => ChatApi(client))],
+        child: MaterialApp(
+          theme: customerTheme(),
+          debugShowCheckedModeBanner: false,
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: TextButton(
+                  onPressed: () => Navigator.push<void>(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (_) => ChatDriverPage(order: order),
+                    ),
                   ),
+                  child: const Text('Buka Chat'),
                 ),
-                child: const Text('Buka Chat'),
               ),
             ),
           ),
@@ -107,8 +189,7 @@ void main() {
     tester,
   ) async {
     final order = pesananFixture().first;
-    await tester.pumpWidget(wrap(ChatDriverPage(order: order)));
-    await tester.pump();
+    await _pumpChat(tester, order: order);
 
     await tester.tap(find.byIcon(Icons.phone));
     await tester.pumpAndSettle();
@@ -123,12 +204,9 @@ void main() {
     expect(find.text('Telepon Kurir'), findsNothing);
   });
 
-  testWidgets('Lihat Detail membuka struk pesanan yang sama', (
-    tester,
-  ) async {
+  testWidgets('Lihat Detail membuka struk pesanan yang sama', (tester) async {
     final order = pesananFixture().first;
-    await tester.pumpWidget(wrap(ChatDriverPage(order: order)));
-    await tester.pump();
+    await _pumpChat(tester, order: order);
 
     await tester.tap(find.text('Lihat Detail ›'));
     await tester.pumpAndSettle();
@@ -136,77 +214,37 @@ void main() {
     expect(find.textContaining('GM-1001'), findsWidgets);
   });
 
-  testWidgets('kirim pesan menambah bubble + centang, field dibersihkan', (
+  testWidgets('kirim pesan menambah bubble, field dibersihkan', (
     tester,
   ) async {
     final order = pesananFixture().first;
-    await tester.pumpWidget(wrap(ChatDriverPage(order: order)));
-    await tester.pump();
+    final calls = <String>[];
+    await _pumpChat(tester, order: order, calls: calls);
 
     await tester.enterText(
-      find.byType(TextField),
+      find.byKey(const Key('chat-input')),
       'Tolong titip di teras ya',
     );
-    await tester.tap(find.byIcon(Icons.send));
-    await tester.pump();
+    await tester.tap(find.byKey(const Key('chat-kirim')));
+    await tester.pumpAndSettle();
 
+    expect(calls, contains('POST /chat/pesanan/${order.id}'));
     expect(find.text('Tolong titip di teras ya'), findsOneWidget);
-    expect(find.byIcon(Icons.done_all), findsOneWidget);
-    expect(find.text('Tolong titip di teras ya'), findsOneWidget);
-    final field = tester.widget<TextField>(find.byType(TextField));
+    final field = tester.widget<TextField>(find.byKey(const Key('chat-input')));
     expect(field.controller!.text, isEmpty);
     expect(find.textContaining('Belum ada pesan'), findsNothing);
   });
 
   testWidgets('kirim kosong diblokir', (tester) async {
     final order = pesananFixture().first;
-    await tester.pumpWidget(wrap(ChatDriverPage(order: order)));
-    await tester.pump();
+    final calls = <String>[];
+    await _pumpChat(tester, order: order, calls: calls);
 
-    await tester.enterText(find.byType(TextField), '   ');
-    await tester.tap(find.byIcon(Icons.send));
-    await tester.pump();
-
-    expect(find.textContaining('Belum ada pesan'), findsOneWidget);
-  });
-
-  testWidgets('pesan terkirim tersimpan lokal per pesanan', (tester) async {
-    final order = pesananFixture().first;
-    await tester.pumpWidget(wrap(ChatDriverPage(order: order)));
-    await tester.pump();
-
-    await tester.enterText(find.byType(TextField), 'Sudah sampai mana?');
-    await tester.tap(find.byIcon(Icons.send));
-    await tester.pump();
-    expect(find.text('Sudah sampai mana?'), findsOneWidget);
-
-    // Buka ulang halaman dengan pesanan yang sama: pesan harus tetap ada.
-    await tester.pumpWidget(wrap(ChatDriverPage(order: order)));
+    await tester.enterText(find.byKey(const Key('chat-input')), '   ');
+    await tester.tap(find.byKey(const Key('chat-kirim')));
     await tester.pumpAndSettle();
-    expect(find.text('Sudah sampai mana?'), findsOneWidget);
 
-    // Pesanan lain tidak ikut menampilkan pesan ini.
-    final other = pesananFixture()[1];
-    await tester.pumpWidget(wrap(ChatDriverPage(order: other)));
-    await tester.pumpAndSettle();
-    expect(find.text('Sudah sampai mana?'), findsNothing);
-  });
-
-  testWidgets('tombol kamera dan lampiran tidak crash tanpa picker', (
-    tester,
-  ) async {
-    final order = pesananFixture().first;
-    await tester.pumpWidget(wrap(ChatDriverPage(order: order)));
-    await tester.pump();
-
-    await tester.tap(find.byIcon(Icons.camera_alt_outlined));
-    await tester.pump();
-    await tester.tap(find.byIcon(Icons.attach_file));
-    await tester.pump();
-
-    // Di lingkungan tes tidak ada picker asli: tidak ada bubble baru dan
-    // halaman tetap tampil (picker gagal ditangani, bukan crash).
-    expect(find.text('Kurir Toko'), findsOneWidget);
+    expect(calls.where((c) => c.startsWith('POST')), isEmpty);
     expect(find.textContaining('Belum ada pesan'), findsOneWidget);
   });
 }

@@ -252,23 +252,6 @@ void main() {
     expect(find.byKey(const Key('cart-badge-1')), findsOneWidget);
   });
 
-  testWidgets('kartu Kilat menampilkan badge dan harga coret placeholder', (
-    tester,
-  ) async {
-    await openHome(tester);
-    // Nilai dari placeholder_diskon.dart (tetap PLACEHOLDER, bukan
-    // data seller; nilainya kini selaras dengan desain referensi):
-    // p1 -20% / Rp 21.900, p2 -17% / Rp 19.500, p3 -14% / Rp 39.500.
-    expect(find.text('-20%'), findsOneWidget);
-    expect(find.text('-17%'), findsOneWidget);
-    expect(find.text('-14%'), findsOneWidget);
-    expect(find.text('Rp 21.900'), findsOneWidget);
-    expect(find.text('Rp 19.500'), findsOneWidget);
-    expect(find.text('Rp 39.500'), findsOneWidget);
-    // Produk tanpa placeholder (p4) tidak dapat badge.
-    expect(find.byKey(const Key('badge-diskon-p4')), findsNothing);
-  });
-
   testWidgets(
     'bilah stok kartu Kilat tipis, tinggi kartu 178, dan lebar kartu 108',
     (tester) async {

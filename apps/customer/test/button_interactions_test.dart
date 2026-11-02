@@ -476,11 +476,17 @@ void main() {
     await tap(tester, find.text('Pengaturan'));
     await tap(tester, find.text('Metode Pembayaran'));
     expect(find.byType(MetodePembayaranPage), findsOneWidget);
-    await tap(tester, find.byKey(const Key('metode-mandiri')));
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('metode-va_mandiri')),
+      200,
+    );
+    await tester.pumpAndSettle();
+    await tap(tester, find.byKey(const Key('metode-va_mandiri')));
     await tap(tester, find.text('Simpan'));
     expect(find.byType(PengaturanPage), findsOneWidget);
     final prefs = await SharedPreferences.getInstance();
-    expect(prefs.getInt('metode_utama'), 1);
+    expect(prefs.getInt('metode_utama'), 5);
+    expect(prefs.getString('metode_bayar_preferensi'), 'va_mandiri');
   });
 
   testWidgets('keranjang: kebab mengosongkan', (tester) async {
