@@ -3,20 +3,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/garden_widgets.dart';
 import '../../../core/theme.dart';
-import '../../checkout/application/checkout_provider.dart';
-import '../../checkout/presentation/checkout_page.dart';
+import '../application/notifikasi_provider.dart';
 
 /// Halaman Notifikasi.
 ///
-/// Isinya HANYA sinyal nyata dari aplikasi: kartu pembayaran menunggu
-/// (dari sesi checkout tersimpan) atau empty state. Badge bel di Home
-/// mengikuti jumlah item di sini, tidak ada angka palsu.
+/// Membaca baris notifikasi tersimpan dari backend: satu baris per
+/// perubahan status pesanan. Badge bel di Home memakai provider yang sama,
+/// jadi angkanya selalu jumlah belum dibaca di sini.
+///
+/// Belum ada halaman detail pesanan di app ini, jadi tap kartu hanya
+/// menandai dibaca, bukan membuka halaman yang tidak ada.
 class NotificationsPage extends ConsumerWidget {
   const NotificationsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pending = ref.watch(pendingCheckoutProvider);
+    final notifikasi = ref.watch(notifikasiProvider);
     return Scaffold(
       backgroundColor: authBackground,
       body: Column(
@@ -28,32 +30,74 @@ class NotificationsPage extends ConsumerWidget {
             topPadding: 28,
           ),
           Expanded(
-            child: pending.when(
-              data: (hasPending) => hasPending
-                  ? ListView(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                      children: [
-                        _NotifCard(
-                          key: const Key('notif-pending'),
-                          icon: Icons.payment_outlined,
-                          title: 'Pembayaran menunggu',
-                          subtitle:
-                              'Selesaikan pembayaran tersimpan sebelum kedaluwarsa.',
-                          onTap: () => Navigator.push<void>(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const CheckoutPage(items: []),
-                            ),
-                          ),
+            child: notifikasi.when(
+              data: (value) => Column(
+                children: [
+                  if (value.belumDibaca > 0)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                        child: TextButton(
+                          key: const Key('tandai-semua-dibaca'),
+                          onPressed: () async {
+                            try {
+                              await ref
+                                  .read(notifikasiApiProvider)
+                                  .tandaiSemuaBaca();
+                            } catch (_) {
+                              // Gagal jaringan: baris tetap belum dibaca,
+                              // pengguna bisa menekan lagi.
+                            }
+                            ref.invalidate(notifikasiProvider);
+                          },
+                          child: const Text('Tandai semua dibaca'),
                         ),
-                      ],
-                    )
-                  : const _EmptyState(),
+                      ),
+                    ),
+                  Expanded(
+                    child: value.data.isEmpty
+                        ? const _EmptyState()
+                        : ListView.builder(
+                            padding:
+                                const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                            itemCount: value.data.length,
+                            itemBuilder: (context, index) {
+                              final item = value.data[index];
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.only(bottom: 10),
+                                child: _NotifCard(
+                                  key: Key('notif-${item.id}'),
+                                  icon: Icons.receipt_long_outlined,
+                                  title: item.judul,
+                                  subtitle: item.isi,
+                                  waktu: _waktu(item.createdAt),
+                                  unread: !item.dibaca,
+                                  onTap: () async {
+                                    if (item.dibaca) return;
+                                    try {
+                                      await ref
+                                          .read(notifikasiApiProvider)
+                                          .tandaiBaca(item.id);
+                                    } catch (_) {
+                                      // Sama seperti di atas: gagal
+                                      // jaringan, baris tetap belum dibaca.
+                                    }
+                                    ref.invalidate(notifikasiProvider);
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
               loading: () =>
                   const Center(child: CircularProgressIndicator()),
               error: (_, _) => Center(
                 child: TextButton(
-                  onPressed: () => ref.invalidate(pendingCheckoutProvider),
+                  onPressed: () => ref.invalidate(notifikasiProvider),
                   child: const Text('Coba lagi'),
                 ),
               ),
@@ -65,17 +109,42 @@ class NotificationsPage extends ConsumerWidget {
   }
 }
 
+String _waktu(DateTime t) {
+  const bulan = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'Mei',
+    'Jun',
+    'Jul',
+    'Agu',
+    'Sep',
+    'Okt',
+    'Nov',
+    'Des',
+  ];
+  final lokal = t.toLocal();
+  final jam = lokal.hour.toString().padLeft(2, '0');
+  final menit = lokal.minute.toString().padLeft(2, '0');
+  return '${lokal.day} ${bulan[lokal.month - 1]}, $jam.$menit';
+}
+
 class _NotifCard extends StatelessWidget {
   const _NotifCard({
     super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
+    required this.waktu,
+    required this.unread,
     required this.onTap,
   });
   final IconData icon;
   final String title;
   final String subtitle;
+  final String waktu;
+  final bool unread;
   final VoidCallback onTap;
   @override
   Widget build(BuildContext context) => Container(
@@ -102,9 +171,10 @@ class _NotifCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w700,
+                          fontWeight:
+                              unread ? FontWeight.w800 : FontWeight.w400,
                           color: gardenInk,
                         ),
                       ),
@@ -113,9 +183,24 @@ class _NotifCard extends StatelessWidget {
                         subtitle,
                         style: const TextStyle(fontSize: 12, color: textGrey),
                       ),
+                      const SizedBox(height: 4),
+                      Text(
+                        waktu,
+                        style: const TextStyle(fontSize: 11, color: textGrey),
+                      ),
                     ],
                   ),
                 ),
+                if (unread)
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: gardenInk,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                const SizedBox(width: 6),
                 const Icon(
                   Icons.chevron_right,
                   size: 20,
@@ -153,7 +238,7 @@ class _EmptyState extends StatelessWidget {
               ),
               SizedBox(height: 6),
               Text(
-                'Notifikasi pesanan dan promo akan muncul di sini.',
+                'Notifikasi perubahan status pesanan akan muncul di sini.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 12, color: textGrey),
               ),

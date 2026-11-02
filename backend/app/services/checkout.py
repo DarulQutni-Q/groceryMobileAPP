@@ -16,6 +16,8 @@ from app.models.toko import Toko
 from app.models.user import now_utc
 from app.schemas.pembayaran import CheckoutResponse, InvoiceEvent
 from app.services.alamat import lock_customer, owned_address
+from app.services.fcm import notify_order_owner
+from app.services.notifikasi import catat_pesanan_baru
 from app.services.xendit import safe_payment_url
 
 
@@ -204,7 +206,7 @@ def reserve_payment(db, order, data, attempt, invoice, products):
     return payment
 
 
-def finalize_order(db, user, data, attempt, gateway, fresh):
+def finalize_order(db, user, data, attempt, gateway, fresh, settings=None):
     lock_customer(db, user)
     payment = db.scalar(select(Pembayaran).where(Pembayaran.external_id == attempt.external_id))
     if payment:
@@ -220,17 +222,20 @@ def finalize_order(db, user, data, attempt, gateway, fresh):
     invoice = merge_invoice(db, attempt, invoice_for(attempt, user, data, gateway, fresh))
     order = insert_order(db, user, data, address, store, items, costs)
     payment = reserve_payment(db, order, data, attempt, invoice, products)
+    catat_pesanan_baru(db, order, store)
     db.commit()
+    if settings is not None:
+        notify_order_owner(db, order, store, settings)
     return checkout_result(db, payment)
 
 
-def perform_checkout(db, user, data, key, gateway):
+def perform_checkout(db, user, data, key, gateway, settings=None):
     key = key or f"{int(time.time() * 1000)}-{secrets.token_hex(16)}"
     try:
         attempt, payment, fresh = prepare_attempt(db, user, data, key, gateway)
         if payment:
             return checkout_result(db, payment)
-        return finalize_order(db, user, data, attempt, gateway, fresh)
+        return finalize_order(db, user, data, attempt, gateway, fresh, settings)
     except SQLAlchemyError:
         db.rollback()
         raise HTTPException(

@@ -38,7 +38,14 @@ def checkout(
     gateway=Depends(get_gateway),
 ):
     check_limit(request, parse("10/minute"), "checkout", str(user.id))
-    return perform_checkout(db, user, data, idempotency_key, gateway(data.metode_bayar))
+    return perform_checkout(
+        db,
+        user,
+        data,
+        idempotency_key,
+        gateway(data.metode_bayar),
+        settings=request.app.state.settings,
+    )
 
 
 def verify_callback(request: Request, x_callback_token: Annotated[str | None, Header()] = None):

@@ -9,6 +9,7 @@ from app.models.pesanan import Pesanan, PesananItem
 from app.models.produk import Produk
 from app.models.user import now_utc
 from app.schemas.pesanan import ItemTest
+from app.services.notifikasi import catat_status_pesanan
 from app.services.pembayaran import release_stock
 
 
@@ -111,5 +112,6 @@ def transition(db, pesanan, action, reason=None):
             payment.perlu_rekonsiliasi = True
         if payment.status == "pending":
             payment.status = "failed"
+    catat_status_pesanan(db, pesanan)
     db.commit()
     return pesanan

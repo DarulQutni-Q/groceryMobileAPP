@@ -23,6 +23,7 @@ from app.routers.auth import router
 from app.routers.catalog import router as catalog_router
 from app.routers.laporan import router as laporan_router
 from app.routers.pembayaran import router as pembayaran_router
+from app.routers.notifikasi import router as notifikasi_router
 from app.routers.pesanan import router as pesanan_router
 from app.routers.produk import router as produk_router
 from app.routers.toko import router as toko_router
@@ -63,6 +64,7 @@ def create_app() -> FastAPI:
     app.include_router(produk_router)
     app.include_router(catalog_router)
     app.include_router(pesanan_router)
+    app.include_router(notifikasi_router)
     app.include_router(laporan_router)
     app.add_exception_handler(RequestValidationError, validation_error)
     app.add_middleware(ConfiguredCors)

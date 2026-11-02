@@ -143,6 +143,10 @@ class AuthFixture {
           'nama_toko': null,
         });
       }
+      if (request.path == '/notifikasi') {
+        // Default dunia fixture: belum ada notifikasi tersimpan.
+        return response({'data': [], 'belum_dibaca': 0});
+      }
       if (paused != null) await paused!.future;
       return response({'access_token': 'access', 'refresh_token': 'refresh'});
     });

@@ -77,6 +77,30 @@ def send_push(
         raise FcmError(f"FCM {resp.status_code}: {resp.text[:200]}")
 
 
+def notify_order_owner(db: Session, pesanan: Any, toko: Any, settings: Settings) -> bool:
+    """Kirim push pesanan baru ke pemilik toko. Best-effort seperti
+    notify_order_customer: tidak pernah raise."""
+    try:
+        owner = db.scalar(select(User).where(User.id == toko.owner_id))
+        if owner is None or not owner.fcm_token:
+            return False
+        total = f"Rp {pesanan.total:,}".replace(",", ".")
+        send_push(
+            owner.fcm_token,
+            f"Pesanan baru {pesanan.kode}",
+            f"Pesanan baru senilai {total}, status: Baru",
+            settings,
+            data={"pesanan_id": str(pesanan.id), "status": "baru"},
+        )
+        return True
+    except Exception:
+        _log.warning(
+            "gagal kirim push pesanan baru %s", getattr(pesanan, "kode", "?"),
+            exc_info=True,
+        )
+        return False
+
+
 def notify_order_customer(db: Session, pesanan: Any, settings: Settings) -> bool:
     """Kirim push status pesanan ke customer. Best-effort: tidak pernah
     raise, supaya kegagalan push tidak menggagalkan perubahan status.

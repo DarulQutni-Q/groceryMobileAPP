@@ -20,3 +20,5 @@ export 'src/models/alamat.dart';
 export 'src/models/pembayaran.dart';
 export 'src/api/alamat_api.dart';
 export 'src/api/checkout_api.dart';
+export 'src/models/notifikasi.dart';
+export 'src/api/notifikasi_api.dart';

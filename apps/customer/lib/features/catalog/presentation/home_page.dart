@@ -4,12 +4,12 @@ import 'package:grocery_shared/shared.dart';
 
 import '../../../core/theme.dart';
 import '../../auth/application/auth_provider.dart';
-import '../../checkout/application/checkout_provider.dart';
 import '../application/produk_provider.dart';
 import 'cart_page.dart';
 import 'catalog_page.dart';
 import 'toko_page.dart';
 import 'pilih_toko_dialog.dart';
+import '../application/notifikasi_provider.dart';
 import 'notifications_page.dart';
 import 'promo_page.dart';
 import 'beli_satu_gratis_satu_page.dart';
@@ -169,18 +169,29 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                 ),
                 IconButton.filledTonal(
-                  onPressed: () => Navigator.push<void>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const NotificationsPage(),
-                    ),
-                  ),
+                  onPressed: () async {
+                    await Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationsPage(),
+                      ),
+                    );
+                    ref.invalidate(notifikasiProvider);
+                  },
                   tooltip: 'Notifikasi',
                   icon: Badge(
-                    isLabelVisible: ref
-                        .watch(pendingCheckoutProvider)
-                        .maybeWhen(data: (value) => value, orElse: () => false),
-                    label: const Text('1'),
+                    isLabelVisible: ref.watch(notifikasiProvider).maybeWhen(
+                          data: (value) => value.belumDibaca > 0,
+                          orElse: () => false,
+                        ),
+                    label: Text(
+                      ref.watch(notifikasiProvider).maybeWhen(
+                            data: (value) => value.belumDibaca > 99
+                                ? '99+'
+                                : '${value.belumDibaca}',
+                            orElse: () => '',
+                          ),
+                    ),
                     backgroundColor: dangerRed,
                     child: const Icon(
                       Icons.notifications_none_rounded,
