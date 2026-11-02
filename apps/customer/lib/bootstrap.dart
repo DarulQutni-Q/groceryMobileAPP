@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
+import 'features/auth/presentation/gerbang_versi.dart';
 import 'features/auth/application/auth_provider.dart';
 
 Future<void> bootstrap(String flavor) async {
@@ -36,7 +37,12 @@ Future<void> bootstrap(String flavor) async {
               : dotenv.env['GOOGLE_CLIENT_ID'] ?? '',
         ),
       ],
-      child: const CustomerApp(),
+      child: const GerbangVersi(
+        aplikasi: 'customer',
+        // Samakan dengan pubspec.yaml (tanpa sufiks +build).
+        versiSaatIni: '0.1.0',
+        child: CustomerApp(),
+      ),
     ),
   );
 }

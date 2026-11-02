@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
+import 'features/auth/presentation/gerbang_versi.dart';
 import 'features/auth/application/auth_provider.dart';
 
 Future<void> bootstrap(String flavor) async {
@@ -28,7 +29,12 @@ Future<void> bootstrap(String flavor) async {
         apiBaseUrlProvider.overrideWithValue(baseUrl),
         googleClientIdProvider.overrideWithValue(googleId),
       ],
-      child: const SellerApp(),
+      child: const GerbangVersi(
+        aplikasi: 'seller',
+        // Samakan dengan pubspec.yaml (tanpa sufiks +build).
+        versiSaatIni: '1.0.0',
+        child: SellerApp(),
+      ),
     ),
   );
 }

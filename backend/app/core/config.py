@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     smtp_password: SecretStr = SecretStr("")
     smtp_from: str = ""
     fcm_service_account_file: str = ""
+    versi_minimum_customer: str = "0.0.0"
+    versi_minimum_seller: str = "0.0.0"
     xendit_api_key: SecretStr = SecretStr("")
     xendit_webhook_token: SecretStr = SecretStr("")
     auto_create_tables: bool = False
