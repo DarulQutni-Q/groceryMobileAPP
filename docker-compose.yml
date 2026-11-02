@@ -31,6 +31,7 @@ services:
         max-file: "3"
     volumes:
       - uploads_data:/srv/uploads
+      - ${FCM_SERVICE_ACCOUNT_HOST:-/dev/null}:/secrets/fcm-service-account.json:ro
     environment:
       DATABASE_URL: postgresql+psycopg2://grocery:${POSTGRES_PASSWORD:?Isi POSTGRES_PASSWORD}@db:5432/grocery
       JWT_SECRET: ${JWT_SECRET:?Isi JWT_SECRET}
@@ -44,7 +45,7 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       SMTP_FROM: ${SMTP_FROM:-}
-      FCM_SERVICE_ACCOUNT_FILE: ${FCM_SERVICE_ACCOUNT_FILE:-}
+      FCM_SERVICE_ACCOUNT_FILE: /secrets/fcm-service-account.json
       ENV: ${ENV:-prod}
     ports:
       - "8001:8000"
