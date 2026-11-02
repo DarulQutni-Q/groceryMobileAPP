@@ -1,21 +1,18 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grocery_shared/shared.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../checkout/presentation/struk_page.dart';
 import '../../../core/theme.dart';
+import '../application/chat_provider.dart';
 import 'catalog_widgets.dart' show rupiah;
 
-/// Chat dengan kurir toko.
+/// Chat dengan kurir toko, lewat backend.
 ///
-/// Halaman ini SIMULASI LOKAL: tidak ada backend chat kurir, jadi tidak
-/// ada balasan kurir sungguhan. Yang berfungsi beneran: pesan yang dikirim
-/// pengguna (teks dan foto) tampil sebagai bubble sendiri dan tersimpan
-/// lokal per pesanan lewat SharedPreferences.
+/// Pesan tersimpan di server per pesanan dan dibaca toko dari aplikasinya,
+/// jadi bukan lagi catatan lokal di perangkat ini. Teks saja: foto dari
+/// chat lokal lama tidak dipindahkan, karena path file perangkat pengirim
+/// tidak ada artinya bagi pihak lain.
 ///
 /// Data yang tampil berasal dari [order] yang dioper dari halaman Pesanan:
 /// nomor, status, dan total pesanan adalah data backend asli. Identitas
@@ -25,51 +22,16 @@ import 'catalog_widgets.dart' show rupiah;
 /// data: chat baru mulai kosong, bukan dari percakapan referensi.
 ///
 /// Keyboard sistem tidak dirender (bukan bagian UI aplikasi).
-class ChatDriverPage extends StatefulWidget {
+class ChatDriverPage extends ConsumerStatefulWidget {
   const ChatDriverPage({super.key, this.order});
 
   /// Pesanan yang sedang dibahas. Boleh null (pemakaian langsung tanpa
-  /// konteks pesanan): kartu pesanan dan pesan sistem disembunyikan.
+  /// konteks pesanan): kartu pesanan dan pesan sistem disembunyikan, dan
+  /// kirim pesan tidak bisa dilakukan tanpa pesanan.
   final Pesanan? order;
 
   @override
-  State<ChatDriverPage> createState() => _ChatDriverPageState();
-}
-
-class _ChatMessage {
-  const _ChatMessage({
-    required this.mine,
-    this.text,
-    this.imagePath,
-    required this.sentAt,
-  });
-
-  final bool mine;
-  final String? text;
-  final String? imagePath;
-  final DateTime sentAt;
-
-  String get time =>
-      '${sentAt.hour}:${sentAt.minute.toString().padLeft(2, '0')}';
-
-  Map<String, Object?> toJson() => {
-    'mine': mine,
-    'text': text,
-    'imagePath': imagePath,
-    'sentAt': sentAt.toIso8601String(),
-  };
-
-  static _ChatMessage? fromJson(Object? value) {
-    if (value is! Map<String, Object?>) return null;
-    final sentAt = DateTime.tryParse('${value['sentAt']}');
-    if (sentAt == null) return null;
-    return _ChatMessage(
-      mine: value['mine'] == true,
-      text: value['text'] as String?,
-      imagePath: value['imagePath'] as String?,
-      sentAt: sentAt,
-    );
-  }
+  ConsumerState<ChatDriverPage> createState() => _ChatDriverPageState();
 }
 
 const _bulan = [
@@ -87,85 +49,39 @@ const _bulan = [
   'Des',
 ];
 
-/// Judul status pesanan. Bukan estimasi waktu: backend tidak punya ETA,
-/// jadi judulnya status, bukan "Tiba dalam ~8 Menit" karangan.
-/// Pemetaan ini sama dengan judul kartu tracking di halaman Pesanan.
 String _statusTitle(String status) => switch (status) {
-  'baru' => 'Menunggu konfirmasi toko',
-  'diproses' => 'Pesanan sedang diproses',
-  'dikemas' => 'Pesanan sudah dikemas',
-  'diantar' => 'Pesanan dalam perjalanan',
-  'selesai' => 'Pesanan selesai',
-  'dibatalkan' => 'Pesanan dibatalkan',
-  'ditolak' => 'Pesanan dibatalkan',
-  _ => 'Pesanan dalam proses',
+  'baru' => 'Pesanan Baru',
+  'diproses' => 'Diproses',
+  'dikemas' => 'Dikemas',
+  'diantar' => 'Diantar',
+  'selesai' => 'Selesai',
+  'dibatalkan' => 'Dibatalkan',
+  'ditolak' => 'Ditolak',
+  _ => status,
 };
 
-class _ChatDriverPageState extends State<ChatDriverPage> {
+String _tanggal(DateTime value) {
+  final local = value.toLocal();
+  return '${local.day} ${_bulan[local.month - 1]} ${local.year}';
+}
+
+String _waktu(DateTime value) {
+  final local = value.toLocal();
+  return '${_tanggal(local)}, '
+      '${local.hour.toString().padLeft(2, '0')}:'
+      '${local.minute.toString().padLeft(2, '0')} WIB';
+}
+
+class _ChatDriverPageState extends ConsumerState<ChatDriverPage> {
   final _input = TextEditingController();
   final _scroll = ScrollController();
-  var _messages = const <_ChatMessage>[];
-
-  String get _prefsKey => 'chat_kurir_${widget.order?.kode ?? 'tanpa_kode'}';
-
-  @override
-  void initState() {
-    super.initState();
-    _loadMessages();
-  }
-
-  @override
-  void didUpdateWidget(ChatDriverPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Halaman yang sama dipakai untuk pesanan berbeda (mis. rebuild dari
-    // parent): muat ulang riwayat sesuai kode pesanan baru, jangan tampilkan
-    // riwayat pesanan lama.
-    if (oldWidget.order?.kode != widget.order?.kode) {
-      _messages = const [];
-      _loadMessages();
-    }
-  }
+  var _mengirim = false;
 
   @override
   void dispose() {
     _input.dispose();
     _scroll.dispose();
     super.dispose();
-  }
-
-  Future<void> _loadMessages() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_prefsKey);
-      if (raw == null || raw.isEmpty) return;
-      final decoded = jsonDecode(raw);
-      if (decoded is! List) return;
-      final loaded = decoded
-          .map(_ChatMessage.fromJson)
-          .whereType<_ChatMessage>()
-          // Foto picker tersimpan di cache yang bisa dibersihkan sistem:
-          // pesan foto yang filenya sudah tidak ada tidak ditampilkan
-          // daripada bubble rusak.
-          .where((m) => m.imagePath == null || File(m.imagePath!).existsSync())
-          .toList();
-      if (!mounted) return;
-      setState(() => _messages = loaded);
-      _scrollToBottom();
-    } catch (_) {
-      // Data lokal rusak: mulai dari chat kosong daripada crash.
-    }
-  }
-
-  Future<void> _saveMessages() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(
-        _prefsKey,
-        jsonEncode(_messages.map((m) => m.toJson()).toList()),
-      );
-    } catch (_) {
-      // Penyimpanan lokal gagal: pesan tetap tampil di sesi ini.
-    }
   }
 
   void _scrollToBottom() {
@@ -176,40 +92,31 @@ class _ChatDriverPageState extends State<ChatDriverPage> {
     });
   }
 
-  void _sendText() {
+  Future<void> _sendText() async {
+    final order = widget.order;
     final text = _input.text.trim();
-    if (text.isEmpty) return;
-    setState(() {
-      _messages = [
-        ..._messages,
-        _ChatMessage(mine: true, text: text, sentAt: DateTime.now()),
-      ];
-      _input.clear();
-    });
-    _saveMessages();
-    _scrollToBottom();
-  }
-
-  Future<void> _sendImage(ImageSource source) async {
-    XFile? picked;
-    try {
-      picked = await ImagePicker().pickImage(source: source);
-    } catch (_) {
+    if (text.isEmpty || _mengirim) return;
+    if (order == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Buka chat dari pesanan untuk mengirim.')),
+      );
       return;
     }
-    if (picked == null || !mounted) return;
-    setState(() {
-      _messages = [
-        ..._messages,
-        _ChatMessage(
-          mine: true,
-          imagePath: picked!.path,
-          sentAt: DateTime.now(),
-        ),
-      ];
-    });
-    _saveMessages();
-    _scrollToBottom();
+    setState(() => _mengirim = true);
+    try {
+      await ref.read(chatApiProvider).kirim(order.id, text);
+      _input.clear();
+      ref.invalidate(chatListProvider(order.id));
+      _scrollToBottom();
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Gagal mengirim pesan, coba lagi.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _mengirim = false);
+    }
   }
 
   void _showPhoneDialog() {
@@ -281,21 +188,24 @@ class _ChatDriverPageState extends State<ChatDriverPage> {
     return _statusTitle(order.status);
   }
 
-  String _dayLabel() {
-    if (_messages.isEmpty) return 'Hari Ini';
-    final latest = _messages.last.sentAt;
+  String _dayLabel(List<ChatPesan> messages) {
+    if (messages.isEmpty) return 'Hari Ini';
+    final latest = messages.last.createdAt.toLocal();
     final now = DateTime.now();
     if (latest.year == now.year &&
         latest.month == now.month &&
         latest.day == now.day) {
       return 'Hari Ini';
     }
-    return '${latest.day} ${_bulan[latest.month - 1]} ${latest.year}';
+    return _tanggal(latest);
   }
 
   @override
   Widget build(BuildContext context) {
     final order = widget.order;
+    final messagesAsync = order == null
+        ? const AsyncValue<List<ChatPesan>>.data([])
+        : ref.watch(chatListProvider(order.id));
     return Scaffold(
       backgroundColor: authBackground,
       body: SafeArea(
@@ -396,40 +306,60 @@ class _ChatDriverPageState extends State<ChatDriverPage> {
                 ),
               ),
             Expanded(
-              child: ListView(
-                controller: _scroll,
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                children: [
-                  Center(child: _DateChip(_dayLabel())),
-                  const SizedBox(height: 12),
-                  // Pesan sistem hanya kalau pesanan benar-benar sedang
-                  // diantar (sudah diserahkan ke kurir).
-                  if (order != null && order.status == 'diantar') ...[
-                    const _SystemMessage(
-                      'Pesanan telah diserahkan ke Kurir Toko',
+              child: messagesAsync.when(
+                loading: () =>
+                    const Center(child: CircularProgressIndicator()),
+                error: (_, _) => Center(
+                  child: TextButton(
+                    key: const Key('chat-muat-ulang'),
+                    onPressed: () =>
+                        ref.invalidate(chatListProvider(order!.id)),
+                    child: const Text('Gagal memuat. Coba lagi'),
+                  ),
+                ),
+                data: (messages) {
+                  _scrollToBottom();
+                  return RefreshIndicator(
+                    onRefresh: () async =>
+                        ref.refresh(chatListProvider(order!.id).future),
+                    child: ListView(
+                      controller: _scroll,
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                      children: [
+                        Center(child: _DateChip(_dayLabel(messages))),
+                        const SizedBox(height: 12),
+                        // Pesan sistem hanya kalau pesanan benar-benar sedang
+                        // diantar (sudah diserahkan ke kurir).
+                        if (order != null && order.status == 'diantar') ...[
+                          const _SystemMessage(
+                            'Pesanan telah diserahkan ke Kurir Toko',
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        if (messages.isEmpty)
+                          const Padding(
+                            padding: EdgeInsets.only(top: 24),
+                            child: Text(
+                              'Belum ada pesan untuk pesanan ini.\n'
+                              'Pesan tersimpan di server dan dibaca toko.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 12, color: textGrey),
+                            ),
+                          ),
+                        for (int i = 0; i < messages.length; i++) ...[
+                          if (i > 0) const SizedBox(height: 10),
+                          _Bubble(
+                            mine: !messages[i].dariToko,
+                            text: messages[i].isi,
+                            time:
+                                '${messages[i].createdAt.toLocal().hour}:'
+                                '${messages[i].createdAt.toLocal().minute.toString().padLeft(2, '0')}',
+                          ),
+                        ],
+                      ],
                     ),
-                    const SizedBox(height: 12),
-                  ],
-                  if (_messages.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 24),
-                      child: Text(
-                        'Belum ada pesan untuk pesanan ini.\n'
-                        'Pesan yang kamu kirim tersimpan di perangkat ini.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 12, color: textGrey),
-                      ),
-                    ),
-                  for (int i = 0; i < _messages.length; i++) ...[
-                    if (i > 0) const SizedBox(height: 10),
-                    _Bubble(
-                      mine: _messages[i].mine,
-                      text: _messages[i].text,
-                      imagePath: _messages[i].imagePath,
-                      time: _messages[i].time,
-                    ),
-                  ],
-                ],
+                  );
+                },
               ),
             ),
             Container(
@@ -440,28 +370,9 @@ class _ChatDriverPageState extends State<ChatDriverPage> {
               ),
               child: Row(
                 children: [
-                  InkWell(
-                    onTap: () => _sendImage(ImageSource.camera),
-                    customBorder: const CircleBorder(),
-                    child: const Icon(
-                      Icons.camera_alt_outlined,
-                      size: 24,
-                      color: gardenInk,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  InkWell(
-                    onTap: () => _sendImage(ImageSource.gallery),
-                    customBorder: const CircleBorder(),
-                    child: const Icon(
-                      Icons.attach_file,
-                      size: 24,
-                      color: gardenInk,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
                   Expanded(
                     child: TextField(
+                      key: const Key('chat-input'),
                       controller: _input,
                       onSubmitted: (_) => _sendText(),
                       decoration: const InputDecoration(
@@ -475,6 +386,7 @@ class _ChatDriverPageState extends State<ChatDriverPage> {
                     ),
                   ),
                   InkWell(
+                    key: const Key('chat-kirim'),
                     onTap: _sendText,
                     customBorder: const CircleBorder(),
                     child: Container(
@@ -484,11 +396,19 @@ class _ChatDriverPageState extends State<ChatDriverPage> {
                         shape: BoxShape.circle,
                         color: gardenInk,
                       ),
-                      child: const Icon(
-                        Icons.send,
-                        size: 20,
-                        color: Colors.white,
-                      ),
+                      child: _mengirim
+                          ? const Padding(
+                              padding: EdgeInsets.all(12),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(
+                              Icons.send,
+                              size: 20,
+                              color: Colors.white,
+                            ),
                     ),
                   ),
                 ],
@@ -499,18 +419,6 @@ class _ChatDriverPageState extends State<ChatDriverPage> {
       ),
     );
   }
-}
-
-String _tanggal(DateTime value) {
-  final local = value.toLocal();
-  return '${local.day} ${_bulan[local.month - 1]} ${local.year}';
-}
-
-String _waktu(DateTime value) {
-  final local = value.toLocal();
-  return '${_tanggal(local)}, '
-      '${local.hour.toString().padLeft(2, '0')}:'
-      '${local.minute.toString().padLeft(2, '0')} WIB';
 }
 
 /// Tombol lingkaran putih di header, sesuai referensi (panah kembali dan
@@ -588,15 +496,9 @@ class _SystemMessage extends StatelessWidget {
 }
 
 class _Bubble extends StatelessWidget {
-  const _Bubble({
-    required this.mine,
-    this.text,
-    this.imagePath,
-    required this.time,
-  });
+  const _Bubble({required this.mine, required this.text, required this.time});
   final bool mine;
-  final String? text;
-  final String? imagePath;
+  final String text;
   final String time;
   @override
   Widget build(BuildContext context) => Row(
@@ -627,24 +529,14 @@ class _Bubble extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              if (imagePath != null)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.file(
-                    File(imagePath!),
-                    width: 200,
-                    fit: BoxFit.cover,
-                  ),
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.35,
+                  color: mine ? Colors.white : gardenInk,
                 ),
-              if (text != null)
-                Text(
-                  text!,
-                  style: TextStyle(
-                    fontSize: 13,
-                    height: 1.35,
-                    color: mine ? Colors.white : gardenInk,
-                  ),
-                ),
+              ),
               const SizedBox(height: 4),
               Row(
                 mainAxisSize: MainAxisSize.min,

@@ -7,6 +7,7 @@ import '../../store/presentation/store_widgets.dart';
 import '../application/pesanan_provider.dart';
 import 'pesanan_actions.dart';
 import 'pesanan_widgets.dart';
+import 'chat_pelanggan_page.dart';
 
 class PesananDetailScreen extends ConsumerWidget {
   const PesananDetailScreen({
@@ -233,6 +234,18 @@ class PesananDetailScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          OutlinedButton.icon(
+            key: const Key('pesanan-chat'),
+            onPressed: () => Navigator.push<void>(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ChatPelangganPage(order: order),
+              ),
+            ),
+            icon: const Icon(Icons.chat_outlined),
+            label: const Text('Chat Pelanggan'),
+          ),
+          const SizedBox(height: 8),
           if (order.status == 'baru') ...[
             FilledButton(
               onPressed: busy
