@@ -1,5 +1,5 @@
-/// Voucher dari backend (milik satu toko). Jenis backend: 'persen' dan
-/// 'gratis_ongkir'; 'tanpa' hanya sentinel lokal untuk "hapus pilihan".
+/// Voucher dari backend (milik satu toko). Satu-satunya jenis backend
+/// adalah 'persen'; 'tanpa' hanya sentinel lokal untuk "hapus pilihan".
 class Voucher {
   const Voucher({
     required this.id,
@@ -57,13 +57,6 @@ class Voucher {
     return hitung > cap ? cap : hitung;
   }
 
-  /// Potongan ongkir voucher gratis ongkir, dibatasi max_ongkir.
-  int potonganOngkir(int ongkir) {
-    if (jenis != 'gratis_ongkir') return 0;
-    return ongkir > maxOngkir ? maxOngkir : ongkir;
-  }
-
   /// Apakah voucher ini bisa dipakai untuk [subtotal] sekarang.
-  bool memenuhiSyarat(int subtotal) =>
-      jenis != 'persen' || subtotal >= minBelanja;
+  bool memenuhiSyarat(int subtotal) => subtotal >= minBelanja;
 }

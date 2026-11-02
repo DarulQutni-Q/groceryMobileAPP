@@ -111,15 +111,12 @@ class VoucherPage extends ConsumerWidget {
   }
 
   String _ringkas(Voucher voucher) {
-    if (voucher.jenis == 'persen') {
-      final syarat = <String>['${voucher.persen}%'];
-      if (voucher.cap > 0) syarat.add('maks. Rp ${voucher.cap}');
-      if (voucher.minBelanja > 0) {
-        syarat.add('min. belanja Rp ${voucher.minBelanja}');
-      }
-      return syarat.join(' • ');
+    final syarat = <String>['${voucher.persen}%'];
+    if (voucher.cap > 0) syarat.add('maks. Rp ${voucher.cap}');
+    if (voucher.minBelanja > 0) {
+      syarat.add('min. belanja Rp ${voucher.minBelanja}');
     }
-    return 'Gratis ongkir s/d Rp ${voucher.maxOngkir}';
+    return syarat.join(' • ');
   }
 
   Future<void> _tambahVoucher(BuildContext context, WidgetRef ref) async {
@@ -128,8 +125,6 @@ class VoucherPage extends ConsumerWidget {
     final persen = TextEditingController();
     final cap = TextEditingController();
     final minBelanja = TextEditingController();
-    final maxOngkir = TextEditingController();
-    var jenis = 'persen';
     var error = '';
     final simpan = await showDialog<bool>(
       context: context,
@@ -150,24 +145,7 @@ class VoucherPage extends ConsumerWidget {
                   controller: judul,
                   decoration: const InputDecoration(labelText: 'Judul'),
                 ),
-                DropdownButtonFormField<String>(
-                  key: const Key('voucher-jenis'),
-                  initialValue: jenis,
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'persen',
-                      child: Text('Persen'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'gratis_ongkir',
-                      child: Text('Gratis ongkir'),
-                    ),
-                  ],
-                  onChanged: (value) =>
-                      setState(() => jenis = value ?? 'persen'),
-                ),
-                if (jenis == 'persen') ...[
-                  TextField(
+                TextField(
                     key: const Key('voucher-persen'),
                     controller: persen,
                     keyboardType: TextInputType.number,
@@ -190,16 +168,6 @@ class VoucherPage extends ConsumerWidget {
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: const InputDecoration(
                       labelText: 'Min. belanja (0 = tanpa syarat)',
-                    ),
-                  ),
-                ] else
-                  TextField(
-                    key: const Key('voucher-max-ongkir'),
-                    controller: maxOngkir,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(
-                      labelText: 'Maks. ongkir ditanggung',
                     ),
                   ),
                 if (error.isNotEmpty) ...[
@@ -233,11 +201,10 @@ class VoucherPage extends ConsumerWidget {
       await ref.read(voucherApiProvider).create({
         'kode': kode.text.trim(),
         'judul': judul.text.trim(),
-        'jenis': jenis,
+        'jenis': 'persen',
         'persen': int.tryParse(persen.text) ?? 0,
         'cap': int.tryParse(cap.text) ?? 0,
         'min_belanja': int.tryParse(minBelanja.text) ?? 0,
-        'max_ongkir': int.tryParse(maxOngkir.text) ?? 0,
       });
       ref.invalidate(voucherListProvider);
     } catch (_) {

@@ -9,7 +9,7 @@ from app.schemas.input import InputModel
 class VoucherCreate(InputModel):
     kode: str = Field(min_length=1, max_length=40)
     judul: str = Field(min_length=1, max_length=120)
-    jenis: str = Field(default="persen", pattern=r"^(persen|gratis_ongkir)$")
+    jenis: str = Field(default="persen", pattern=r"^persen$")
     persen: int = Field(default=0, ge=0, le=100)
     cap: int = Field(default=0, ge=0, le=2147483647)
     min_belanja: int = Field(default=0, ge=0, le=2147483647)

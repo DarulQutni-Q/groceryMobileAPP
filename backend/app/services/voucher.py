@@ -19,12 +19,11 @@ def cari_voucher_aktif(db: Session, toko_id, kode: str):
 
 
 def potongan_voucher(voucher: Voucher, subtotal: int, ongkir: int):
-    """Kembalikan (potongan_tagihan, potongan_ongkir)."""
+    """Kembalikan (potongan_tagihan, potongan_ongkir). Satu-satunya jenis
+    adalah persen; potongan ongkir selalu 0."""
     if voucher.jenis == "persen":
         hitung = subtotal * voucher.persen // 100
         return (hitung if hitung < voucher.cap else voucher.cap), 0
-    if voucher.jenis == "gratis_ongkir":
-        return 0, (ongkir if ongkir < voucher.max_ongkir else voucher.max_ongkir)
     return 0, 0
 
 
@@ -34,7 +33,7 @@ def terapkan_voucher(db: Session, toko_id, kode: str, subtotal: int, ongkir: int
     voucher = cari_voucher_aktif(db, toko_id, kode)
     if voucher is None:
         raise HTTPException(400, "Voucher tidak ditemukan atau tidak aktif")
-    if voucher.jenis == "persen" and subtotal < voucher.min_belanja:
+    if subtotal < voucher.min_belanja:
         raise HTTPException(400, "Subtotal belum memenuhi minimal belanja voucher")
     diskon, potongan_ongkir = potongan_voucher(voucher, subtotal, ongkir)
     return voucher, diskon, potongan_ongkir

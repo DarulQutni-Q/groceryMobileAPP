@@ -123,10 +123,6 @@ def test_voucher_tidak_valid_ditolak(dunia):
     assert http.post("/checkout/preview", headers=buyer, json={**body, "voucher_kode": "OFF10"}).status_code == 400
 
 
-def test_gratis_ongkir_diterima_tapi_tanpa_efek_saat_ongkir_nol(dunia):
+def test_jenis_gratis_ongkir_ditolak(dunia):
     http, seller, buyer, toko, body = dunia
-    assert _buat(http, seller, kode="GRATISONGKIR", judul="Gratis ongkir", jenis="gratis_ongkir", persen=0, max_ongkir=15000).status_code == 201
-    preview = http.post("/checkout/preview", headers=buyer, json={**body, "voucher_kode": "GRATISONGKIR"})
-    assert preview.status_code == 200, preview.text
-    assert preview.json()["diskon"] == 0
-    assert preview.json()["total"] == 34000 + 1000
+    assert _buat(http, seller, kode="GRATISONGKIR", judul="Gratis ongkir", jenis="gratis_ongkir", persen=0, max_ongkir=15000).status_code == 422

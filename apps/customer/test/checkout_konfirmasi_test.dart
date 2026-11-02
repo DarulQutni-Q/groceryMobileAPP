@@ -142,15 +142,15 @@ Future<AuthFixture> bukaKonfirmasi(
           'created_at': '2026-11-02T00:00:00Z',
         },
         {
-          'id': 'gratisOngkir',
+          'id': 'hemat5',
           'toko_id': 't1',
-          'kode': 'GRATISONGKIR',
-          'judul': 'Gratis Ongkir Instan s/d Rp 15.000',
-          'jenis': 'gratis_ongkir',
-          'persen': 0,
-          'cap': 0,
-          'min_belanja': 0,
-          'max_ongkir': 15000,
+          'kode': 'HEMAT5',
+          'judul': 'Hemat 5%',
+          'jenis': 'persen',
+          'persen': 5,
+          'cap': 10000,
+          'min_belanja': 75000,
+          'max_ongkir': 0,
           'aktif': true,
           'created_at': '2026-11-02T00:00:00Z',
         },
@@ -289,18 +289,6 @@ void main() {
     expect(diskon.potonganTagihan(74999), 0);
     expect(diskon.memenuhiSyarat(75000), isTrue);
     expect(diskon.memenuhiSyarat(74999), isFalse);
-    const ongkir = Voucher(
-      id: 'gratisOngkir',
-      tokoId: 't1',
-      kode: 'GRATISONGKIR',
-      judul: 'Gratis Ongkir',
-      jenis: 'gratis_ongkir',
-      maxOngkir: 15000,
-    );
-    expect(ongkir.potonganTagihan(85100), 0);
-    expect(ongkir.potonganOngkir(20000), 15000);
-    expect(ongkir.potonganOngkir(8000), 8000);
-    expect(ongkir.potonganOngkir(0), 0);
   });
 
   testWidgets('alamat tap opens list and picking updates card', (
@@ -387,20 +375,17 @@ void main() {
     expect(find.text('Rp 86.100'), findsNWidgets(2));
   });
 
-  testWidgets('voucher free ongkir with zero shipping changes nothing', (
+  testWidgets('voucher picker tidak lagi menawarkan gratis ongkir', (
     tester,
   ) async {
     await bukaKonfirmasi(tester);
     await tester.tap(find.byKey(const Key('choose-voucher')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('voucher-gratisOngkir')));
+    expect(find.text('Gratis Ongkir'), findsNothing);
+    await tester.tap(find.byKey(const Key('voucher-hemat5')));
     await tester.pumpAndSettle();
-    expect(
-      find.text('Terpilih: Gratis Ongkir Instan s/d Rp 15.000'),
-      findsOneWidget,
-    );
+    expect(find.text('Terpilih: Hemat 5%'), findsOneWidget);
     expect(find.text('Rp 86.100'), findsNWidgets(2));
-    expect(find.text('Hemat Rp 25.000'), findsNothing);
   });
 
   testWidgets('payment selection updates card', (tester) async {

@@ -26,15 +26,12 @@ class VoucherPickerPage extends ConsumerWidget {
   final Voucher? selected;
 
   String _subtitle(Voucher voucher) {
-    if (voucher.jenis == 'persen') {
-      final syarat = <String>[];
-      if (voucher.minBelanja > 0) {
-        syarat.add('Min. belanja ${rupiah(voucher.minBelanja)}');
-      }
-      if (voucher.cap > 0) syarat.add('Maks. ${rupiah(voucher.cap)}');
-      return syarat.join(' • ');
+    final syarat = <String>[];
+    if (voucher.minBelanja > 0) {
+      syarat.add('Min. belanja ${rupiah(voucher.minBelanja)}');
     }
-    return 'Gratis ongkir s/d ${rupiah(voucher.maxOngkir)}';
+    if (voucher.cap > 0) syarat.add('Maks. ${rupiah(voucher.cap)}');
+    return syarat.join(' • ');
   }
 
   @override
@@ -94,18 +91,12 @@ class VoucherPickerPage extends ConsumerWidget {
               for (final voucher in vouchers) ...[
                 _VoucherTile(
                   key: Key('voucher-${voucher.id}'),
-                  big: voucher.jenis == 'persen'
-                      ? '${voucher.persen}%'
-                      : 'FREE',
+                  big: '${voucher.persen}%',
                   title: voucher.judul,
                   subtitle: _subtitle(voucher),
-                  preview: voucher.jenis == 'persen'
-                      ? (voucher.memenuhiSyarat(subtotal)
-                            ? 'Hemat ${rupiah(voucher.potonganTagihan(subtotal))}'
-                            : 'Min. belanja ${rupiah(voucher.minBelanja)} belum tercapai')
-                      : (ongkir > 0
-                            ? 'Hemat ongkir ${rupiah(voucher.potonganOngkir(ongkir))}'
-                            : 'Ongkir pesanan ini sudah gratis'),
+                  preview: voucher.memenuhiSyarat(subtotal)
+                      ? 'Hemat ${rupiah(voucher.potonganTagihan(subtotal))}'
+                      : 'Min. belanja ${rupiah(voucher.minBelanja)} belum tercapai',
                   disabled: !voucher.memenuhiSyarat(subtotal),
                   chosen: selected?.id == voucher.id,
                   onTap: () => Navigator.pop(context, voucher),

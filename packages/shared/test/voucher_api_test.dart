@@ -76,18 +76,7 @@ void main() {
     ]);
   });
 
-  test('potongan ongkir dibatasi max_ongkir dan tanpa voucher netral', () {
-    final gratis = Voucher(
-      id: 'v2',
-      tokoId: 't1',
-      kode: 'GRATIS',
-      judul: 'Gratis ongkir',
-      jenis: 'gratis_ongkir',
-      maxOngkir: 15000,
-    );
-    expect(gratis.potonganOngkir(10000), 10000);
-    expect(gratis.potonganOngkir(20000), 15000);
-    expect(gratis.potonganTagihan(100000), 0);
+  test('tanpa voucher netral', () {
     expect(Voucher.tanpa.isTanpa, isTrue);
     expect(Voucher.tanpa.potonganTagihan(100000), 0);
   });
