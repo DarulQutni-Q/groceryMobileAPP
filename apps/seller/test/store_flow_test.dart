@@ -91,6 +91,7 @@ void main() {
     await tester.tap(find.byKey(const Key('nav-toko')));
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(find.text('Keluar'), 200);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Keluar'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Keluar'));
@@ -127,6 +128,7 @@ void main() {
     await tester.tap(find.byKey(const Key('nav-toko')));
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(find.text('Keluar'), 200);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Keluar'));
     await tester.pumpAndSettle();
     expect(deletions, 0);
@@ -223,6 +225,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Belum ada data penjualan.'), findsOneWidget);
       await tester.scrollUntilVisible(find.text('Lihat Pesanan'), 150);
+    await tester.pumpAndSettle();
       await tester.pumpAndSettle();
       expect(find.text('Lihat Pesanan'), findsOneWidget);
       expect(tester.takeException(), isNull);

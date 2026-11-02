@@ -72,6 +72,9 @@ void main() {
         expect(find.text(label), findsWidgets);
       }
       expect(find.byTooltip('Nomor telepon belum tersedia'), findsOneWidget);
+      // Total ada di bawah daftar (ListView malas): gulir dulu sampai tampil.
+      await tester.scrollUntilVisible(find.text('Rp 34.500'), 200);
+      await tester.pumpAndSettle();
       expect(find.text('Rp 34.500'), findsWidgets);
       expect(tester.takeException(), isNull);
     },
