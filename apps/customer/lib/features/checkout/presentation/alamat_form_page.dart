@@ -103,7 +103,7 @@ class _AlamatFormPageState extends ConsumerState<AlamatFormPage> {
     if (address?.latitude != null && address?.longitude != null) {
       return LatLng(address!.latitude!, address.longitude!);
     }
-    return jakartaDefault;
+    return dewantaraDefault;
   }
 
   @override

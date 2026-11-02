@@ -7,11 +7,11 @@ import 'package:latlong2/latlong.dart';
 
 import '../../../core/theme.dart';
 
-/// Titik default peta: Jakarta, dipakai kalau alamat belum punya titik
-/// tersimpan dan user belum memakai GPS. Ini BUKAN lokasi palsu yang
-/// disimpan: titik ini tidak pernah dikirim ke backend kalau user tidak
-/// menggeser peta atau memakai GPS.
-const jakartaDefault = LatLng(-6.2088, 106.8456);
+/// Titik default peta: Dewantara (sekitar Keude Krueng Geukueh), dipakai
+/// kalau alamat belum punya titik tersimpan dan user belum memakai GPS.
+/// Ini BUKAN lokasi palsu yang disimpan: titik ini tidak pernah dikirim
+/// ke backend kalau user tidak menggeser peta atau memakai GPS.
+const dewantaraDefault = LatLng(5.2443, 97.0248);
 
 /// Peta OpenStreetMap dengan pin tengah: pin diam di tengah layar,
 /// koordinatnya mengikuti posisi peta saat digeser. Dipakai di formulir

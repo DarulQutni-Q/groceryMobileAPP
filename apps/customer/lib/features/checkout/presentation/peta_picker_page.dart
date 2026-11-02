@@ -28,7 +28,7 @@ class _PetaPickerPageState extends ConsumerState<PetaPickerPage> {
     if (address.latitude != null && address.longitude != null) {
       return LatLng(address.latitude!, address.longitude!);
     }
-    return jakartaDefault;
+    return dewantaraDefault;
   }
 
   bool get _hasStored =>

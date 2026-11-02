@@ -159,7 +159,7 @@ void main() {
       mock.entries.single['alamat_lengkap'],
       'Jalan Melati 10, Kec. Sukajadi, Kota Bandung 40162',
     );
-    // Tanpa sentuhan peta, tidak ada titik yang dikirim (bukan Jakarta palsu).
+    // Tanpa sentuhan peta, tidak ada titik yang dikirim (bukan titik default palsu).
     expect(mock.entries.single['latitude'], isNull);
     expect(mock.entries.single['longitude'], isNull);
     expect(tester.takeException(), isNull);
