@@ -51,6 +51,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "812183398359-287ptun3g8ugr9v5k141a44llk08r6mf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gardenmart.daerul",
+            "certificate_hash": "696db45a0386acc6318b57eea895ae1f3236a427"
+          }
+        },
+        {
           "client_id": "812183398359-5u9j41fqjd6i2naa81eoanfiusg9qoc5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -87,6 +95,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "812183398359-66l5hu97m8hereqgfbduditqfdvvqu8q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gardenmart.gardenmart_customer.dev",
+            "certificate_hash": "696db45a0386acc6318b57eea895ae1f3236a427"
+          }
+        },
         {
           "client_id": "812183398359-ej3kos87fkevonlep3cgqnd4vv68fbtt.apps.googleusercontent.com",
           "client_type": 1,
