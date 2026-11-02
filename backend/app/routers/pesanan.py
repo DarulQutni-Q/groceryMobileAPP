@@ -14,6 +14,7 @@ from app.schemas.pagination import Page
 from app.schemas.pesanan import PesananResponse, PesananTest, StatusRequest, TolakRequest
 from app.services.pagination import Pagination, list_response, pagination_params
 from app.services.pesanan import create_test_order, transition
+from app.services.fcm import notify_order_customer
 from app.services.toko import get_store
 
 router = APIRouter(prefix="/pesanan", tags=["Pesanan"])
@@ -84,24 +85,46 @@ def detail(
 
 
 @router.patch("/{pesanan_id}/terima", response_model=PesananResponse)
-def accept(pesanan: Pesanan = Depends(get_pesanan), db: Session = Depends(get_db)):
-    return transition(db, pesanan, "diproses")
+def accept(
+    request: Request,
+    pesanan: Pesanan = Depends(get_pesanan),
+    db: Session = Depends(get_db),
+):
+    result = transition(db, pesanan, "diproses")
+    notify_order_customer(db, result, request.app.state.settings)
+    return result
 
 
 @router.patch("/{pesanan_id}/tolak", response_model=PesananResponse)
 def reject(
-    data: TolakRequest, pesanan: Pesanan = Depends(get_pesanan), db: Session = Depends(get_db)
+    data: TolakRequest,
+    request: Request,
+    pesanan: Pesanan = Depends(get_pesanan),
+    db: Session = Depends(get_db),
 ):
-    return transition(db, pesanan, "ditolak", data.alasan)
+    result = transition(db, pesanan, "ditolak", data.alasan)
+    notify_order_customer(db, result, request.app.state.settings)
+    return result
 
 
 @router.patch("/{pesanan_id}/status", response_model=PesananResponse)
 def status(
-    data: StatusRequest, pesanan: Pesanan = Depends(get_pesanan), db: Session = Depends(get_db)
+    data: StatusRequest,
+    request: Request,
+    pesanan: Pesanan = Depends(get_pesanan),
+    db: Session = Depends(get_db),
 ):
-    return transition(db, pesanan, data.status)
+    result = transition(db, pesanan, data.status)
+    notify_order_customer(db, result, request.app.state.settings)
+    return result
 
 
 @router.patch("/{pesanan_id}/urungkan", response_model=PesananResponse)
-def undo(pesanan: Pesanan = Depends(get_pesanan), db: Session = Depends(get_db)):
-    return transition(db, pesanan, "urungkan")
+def undo(
+    request: Request,
+    pesanan: Pesanan = Depends(get_pesanan),
+    db: Session = Depends(get_db),
+):
+    result = transition(db, pesanan, "urungkan")
+    notify_order_customer(db, result, request.app.state.settings)
+    return result

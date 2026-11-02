@@ -20,6 +20,8 @@ dependencies:
     path: ../../packages/shared
   image_picker: ^1.2.4
   url_launcher: ^6.3.3
+  firebase_core: ^5.1.0
+  firebase_messaging: ^17.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

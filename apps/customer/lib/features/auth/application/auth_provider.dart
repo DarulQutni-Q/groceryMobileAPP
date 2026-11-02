@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -19,11 +22,13 @@ class AuthFailure implements Exception {
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier(this.api, this.storage, {this.googleToken})
+  AuthNotifier(this.api, this.storage, {this.googleToken, this.onAuthenticated})
     : super(const AuthState(AuthStatus.initial));
   final AuthApi api;
   final SecureStorage storage;
   final Future<String> Function()? googleToken;
+  final Future<void> Function()? onAuthenticated;
+  bool _fcmSynced = false;
   int _operation = 0;
 
   bool _current(int operation) => mounted && operation == _operation;
@@ -35,7 +40,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
       throw const AuthFailure('Gunakan akun pembeli untuk masuk ke GardenMart');
     }
     state = AuthState(AuthStatus.authenticated, user: user);
+    _syncFcm();
     return true;
+  }
+
+  void _syncFcm() {
+    final callback = onAuthenticated;
+    if (callback == null || _fcmSynced) return;
+    _fcmSynced = true;
+    unawaited(callback());
   }
 
   void _failed(Object error, int operation) {
@@ -121,6 +134,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final operation = ++_operation;
     try {
       await storage.clearSession();
+      _fcmSynced = false;
       if (_current(operation)) {
         state = const AuthState(AuthStatus.unauthenticated);
       }
@@ -179,10 +193,27 @@ final googleTokenProvider = Provider<Future<String> Function()>((ref) {
   };
 });
 
+/// Minta izin notifikasi (best-effort) lalu kirim token FCM ke backend.
+/// Semua kegagalan ditelan supaya login tidak pernah gagal karena push.
+Future<void> _syncFcmToken(AuthApi api) async {
+  try {
+    await FirebaseMessaging.instance.requestPermission();
+    await syncFcmToken(
+      api: api,
+      register: FirebaseMessaging.instance.register,
+      registeredTokens: FirebaseMessaging.instance.onRegistered,
+    );
+  } catch (_) {}
+}
+
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>(
-  (ref) => AuthNotifier(
-    ref.watch(authApiProvider),
-    ref.watch(storageProvider),
-    googleToken: ref.watch(googleTokenProvider),
-  ),
+  (ref) {
+    final api = ref.watch(authApiProvider);
+    return AuthNotifier(
+      api,
+      ref.watch(storageProvider),
+      googleToken: ref.watch(googleTokenProvider),
+      onAuthenticated: () => _syncFcmToken(api),
+    );
+  },
 );

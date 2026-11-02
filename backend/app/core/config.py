@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     smtp_user: str = ""
     smtp_password: SecretStr = SecretStr("")
     smtp_from: str = ""
+    fcm_service_account_file: str = ""
     xendit_api_key: SecretStr = SecretStr("")
     xendit_webhook_token: SecretStr = SecretStr("")
     auto_create_tables: bool = False

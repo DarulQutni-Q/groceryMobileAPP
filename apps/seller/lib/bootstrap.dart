@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,6 +8,11 @@ import 'features/auth/application/auth_provider.dart';
 
 Future<void> bootstrap(String flavor) async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await Firebase.initializeApp();
+  } catch (_) {
+    // Firebase tidak tersedia (mis. tanpa Play services): token push dilewati.
+  }
   await dotenv.load(fileName: '.env.$flavor.example');
   const override = String.fromEnvironment('API_BASE_URL');
   const googleOverride = String.fromEnvironment('GOOGLE_CLIENT_ID');
