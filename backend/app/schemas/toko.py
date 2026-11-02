@@ -30,6 +30,8 @@ class TokoUpdate(InputModel):
     radius_km: int = Field(default=5, strict=True, ge=1, le=10)
     metode_kirim: list[str] = Field(default_factory=list, max_length=3)
     rekening_bank: str | None = Field(default=None, max_length=200)
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
 
     @field_validator("nama")
     @classmethod
@@ -96,5 +98,7 @@ class TokoResponse(BaseModel):
     status: str
     metode_kirim: list[str]
     rekening_bank: str | None
+    latitude: float | None
+    longitude: float | None
     created_at: datetime
     updated_at: datetime

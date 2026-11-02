@@ -4,6 +4,8 @@ import 'package:grocery_shared/shared.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../application/store_provider.dart';
+import 'package:latlong2/latlong.dart';
+import 'peta_toko.dart';
 import 'store_widgets.dart';
 
 final logoPickerProvider = Provider<Future<XFile?> Function()>(
@@ -32,6 +34,7 @@ class _TokoEditorState extends ConsumerState<TokoEditor> {
       _rekening;
   late Set<String> _kategori, _kirim;
   late double _radius;
+  LatLng? _titik;
   bool _saving = false;
   bool _uploadingLogo = false;
   @override
@@ -46,6 +49,9 @@ class _TokoEditorState extends ConsumerState<TokoEditor> {
     _kategori = {...t.kategori};
     _kirim = {...t.metodeKirim};
     _radius = t.radiusKm.toDouble();
+    _titik = t.latitude != null && t.longitude != null
+        ? LatLng(t.latitude!, t.longitude!)
+        : null;
   }
 
   @override
@@ -74,6 +80,8 @@ class _TokoEditorState extends ConsumerState<TokoEditor> {
         'telepon': _telepon.text.trim(),
         'deskripsi': _deskripsi.text.trim(),
         'kategori': _kategori.toList(),
+        'latitude': _titik?.latitude,
+        'longitude': _titik?.longitude,
       },
     };
     setState(() => _saving = true);
@@ -221,6 +229,20 @@ class _TokoEditorState extends ConsumerState<TokoEditor> {
       ],
     ),
     _field('Alamat Toko', _alamat, required: true, lines: 3),
+    const SizedBox(height: 14),
+    const Text('Lokasi Toko di Peta', style: TextStyle(fontSize: 18)),
+    const SizedBox(height: 4),
+    const Text(
+      'Geser peta untuk menandai lokasi toko. Dipakai customer untuk '
+      'jarak ke toko; toko tanpa titik tetap bisa dipilih.',
+      style: TextStyle(fontSize: 13, color: Colors.black54),
+    ),
+    const SizedBox(height: 8),
+    PetaToko(
+      key: const Key('peta-toko'),
+      initial: _titik ?? dewantaraDefault,
+      onPointChanged: (titik) => _titik = titik,
+    ),
     _field('Nomor Toko', _telepon, required: true, phone: true),
     _field('Deskripsi Singkat (Opsional)', _deskripsi, lines: 2),
   ];

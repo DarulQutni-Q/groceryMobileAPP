@@ -22,6 +22,8 @@ class TokoPublic(BaseModel):
     metode_kirim: list[str]
     jam_buka: time | None = None
     jam_tutup: time | None = None
+    latitude: float | None = None
+    longitude: float | None = None
 
 
 class TokoDetail(TokoPublic):
