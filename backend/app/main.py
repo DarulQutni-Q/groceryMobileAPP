@@ -1,3 +1,5 @@
+import asyncio
+import logging
 import secrets
 from contextlib import asynccontextmanager
 
@@ -28,9 +30,39 @@ from app.routers.voucher import router as voucher_router
 from app.routers.promo import router as promo_router
 from app.routers.chat import router as chat_router
 from app.routers.pesanan import router as pesanan_router
+from app.services.pembayaran import reconcile_with_xendit
+from app.services.sweeper import kadaluarsa_pesanan_tak_dibayar
+from app.services.xendit import Xendit
 from app.routers.produk import router as produk_router
 from app.routers.toko import router as toko_router
 from app.services.foto import FILE_PATTERN, FORMATS
+
+
+async def _sweeper_loop(app: FastAPI):
+    """Tiap 5 menit: batalkan pesanan tak dibayar yang melewati batas.
+
+    Loop tidak pernah mematikan server: galat apa pun dicatat lalu loop
+    tidur lagi. Rekonsiliasi Xendit jalan dulu per kandidat, jadi pesanan
+    yang ternyata sudah paid tidak ikut dibatalkan.
+    """
+    log = logging.getLogger("grocery.sweeper")
+    while True:
+        await asyncio.sleep(300)
+        try:
+            gateway = lambda metode: Xendit(app.state.settings, metode)
+            with app.state.sessions() as db:
+                jumlah = kadaluarsa_pesanan_tak_dibayar(
+                    db,
+                    rekonsiliasi=lambda db_, payment: reconcile_with_xendit(
+                        db_, payment, gateway
+                    ),
+                )
+            if jumlah:
+                log.info("sweeper membatalkan %d pesanan tak dibayar", jumlah)
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            log.exception("sweeper gagal, dicoba lagi 5 menit berikutnya")
 
 
 @asynccontextmanager
@@ -47,9 +79,11 @@ async def lifespan(app: FastAPI):
     )
     if settings.auto_create_tables:
         Base.metadata.create_all(engine)
+    tugas_sweeper = asyncio.create_task(_sweeper_loop(app))
     try:
         yield
     finally:
+        tugas_sweeper.cancel()
         engine.dispose()
 
 
