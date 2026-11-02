@@ -18,6 +18,7 @@ from app.schemas.pembayaran import CheckoutResponse, InvoiceEvent
 from app.services.alamat import lock_customer, owned_address
 from app.services.fcm import notify_order_owner
 from app.services.notifikasi import catat_pesanan_baru
+from app.services.riwayat import catat_riwayat
 from app.services.voucher import terapkan_voucher
 from app.services.promo import potongan_promo
 from app.services.xendit import safe_payment_url
@@ -244,6 +245,7 @@ def finalize_order(db, user, data, attempt, gateway, fresh, settings=None):
     order = insert_order(db, user, data, address, store, items, costs)
     payment = reserve_payment(db, order, data, attempt, invoice, products)
     catat_pesanan_baru(db, order, store)
+    catat_riwayat(db, order, "baru")
     db.commit()
     if settings is not None:
         notify_order_owner(db, order, store, settings)

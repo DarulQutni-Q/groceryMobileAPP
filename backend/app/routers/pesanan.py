@@ -9,10 +9,12 @@ from sqlalchemy.orm import Session, joinedload, selectinload
 from app.core.security import get_authenticated_user
 from app.db.session import get_db
 from app.models.pesanan import TAB_STATUS, Pesanan
+from app.models.riwayat import RiwayatStatus
 from app.models.toko import Toko
 from app.models.user import User
 from app.schemas.pagination import Page
 from app.schemas.pesanan import PesananResponse, PesananTest, StatusRequest, TolakRequest
+from app.schemas.riwayat import RiwayatStatusResponse
 from app.services.pagination import Pagination, list_response, pagination_params
 from app.services.pesanan import create_test_order, transition
 from app.services.alamat import get_customer
@@ -166,3 +168,35 @@ def batalkan(
             )
         notify_order_cancelled_owner(db, result, toko, request.app.state.settings)
     return result
+
+
+@router.get("/{pesanan_id}/riwayat", response_model=list[RiwayatStatusResponse])
+def riwayat_customer(
+    pesanan_id: UUID,
+    user: User = Depends(get_customer),
+    db: Session = Depends(get_db),
+):
+    pesanan = db.scalar(
+        select(Pesanan).where(
+            Pesanan.id == pesanan_id, Pesanan.customer_id == user.id
+        )
+    )
+    if pesanan is None:
+        raise HTTPException(404, "Pesanan tidak ditemukan")
+    return db.scalars(
+        select(RiwayatStatus)
+        .where(RiwayatStatus.pesanan_id == pesanan.id)
+        .order_by(RiwayatStatus.created_at)
+    ).all()
+
+
+@router.get("/toko/{pesanan_id}/riwayat", response_model=list[RiwayatStatusResponse])
+def riwayat_toko(
+    pesanan: Pesanan = Depends(get_pesanan),
+    db: Session = Depends(get_db),
+):
+    return db.scalars(
+        select(RiwayatStatus)
+        .where(RiwayatStatus.pesanan_id == pesanan.id)
+        .order_by(RiwayatStatus.created_at)
+    ).all()

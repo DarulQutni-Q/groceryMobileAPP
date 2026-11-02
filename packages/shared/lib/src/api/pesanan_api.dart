@@ -1,4 +1,5 @@
 import '../models/pesanan.dart';
+import '../models/riwayat.dart';
 import 'api_client.dart';
 
 class PesananApi {
@@ -18,6 +19,15 @@ class PesananApi {
         : (data as Map<String, dynamic>)['data'] as List<dynamic>;
     return rows
         .map((item) => Pesanan.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Jejak status satu pesanan (customer, pesanan sendiri).
+  Future<List<RiwayatStatus>> riwayat(String id) async {
+    final data = (await client.dio.get<List<dynamic>>('/pesanan/$id/riwayat'))
+        .data!;
+    return data
+        .map((item) => RiwayatStatus.fromJson(item as Map<String, dynamic>))
         .toList();
   }
 

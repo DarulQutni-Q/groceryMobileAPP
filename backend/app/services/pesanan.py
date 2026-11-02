@@ -10,6 +10,7 @@ from app.models.produk import Produk
 from app.models.user import now_utc
 from app.schemas.pesanan import ItemTest
 from app.services.notifikasi import catat_status_pesanan
+from app.services.riwayat import catat_riwayat
 from app.services.pembayaran import release_stock
 
 
@@ -113,5 +114,6 @@ def transition(db, pesanan, action, reason=None):
         if payment.status == "pending":
             payment.status = "failed"
     catat_status_pesanan(db, pesanan)
+    catat_riwayat(db, pesanan, pesanan.status, keterangan=reason)
     db.commit()
     return pesanan

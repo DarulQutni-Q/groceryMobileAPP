@@ -5,6 +5,7 @@ import 'package:grocery_shared/shared.dart';
 import '../../../core/garden_widgets.dart';
 import '../../../core/theme.dart';
 import '../application/pesanan_provider.dart';
+import '../application/riwayat_provider.dart';
 import 'catalog_page.dart' show CatalogPage;
 import 'catalog_widgets.dart' show PromoEmptyState, rupiah;
 import 'chat_driver_page.dart' show ChatDriverPage;
@@ -113,11 +114,11 @@ class _Stepper extends StatelessWidget {
   }
 }
 
-class _OrderCard extends StatelessWidget {
+class _OrderCard extends ConsumerWidget {
   const _OrderCard({required this.order});
   final Pesanan order;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final aktif = _isActive(order.status);
     final selesai = _isDone(order.status);
     return Container(
@@ -194,6 +195,8 @@ class _OrderCard extends StatelessWidget {
               color: gardenInk,
             ),
           ),
+          const SizedBox(height: 12),
+          _RiwayatStatus(pesananId: order.id),
           if (aktif)
             Align(
               alignment: Alignment.centerRight,
@@ -211,6 +214,101 @@ class _OrderCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Jejak status dari backend (dengan waktu asli tiap perubahan).
+/// Pesanan lama yang dibuat sebelum fitur ini tidak punya baris riwayat:
+/// tidak ada yang ditampilkan, dan tidak ada riwayat yang dikarang.
+class _RiwayatStatus extends ConsumerWidget {
+  const _RiwayatStatus({required this.pesananId});
+  final String pesananId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final riwayat = ref.watch(riwayatProvider(pesananId));
+    return riwayat.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
+      data: (entries) {
+        if (entries.isEmpty) return const SizedBox.shrink();
+        final terbaruDulu = entries.reversed.toList();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Riwayat Status',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                color: gardenInk,
+              ),
+            ),
+            const SizedBox(height: 6),
+            for (final entry in terbaruDulu) ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 4),
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF397A24),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _statusLabel(entry.status),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: gardenInk,
+                          ),
+                        ),
+                        Text(
+                          _waktuRiwayat(entry.createdAt),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: textGrey,
+                          ),
+                        ),
+                        if (entry.keterangan != null &&
+                            entry.keterangan!.isNotEmpty)
+                          Text(
+                            entry.keterangan!,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: textGrey,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+            ],
+          ],
+        );
+      },
+    );
+  }
+}
+
+String _waktuRiwayat(DateTime value) {
+  final local = value.toLocal();
+  const bulan = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+    'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+  ];
+  return '${local.day} ${bulan[local.month - 1]} ${local.year} '
+      '${local.hour.toString().padLeft(2, '0')}:'
+      '${local.minute.toString().padLeft(2, '0')}';
 }
 
 class LacakKurirPage extends ConsumerWidget {
