@@ -1,3 +1,4 @@
+import logging
 from typing import Literal
 from uuid import UUID
 
@@ -14,10 +15,14 @@ from app.schemas.pagination import Page
 from app.schemas.pesanan import PesananResponse, PesananTest, StatusRequest, TolakRequest
 from app.services.pagination import Pagination, list_response, pagination_params
 from app.services.pesanan import create_test_order, transition
-from app.services.fcm import notify_order_customer
+from app.services.alamat import get_customer
+from app.services.fcm import notify_order_cancelled_owner, notify_order_customer
+from app.services.notifikasi import catat_pembatalan_untuk_toko
 from app.services.toko import get_store
 
 router = APIRouter(prefix="/pesanan", tags=["Pesanan"])
+
+_log = logging.getLogger(__name__)
 
 
 def require_dev(request: Request):
@@ -127,4 +132,37 @@ def undo(
 ):
     result = transition(db, pesanan, "urungkan")
     notify_order_customer(db, result, request.app.state.settings)
+    return result
+
+
+@router.patch("/{pesanan_id}/batalkan", response_model=PesananResponse)
+def batalkan(
+    pesanan_id: UUID,
+    request: Request,
+    user: User = Depends(get_customer),
+    db: Session = Depends(get_db),
+):
+    """Customer membatalkan pesanannya sendiri. Hanya pesanan milik
+    customer itu yang bisa dibatalkan; pesanan terminal ditolak transition."""
+    pesanan = db.scalar(
+        select(Pesanan)
+        .where(Pesanan.id == pesanan_id, Pesanan.customer_id == user.id)
+        .options(selectinload(Pesanan.items), selectinload(Pesanan.customer))
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
+    if pesanan is None:
+        raise HTTPException(404, "Pesanan tidak ditemukan")
+    result = transition(db, pesanan, "dibatalkan")
+    toko = db.scalar(select(Toko).where(Toko.id == result.toko_id))
+    if toko is not None:
+        try:
+            catat_pembatalan_untuk_toko(db, result, toko)
+            db.commit()
+        except Exception:
+            db.rollback()
+            _log.warning(
+                "gagal tulis notifikasi pembatalan %s", result.kode, exc_info=True
+            )
+        notify_order_cancelled_owner(db, result, toko, request.app.state.settings)
     return result

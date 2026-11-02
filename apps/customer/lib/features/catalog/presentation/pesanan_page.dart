@@ -230,6 +230,45 @@ class _PesananPageState extends ConsumerState<PesananPage> {
     }
   }
 
+  Future<void> _batalkan(Pesanan order) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Batalkan pesanan ${order.kode}?'),
+        content: const Text(
+          'Pesanan yang dibatalkan tidak bisa dikembalikan. '
+          'Kalau pesanan sudah dibayar, pengembalian dana diproses manual oleh toko.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Kembali'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: dangerRed),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Batalkan'),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true || !mounted) return;
+    try {
+      await ref.read(pesananApiProvider).batalkan(order.id);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gagal membatalkan pesanan, coba lagi.')),
+      );
+      return;
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Pesanan ${order.kode} dibatalkan.')),
+    );
+    ref.invalidate(pesananProvider);
+  }
+
   void _lihatStruk(Pesanan order) {
     if (widget.onLihatStruk != null) {
       widget.onLihatStruk!(order);
@@ -365,6 +404,7 @@ class _PesananPageState extends ConsumerState<PesananPage> {
                     order: order,
                     onChatDriver: () => _chatDriver(order),
                     onPhone: () => _phoneDialog(order),
+                    onBatalkan: () => _batalkan(order),
                   )
                 : _HistoryCard(
                     order: order,
@@ -426,6 +466,7 @@ class _PesananPageState extends ConsumerState<PesananPage> {
                 order: order,
                 onChatDriver: () => _chatDriver(order),
                 onPhone: () => _phoneDialog(order),
+                onBatalkan: () => _batalkan(order),
               ),
             ),
           );
@@ -506,11 +547,13 @@ class _TrackingCard extends StatelessWidget {
     required this.order,
     required this.onChatDriver,
     required this.onPhone,
+    this.onBatalkan,
   });
 
   final Pesanan order;
   final VoidCallback onChatDriver;
   final VoidCallback onPhone;
+  final VoidCallback? onBatalkan;
 
   @override
   Widget build(BuildContext context) {
@@ -652,6 +695,30 @@ class _TrackingCard extends StatelessWidget {
               ),
             ],
           ),
+          if (onBatalkan != null &&
+              (order.status == 'baru' ||
+                  order.status == 'diproses' ||
+                  order.status == 'dikemas')) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                key: Key('batalkan-${order.id}'),
+                onPressed: onBatalkan,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: dangerRed,
+                  side: const BorderSide(color: dangerRed),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  textStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Roboto',
+                  ),
+                ),
+                child: const Text('Batalkan pesanan'),
+              ),
+            ),
+          ],
         ],
       ),
     );

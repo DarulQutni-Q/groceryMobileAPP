@@ -127,3 +127,25 @@ def notify_order_customer(db: Session, pesanan: Any, settings: Settings) -> bool
             exc_info=True,
         )
         return False
+
+
+def notify_order_cancelled_owner(db: Session, pesanan: Any, toko: Any, settings: Settings) -> bool:
+    """Kirim push pembatalan ke pemilik toko. Best-effort, tidak pernah raise."""
+    try:
+        owner = db.scalar(select(User).where(User.id == toko.owner_id))
+        if owner is None or not owner.fcm_token:
+            return False
+        send_push(
+            owner.fcm_token,
+            f"Pesanan {pesanan.kode} dibatalkan",
+            "Pelanggan membatalkan pesanan ini.",
+            settings,
+            data={"pesanan_id": str(pesanan.id), "status": "dibatalkan"},
+        )
+        return True
+    except Exception:
+        _log.warning(
+            "gagal kirim push pembatalan %s", getattr(pesanan, "kode", "?"),
+            exc_info=True,
+        )
+        return False

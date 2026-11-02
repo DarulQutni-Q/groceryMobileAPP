@@ -37,6 +37,17 @@ def catat_status_pesanan(db: Session, pesanan: Pesanan):
     )
 
 
+def catat_pembatalan_untuk_toko(db: Session, pesanan: Pesanan, toko: Toko):
+    """Satu baris untuk pemilik toko atas pesanan yang dibatalkan pelanggan."""
+    return tulis_notifikasi(
+        db,
+        toko.owner_id,
+        f"Pesanan {pesanan.kode} dibatalkan",
+        "Pelanggan membatalkan pesanan ini.",
+        pesanan.id,
+    )
+
+
 def catat_pesanan_baru(db: Session, pesanan: Pesanan, toko: Toko):
     """Satu baris untuk pemilik toko atas pesanan baru."""
     total = f"Rp {pesanan.total:,}".replace(",", ".")

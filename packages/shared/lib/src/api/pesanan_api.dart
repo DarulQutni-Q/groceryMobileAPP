@@ -51,4 +51,9 @@ class PesananApi {
     final data = (await client.dio.patch<dynamic>('/pesanan/$id/urungkan')).data;
     return Pesanan.fromJson(data as Map<String, dynamic>);
   }
+
+  Future<Pesanan> batalkan(String id) async {
+    final data = (await client.dio.patch<dynamic>('/pesanan/$id/batalkan')).data;
+    return Pesanan.fromJson(data as Map<String, dynamic>);
+  }
 }
