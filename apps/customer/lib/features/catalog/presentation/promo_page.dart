@@ -7,7 +7,7 @@ import 'promo_jsm_page.dart';
 import 'tebus_murah_page.dart';
 
 /// Filter yang tersedia di chip baris atas.
-enum _PromoFilter { semua, diskon, gratis, cashback }
+enum _PromoFilter { semua, diskon, cashback }
 
 /// Data satu voucher. Kategori dipakai chip filter.
 class _VoucherData {
@@ -41,16 +41,6 @@ const _vouchers = [
     expiry: 'Berakhir dlm 2 hari',
     expiryColor: Color(0xFFC2571B),
     category: _PromoFilter.diskon,
-  ),
-  _VoucherData(
-    big: 'FREE',
-    small: 'ONGKIR',
-    bigColor: Color(0xFFE86A17),
-    title: 'Gratis Ongkir Instan s/d Rp 15.000',
-    subtitle: 'Khusus pengiriman toko 15 menit',
-    expiry: 'Berlaku hari ini',
-    expiryColor: Color(0xFF397A24),
-    category: _PromoFilter.gratis,
   ),
   _VoucherData(
     big: '+15k',
@@ -106,9 +96,10 @@ const _weekly = [
 /// interaktivitas: chip filter bisa ditekan, kartu mingguan membuka katalog,
 /// tombol Klaim mengubah status jadi "Sudah Klaim", dan "Voucher saya"
 /// menyaring daftar ke voucher yang sudah diklaim.
-/// Klaim tersimpan lokal di SharedPreferences (belum ada backend
-/// voucher/loyalty), jadi voucher yang diklaim tidak memotong harga di
-/// checkout.
+/// Klaim tersimpan lokal di SharedPreferences. Kartu-kartu di halaman
+/// ini adalah tampilan referensi saja dan tidak memotong harga;
+/// voucher yang benar-benar memotong harga dipilih di checkout dari
+/// backend (HEMAT5/HEMAT7/HEMAT8/HEMAT10).
 class PromoPage extends StatefulWidget {
   const PromoPage({super.key, this.showBack = false});
 
@@ -127,12 +118,9 @@ class _PromoPageState extends State<PromoPage> {
   /// Kunci penyimpanan klaim lokal.
   static const _klaimKey = 'promo_klaim';
 
-  /// Judul voucher yang sudah diklaim di tampilan awal referensi.
-  static const _freeTitle = 'Gratis Ongkir Instan s/d Rp 15.000';
-
-  /// Judul voucher yang sudah diklaim. FREE ongkir sudah diklaim sesuai
-  /// tampilan referensi (pill "Sudah Klaim").
-  final _claimed = <String>{_freeTitle};
+  /// Judul voucher yang sudah diklaim. Mulai kosong: tidak ada lagi
+  /// voucher gratis ongkir bawaan (ongkir memang 0, bukan promo).
+  final _claimed = <String>{};
 
   @override
   void initState() {
@@ -140,8 +128,8 @@ class _PromoPageState extends State<PromoPage> {
     _muatKlaim();
   }
 
-  /// Muat klaim tersimpan; kalau belum ada simpanan sama sekali, pakai
-  /// dan simpan set awal referensi (FREE ongkir sudah diklaim).
+  /// Muat klaim tersimpan; kalau belum ada simpanan sama sekali,
+  /// simpan set kosong apa adanya.
   Future<void> _muatKlaim() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -245,13 +233,6 @@ class _PromoPageState extends State<PromoPage> {
                       active: _filter == _PromoFilter.diskon,
                       onTap: () =>
                           setState(() => _filter = _PromoFilter.diskon),
-                    ),
-                    const SizedBox(width: 6),
-                    _FilterChip(
-                      'Gratis Ongkir',
-                      active: _filter == _PromoFilter.gratis,
-                      onTap: () =>
-                          setState(() => _filter = _PromoFilter.gratis),
                     ),
                     const SizedBox(width: 6),
                     _FilterChip(

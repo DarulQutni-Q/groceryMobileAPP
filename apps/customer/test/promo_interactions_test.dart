@@ -37,16 +37,13 @@ void main() {
 
   testWidgets('promo: chip filter mempersempit daftar', (tester) async {
     await _bukaPromo(tester);
-    await tester.tap(find.text('Gratis Ongkir'));
-    await tester.pumpAndSettle();
-    expect(find.text('Gratis Ongkir Instan s/d Rp 15.000'), findsOneWidget);
-    expect(find.text('Diskon 30% Produk Segar (Fresh Mart)'), findsNothing);
-    expect(find.text('Promo Mingguan'), findsNothing);
+    // Tidak ada lagi chip maupun kartu gratis ongkir.
+    expect(find.text('Gratis Ongkir'), findsNothing);
 
     await tester.tap(find.text('Diskon Belanja'));
     await tester.pumpAndSettle();
     expect(find.text('Diskon 30% Produk Segar (Fresh Mart)'), findsOneWidget);
-    expect(find.text('Gratis Ongkir Instan s/d Rp 15.000'), findsNothing);
+    expect(find.text('Cashback 15.000 Poin Sembako'), findsNothing);
     expect(find.text('Promo Mingguan'), findsOneWidget);
 
     await tester.tap(find.text('Cashback'));
@@ -59,6 +56,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Promo Mingguan'), findsOneWidget);
     expect(find.text('Cashback 15.000 Poin Sembako'), findsOneWidget);
+    expect(find.text('Diskon 30% Produk Segar (Fresh Mart)'), findsOneWidget);
   });
 
   testWidgets('promo: klaim tersimpan lokal dan tampil di voucher saya', (
@@ -67,8 +65,8 @@ void main() {
     await _bukaPromo(tester);
     await tester.tap(find.text('Klaim').first);
     await tester.pumpAndSettle();
-    // FREE ongkir sudah diklaim dari awal + 30% yang baru diklaim.
-    expect(find.text('Sudah Klaim'), findsNWidgets(2));
+    // Tidak ada lagi klaim bawaan; hanya kartu yang baru diklaim.
+    expect(find.text('Sudah Klaim'), findsOneWidget);
     final prefs = await SharedPreferences.getInstance();
     expect(
       prefs.getStringList('promo_klaim'),
@@ -76,21 +74,21 @@ void main() {
     );
     await tester.tap(find.text('Voucher saya'));
     await tester.pumpAndSettle();
-    expect(find.text('Voucher Saya (2)'), findsOneWidget);
+    expect(find.text('Voucher Saya (1)'), findsOneWidget);
     expect(find.text('Cashback 15.000 Poin Sembako'), findsNothing);
     await tester.tap(find.text('Tampilkan Semua'));
     await tester.pumpAndSettle();
     expect(find.text('Promo Mingguan'), findsOneWidget);
   });
 
-  testWidgets('promo: voucher saya awal hanya menampilkan yang diklaim', (
+  testWidgets('promo: voucher saya awal kosong tanpa klaim bawaan', (
     tester,
   ) async {
     await _bukaPromo(tester);
     await tester.tap(find.text('Voucher saya'));
     await tester.pumpAndSettle();
-    expect(find.text('Voucher Saya (1)'), findsOneWidget);
-    expect(find.text('Gratis Ongkir Instan s/d Rp 15.000'), findsOneWidget);
+    expect(find.text('Voucher Saya (0)'), findsOneWidget);
+    expect(find.text('Belum ada voucher yang diklaim.'), findsOneWidget);
     expect(find.text('Diskon 30% Produk Segar (Fresh Mart)'), findsNothing);
   });
 

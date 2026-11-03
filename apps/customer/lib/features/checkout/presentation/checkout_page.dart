@@ -20,7 +20,6 @@ import 'voucher_picker_page.dart';
 ///
 /// Backend saat ini selalu mengembalikan ongkir 0 (promo gratis ongkir),
 /// jadi nilai coret ini dari referensi sampai backend punya tarif asli.
-const ongkirNormal = 10000;
 
 class CheckoutPage extends ConsumerStatefulWidget {
   const CheckoutPage({super.key, required this.items});
@@ -286,7 +285,6 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
 
   /// Promo gratis ongkir toko berlaku kalau backend mengembalikan
   /// ongkir 0 (bukan karena voucher).
-  bool get _gratisOngkirPromo => costs != null && _backendOngkir == 0;
 
   Future<void> _chooseShipping() async {
     final value = await showModalBottomSheet<String>(
@@ -541,36 +539,6 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                       color: Color(0xFF5E872F),
                     ),
                   ),
-                  if (_gratisOngkirPromo) ...[
-                    const SizedBox(width: 8),
-                    Text(
-                      rupiah(ongkirNormal),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black38,
-                        decoration: TextDecoration.lineThrough,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: limePale,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Text(
-                        'Promo Gratis Ongkir',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: gardenInk,
-                        ),
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ],
@@ -908,7 +876,6 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           _costRow(
             'Ongkos Kirim Toko',
             rupiah(_ongkir),
-            coret: _gratisOngkirPromo ? rupiah(ongkirNormal) : null,
           ),
           _costRow(
             'Biaya Layanan Aplikasi',
