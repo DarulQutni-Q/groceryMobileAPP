@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/garden_widgets.dart';
 import '../../../core/theme.dart';
 import '../application/notifikasi_provider.dart';
+import 'detail_pesanan_page.dart';
 
 /// Halaman Notifikasi.
 ///
@@ -11,8 +12,9 @@ import '../application/notifikasi_provider.dart';
 /// perubahan status pesanan. Badge bel di Home memakai provider yang sama,
 /// jadi angkanya selalu jumlah belum dibaca di sini.
 ///
-/// Belum ada halaman detail pesanan di app ini, jadi tap kartu hanya
-/// menandai dibaca, bukan membuka halaman yang tidak ada.
+/// Tap kartu menandai dibaca lalu membuka detail pesanannya kalau
+/// notifikasi itu terikat ke satu pesanan (pesanan_id). Notifikasi
+/// tanpa pesanan (mis. baris lama) tetap hanya ditandai dibaca.
 class NotificationsPage extends ConsumerWidget {
   const NotificationsPage({super.key});
 
@@ -75,16 +77,28 @@ class NotificationsPage extends ConsumerWidget {
                                   waktu: _waktu(item.createdAt),
                                   unread: !item.dibaca,
                                   onTap: () async {
-                                    if (item.dibaca) return;
-                                    try {
-                                      await ref
-                                          .read(notifikasiApiProvider)
-                                          .tandaiBaca(item.id);
-                                    } catch (_) {
-                                      // Sama seperti di atas: gagal
-                                      // jaringan, baris tetap belum dibaca.
+                                    if (!item.dibaca) {
+                                      try {
+                                        await ref
+                                            .read(notifikasiApiProvider)
+                                            .tandaiBaca(item.id);
+                                      } catch (_) {
+                                        // Sama seperti di atas: gagal
+                                        // jaringan, baris tetap belum dibaca.
+                                      }
+                                      ref.invalidate(notifikasiProvider);
                                     }
-                                    ref.invalidate(notifikasiProvider);
+                                    final pesananId = item.pesananId;
+                                    if (pesananId != null && context.mounted) {
+                                      Navigator.push<void>(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => DetailPesananPage(
+                                            pesananId: pesananId,
+                                          ),
+                                        ),
+                                      );
+                                    }
                                   },
                                 ),
                               );
