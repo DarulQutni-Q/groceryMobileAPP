@@ -47,6 +47,8 @@ services:
       SMTP_FROM: ${SMTP_FROM:-}
       FCM_SERVICE_ACCOUNT_FILE: /secrets/fcm-service-account.json
       ENV: ${ENV:-prod}
+      VERSI_MINIMUM_CUSTOMER: ${VERSI_MINIMUM_CUSTOMER:-0.0.0}
+      VERSI_MINIMUM_SELLER: ${VERSI_MINIMUM_SELLER:-0.0.0}
     ports:
       - "8001:8000"
     depends_on:
