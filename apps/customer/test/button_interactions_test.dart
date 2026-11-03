@@ -337,7 +337,7 @@ void main() {
     await tap(tester, find.text('Semua Promo'));
     expect(find.text('Promo Mingguan'), findsOneWidget);
     await tap(tester, find.text('Voucher saya'));
-    expect(find.text('Voucher Saya (2)'), findsOneWidget);
+    expect(find.text('Voucher Saya (1)'), findsOneWidget);
     expect(find.text('Promo Mingguan'), findsNothing);
     await tap(tester, find.text('Tampilkan Semua'));
     expect(find.text('Promo Mingguan'), findsOneWidget);

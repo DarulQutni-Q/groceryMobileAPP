@@ -114,11 +114,13 @@ class _PesananPageState extends ConsumerState<PesananPage> {
   var _tab = 0;
   var _searching = false;
   final _searchController = TextEditingController();
+  final _scrollController = ScrollController();
   var _query = '';
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -137,6 +139,13 @@ class _PesananPageState extends ConsumerState<PesananPage> {
         _searching = true;
       }
     });
+    // Kolom cari adalah anak pertama ListView: kalau list sedang
+    // tergulung ke bawah, kolom tidak ter-build (di luar cacheExtent)
+    // dan pengguna menekan ikon tanpa melihat perubahan. Kembalikan
+    // ke atas supaya kolom langsung tampil.
+    if (_searching && _scrollController.hasClients) {
+      _scrollController.jumpTo(0);
+    }
   }
 
   void _chatDriver(Pesanan order) {
@@ -534,6 +543,7 @@ class _PesananPageState extends ConsumerState<PesananPage> {
     return RefreshIndicator(
       onRefresh: _refresh,
       child: ListView(
+        controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.only(bottom: 24),
         children: children,

@@ -263,8 +263,8 @@ void main() {
 
   testWidgets('lihat struk membuka struk pesanan itu', (tester) async {
     await _pumpPesanan(tester);
-    await tester.scrollUntilVisible(find.text('Lihat struk').first, 200);
-    await tester.pump();
+    await tester.scrollUntilVisible(find.text('Lihat struk'), 200);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Lihat struk').first);
     await tester.pump();
     await tester.pump();
@@ -282,8 +282,8 @@ void main() {
       withProduk: true,
       withCartWatch: true,
     );
-    await tester.scrollUntilVisible(find.text('Beli lagi').first, 200);
-    await tester.pump();
+    await tester.scrollUntilVisible(find.text('Beli lagi'), 200);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Beli lagi').first);
     await tester.pumpAndSettle();
     expect(find.byType(CartPage), findsOneWidget);
