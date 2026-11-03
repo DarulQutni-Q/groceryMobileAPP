@@ -155,13 +155,15 @@ class _AuthPageState extends ConsumerState<AuthPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'Masuk Akun Pembeli',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          Text(
+            showRegister ? 'Daftar Akun Pembeli' : 'Masuk Akun Pembeli',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
-          const Text(
-            'Gunakan No. Handphone atau Email terdaftar',
-            style: TextStyle(fontSize: 11, color: Color(0xFF657B67)),
+          Text(
+            showRegister
+                ? 'Buat akun dengan No. Handphone atau Email'
+                : 'Gunakan No. Handphone atau Email terdaftar',
+            style: const TextStyle(fontSize: 11, color: Color(0xFF657B67)),
           ),
           const SizedBox(height: 18),
           ..._fields(),
