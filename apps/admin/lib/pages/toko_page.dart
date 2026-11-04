@@ -121,7 +121,13 @@ class _TokoPageState extends State<TokoPage> {
                 return DataRow(
                   cells: [
                     DataCell(Text(toko['nama'] as String)),
-                    if (!sempit) DataCell(Text(toko['alamat'] as String)),
+                    if (!sempit)
+                      DataCell(
+                        SizedBox(
+                          width: 320,
+                          child: Text(toko['alamat'] as String),
+                        ),
+                      ),
                     if (!sempit) DataCell(Text(toko['telepon'] as String)),
                     DataCell(Text(buka ? 'Buka' : 'Tutup')),
                     DataCell(
