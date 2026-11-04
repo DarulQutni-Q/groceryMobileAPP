@@ -133,7 +133,11 @@ class _TokoPageState extends State<TokoPage> {
                     DataCell(
                       TextButton(
                         onPressed: () => _toggleStatus(toko),
-                        child: Text(buka ? 'Tutup toko' : 'Buka toko'),
+                        child: Text(
+                          sempit
+                              ? (buka ? 'Tutup' : 'Buka')
+                              : (buka ? 'Tutup toko' : 'Buka toko'),
+                        ),
                       ),
                     ),
                   ],
