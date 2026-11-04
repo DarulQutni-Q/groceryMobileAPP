@@ -19,6 +19,20 @@ def parse_versi(versi):
     return tuple(angka)
 
 
+def minimum_efektif(db, aplikasi, nilai_env):
+    """Nilai minimum yang berlaku: baris pengaturan mengalahkan env.
+    Galat apa pun (mis. tabel belum ada) jatuh kembali ke env."""
+    try:
+        from app.models.pengaturan import Pengaturan
+
+        row = db.get(Pengaturan, f"versi_minimum_{aplikasi}")
+    except Exception:
+        return nilai_env
+    if row is None or not row.nilai:
+        return nilai_env
+    return row.nilai
+
+
 def wajib_update(versi_saat_ini, versi_minimum):
     """True kalau versi saat ini LEBIH LAMA dari minimum. Fail-open."""
     saat_ini = parse_versi(versi_saat_ini)

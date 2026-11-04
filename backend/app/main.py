@@ -1,6 +1,8 @@
 import asyncio
 import logging
+import os
 import secrets
+from datetime import datetime, timezone
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Request
@@ -8,7 +10,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from limits.storage import storage_from_string
 from limits.strategies import FixedWindowRateLimiter
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, select, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -31,6 +33,9 @@ from app.routers.promo import router as promo_router
 from app.routers.chat import router as chat_router
 from app.routers.pesanan import router as pesanan_router
 from app.routers.versi import router as versi_router
+from app.routers.admin import router as admin_router
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from app.services.pembayaran import reconcile_with_xendit
 from app.services.sweeper import kadaluarsa_pesanan_tak_dibayar
 from app.services.xendit import Xendit
@@ -58,12 +63,43 @@ async def _sweeper_loop(app: FastAPI):
                         db_, payment, gateway
                     ),
                 )
+            app.state.sweeper_last_run = datetime.now(timezone.utc)
+            app.state.sweeper_last_count = jumlah
             if jumlah:
                 log.info("sweeper membatalkan %d pesanan tak dibayar", jumlah)
         except asyncio.CancelledError:
             raise
         except Exception:
             log.exception("sweeper gagal, dicoba lagi 5 menit berikutnya")
+
+
+def _seed_admin(app: FastAPI):
+    """Buat akun admin dari ADMIN_EMAIL/ADMIN_PASSWORD bila diset dan
+    belum ada. Kegagalan seed tidak menggagalkan startup: dicatat saja,
+    dan dicoba lagi saat start berikutnya."""
+    settings = app.state.settings
+    email = (settings.admin_email or "").strip().lower()
+    password = settings.admin_password.get_secret_value()
+    if not email or not password:
+        return
+    try:
+        from app.models.user import User
+
+        with app.state.sessions() as db:
+            if db.scalar(select(User).where(User.email == email)) is not None:
+                return
+            db.add(
+                User(
+                    nama="Admin",
+                    email=email,
+                    password_hash=hash_password(password),
+                    role="admin",
+                )
+            )
+            db.commit()
+        logging.getLogger("grocery.admin").info("akun admin dibuat")
+    except Exception:
+        logging.getLogger("grocery.admin").exception("seed admin gagal")
 
 
 @asynccontextmanager
@@ -75,11 +111,15 @@ async def lifespan(app: FastAPI):
     app.state.engine = engine
     app.state.sessions = sessionmaker(engine, expire_on_commit=False)
     app.state.dummy_hash = hash_password(secrets.token_urlsafe(24))
+    app.state.sweeper_last_run = None
+    app.state.sweeper_last_count = None
     app.state.login_limiter = FixedWindowRateLimiter(
         storage_from_string(settings.rate_limit_storage_uri, wrap_exceptions=True)
     )
     if settings.auto_create_tables:
         Base.metadata.create_all(engine)
+    # Seed setelah tabel dijamin ada (create_all/migrasi), bukan sebelumnya.
+    _seed_admin(app)
     tugas_sweeper = asyncio.create_task(_sweeper_loop(app))
     try:
         yield
@@ -108,6 +148,10 @@ def create_app() -> FastAPI:
     app.include_router(chat_router)
     app.include_router(laporan_router)
     app.include_router(versi_router)
+    app.include_router(admin_router)
+    admin_dir = Path(os.environ.get("ADMIN_WEB_DIR", "/srv/admin"))
+    if (admin_dir / "index.html").is_file():
+        app.mount("/dashboard", StaticFiles(directory=admin_dir, html=True), name="dashboard")
     app.add_exception_handler(RequestValidationError, validation_error)
     app.add_middleware(ConfiguredCors)
     app.add_middleware(UploadLimit)

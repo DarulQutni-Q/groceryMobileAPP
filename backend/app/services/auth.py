@@ -30,6 +30,8 @@ def token_response(user: User, secret: str) -> TokenResponse:
 
 
 def register_user(data: RegisterRequest, db: Session) -> User:
+    if data.role == "admin":
+        raise HTTPException(403, "Akun admin hanya dibuat dari environment server")
     email = str(data.email).lower()
     if db.scalar(select(User).where(User.email == email)):
         raise HTTPException(400, "Email sudah terdaftar")

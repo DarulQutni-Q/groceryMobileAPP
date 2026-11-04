@@ -32,6 +32,7 @@ services:
     volumes:
       - uploads_data:/srv/uploads
       - ${FCM_SERVICE_ACCOUNT_HOST:-/dev/null}:/secrets/fcm-service-account.json:ro
+      - ./apps/admin/build/web:/srv/admin:ro
     environment:
       DATABASE_URL: postgresql+psycopg2://grocery:${POSTGRES_PASSWORD:?Isi POSTGRES_PASSWORD}@db:5432/grocery
       JWT_SECRET: ${JWT_SECRET:?Isi JWT_SECRET}
@@ -49,6 +50,9 @@ services:
       ENV: ${ENV:-prod}
       VERSI_MINIMUM_CUSTOMER: ${VERSI_MINIMUM_CUSTOMER:-0.0.0}
       VERSI_MINIMUM_SELLER: ${VERSI_MINIMUM_SELLER:-0.0.0}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      ADMIN_WEB_DIR: /srv/admin
     ports:
       - "8001:8000"
     depends_on:

@@ -13,6 +13,7 @@ from app.models.voucher import Voucher  # noqa: F401
 from app.models.jam_buka import JamBuka
 from app.models.password_reset_otp import PasswordResetOtp  # noqa: F401
 from app.models.pembayaran import Pembayaran  # noqa: F401
+from app.models.pengaturan import Pengaturan  # noqa: F401
 from app.models.pesanan import Pesanan, PesananItem
 from app.models.produk import Produk
 from app.models.toko import Toko

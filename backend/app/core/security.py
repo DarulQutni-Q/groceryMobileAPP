@@ -85,3 +85,25 @@ def get_current_user(user: User = Depends(get_authenticated_user)) -> User:
     if user.role != "seller":
         raise HTTPException(403, "Fitur ini khusus akun seller")
     return user
+
+
+def get_admin_user(
+    request: Request,
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer),
+    db: Session = Depends(get_db),
+) -> User:
+    """Token admin saja. Terpisah dari get_authenticated_user supaya
+    token admin tidak lolos ke endpoint seller/customer, dan sebaliknya."""
+    if credentials is None:
+        raise HTTPException(401, "Silakan login terlebih dahulu")
+    user = db.get(
+        User,
+        decode_user_id(credentials.credentials, request, "access"),
+        options=[joinedload(User.toko)],
+    )
+    if user is None:
+        raise HTTPException(401, "Akun tidak ditemukan")
+    if user.role != "admin":
+        raise HTTPException(403, "Fitur ini khusus admin")
+    check_user_limit(request, user.id)
+    return user

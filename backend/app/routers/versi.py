@@ -7,9 +7,11 @@ gerbang). Naikkan nilainya saat merilis versi yang wajib dipakai semua
 user; aplikasi lama menampilkan layar blokir sampai diperbarui.
 """
 
-from fastapi import APIRouter, Query, Request
+from fastapi import APIRouter, Depends, Query, Request
+from sqlalchemy.orm import Session
 
-from app.services.versi import wajib_update
+from app.db.session import get_db
+from app.services.versi import minimum_efektif, wajib_update
 
 router = APIRouter(tags=["Versi"])
 
@@ -19,12 +21,15 @@ def cek_versi_minimum(
     request: Request,
     aplikasi: str = Query(pattern="^(customer|seller)$"),
     versi: str = "",
+    db: Session = Depends(get_db),
 ):
     settings = request.app.state.settings
-    minimum = (
+    minimum = minimum_efektif(
+        db,
+        aplikasi,
         settings.versi_minimum_customer
         if aplikasi == "customer"
-        else settings.versi_minimum_seller
+        else settings.versi_minimum_seller,
     )
     return {
         "aplikasi": aplikasi,

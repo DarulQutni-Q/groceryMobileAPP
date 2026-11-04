@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     smtp_user: str = ""
     smtp_password: SecretStr = SecretStr("")
     smtp_from: str = ""
+    admin_email: str = ""
+    admin_password: SecretStr = SecretStr("")
     fcm_service_account_file: str = ""
     versi_minimum_customer: str = "0.0.0"
     versi_minimum_seller: str = "0.0.0"
