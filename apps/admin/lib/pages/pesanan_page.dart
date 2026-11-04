@@ -95,7 +95,7 @@ class _PesananPageState extends State<PesananPage> {
               Text('Total: ${rupiah(order['total'] as int)}'),
               const SizedBox(height: 12),
               const Text('Isi pesanan:',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+                  style: TextStyle(fontWeight: FontWeight.w600)),
               for (final item in items)
                 Text(
                   '- ${item['nama_snapshot']} x${item['qty']} '
@@ -118,12 +118,13 @@ class _PesananPageState extends State<PesananPage> {
   Widget build(BuildContext context) {
     final totalPages = _meta['total_pages'] as int? ?? 1;
     final total = _meta['total'] as int? ?? _rows.length;
+    final sempit = MediaQuery.sizeOf(context).width < 600;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           'Pesanan',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 16),
         Wrap(
@@ -151,7 +152,7 @@ class _PesananPageState extends State<PesananPage> {
                 controller: _cari,
                 decoration: const InputDecoration(
                   labelText: 'Cari kode pesanan',
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                   isDense: true,
                 ),
                 onSubmitted: (_) => setState(() {
@@ -172,12 +173,12 @@ class _PesananPageState extends State<PesananPage> {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: DataTable(
-              columns: const [
-                DataColumn(label: Text('Kode')),
-                DataColumn(label: Text('Status')),
-                DataColumn(label: Text('Total')),
-                DataColumn(label: Text('Dibuat')),
-                DataColumn(label: Text('')),
+              columns: [
+                const DataColumn(label: Text('Kode')),
+                const DataColumn(label: Text('Status')),
+                const DataColumn(label: Text('Total')),
+                if (!sempit) const DataColumn(label: Text('Dibuat')),
+                const DataColumn(label: Text('')),
               ],
               rows: _rows.map((row) {
                 final order = Map<String, dynamic>.from(row as Map);
@@ -186,7 +187,8 @@ class _PesananPageState extends State<PesananPage> {
                     DataCell(Text(order['kode'] as String)),
                     DataCell(Text(labelStatus(order['status'] as String))),
                     DataCell(Text(rupiah(order['total'] as int))),
-                    DataCell(Text(tanggal(order['created_at'] as String?))),
+                    if (!sempit)
+                      DataCell(Text(tanggal(order['created_at'] as String?))),
                     DataCell(
                       TextButton(
                         onPressed: () => _tampilDetail(order),

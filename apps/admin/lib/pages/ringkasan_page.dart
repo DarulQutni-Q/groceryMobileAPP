@@ -64,6 +64,49 @@ class _RingkasanPageState extends State<RingkasanPage> {
     final perStatus =
         Map<String, dynamic>.from(data['pesanan_per_status'] as Map);
     final perRole = Map<String, dynamic>.from(data['pengguna_per_role'] as Map);
+    final sempit = MediaQuery.sizeOf(context).width < 600;
+    final kartu = <Widget>[
+      KartuStat(
+        judul: 'Pengguna',
+        nilai: '${data['pengguna_total']}',
+        lebar: 220,
+        subjudul:
+            perRole.entries.map((e) => '${e.key}: ${e.value}').join('  •  '),
+      ),
+      KartuStat(
+        judul: 'Toko buka',
+        nilai: '${data['toko_buka']} / ${data['toko_total']}',
+        lebar: 220,
+      ),
+      KartuStat(
+        judul: 'Pesanan total',
+        nilai: '${data['pesanan_total']}',
+        lebar: 220,
+        subjudul: 'Hari ini: ${data['pesanan_hari_ini']}',
+      ),
+      KartuStat(
+        judul: 'Omzet selesai 7 hari',
+        nilai: rupiah(data['omzet_selesai_7h'] as int),
+        lebar: 220,
+      ),
+      KartuStat(
+        judul: 'Omzet selesai 30 hari',
+        nilai: rupiah(data['omzet_selesai_30h'] as int),
+        lebar: 220,
+      ),
+      KartuStat(
+        judul: 'Baru lewat 70 menit',
+        nilai: '${data['baru_lewat_70_menit']}',
+        lebar: 220,
+        subjudul: 'Kandidat sweeper pesanan tak dibayar',
+      ),
+      KartuStat(
+        judul: 'Token FCM perangkat',
+        nilai: '${data['token_fcm_total']}',
+        lebar: 220,
+        subjudul: 'Nol berarti push asli belum bisa dites',
+      ),
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -71,7 +114,7 @@ class _RingkasanPageState extends State<RingkasanPage> {
           children: [
             const Text(
               'Ringkasan',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
             ),
             const Spacer(),
             IconButton(
@@ -82,50 +125,17 @@ class _RingkasanPageState extends State<RingkasanPage> {
           ],
         ),
         const SizedBox(height: 16),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: [
-            KartuStat(
-              judul: 'Pengguna',
-              nilai: '${data['pengguna_total']}',
-              subjudul: perRole.entries
-                  .map((e) => '${e.key}: ${e.value}')
-                  .join('  •  '),
-            ),
-            KartuStat(
-              judul: 'Toko buka',
-              nilai: '${data['toko_buka']} / ${data['toko_total']}',
-            ),
-            KartuStat(
-              judul: 'Pesanan total',
-              nilai: '${data['pesanan_total']}',
-              subjudul: 'Hari ini: ${data['pesanan_hari_ini']}',
-            ),
-            KartuStat(
-              judul: 'Omzet selesai 7 hari',
-              nilai: rupiah(data['omzet_selesai_7h'] as int),
-            ),
-            KartuStat(
-              judul: 'Omzet selesai 30 hari',
-              nilai: rupiah(data['omzet_selesai_30h'] as int),
-            ),
-            KartuStat(
-              judul: 'Baru lewat 70 menit',
-              nilai: '${data['baru_lewat_70_menit']}',
-              subjudul: 'Kandidat sweeper pesanan tak dibayar',
-            ),
-            KartuStat(
-              judul: 'Token FCM perangkat',
-              nilai: '${data['token_fcm_total']}',
-              subjudul: 'Nol berarti push asli belum bisa dites',
-            ),
-          ],
-        ),
+        if (sempit)
+          for (var i = 0; i < kartu.length; i++) ...[
+            SizedBox(width: double.infinity, child: kartu[i]),
+            if (i < kartu.length - 1) const SizedBox(height: 12),
+          ]
+        else
+          Wrap(spacing: 12, runSpacing: 12, children: kartu),
         const SizedBox(height: 24),
         const Text(
           'Pesanan per status',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Wrap(

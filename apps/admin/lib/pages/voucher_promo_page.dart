@@ -51,12 +51,13 @@ class _VoucherPromoPageState extends State<VoucherPromoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final sempit = MediaQuery.sizeOf(context).width < 600;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           'Voucher & Promo',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         const Text(
@@ -69,7 +70,7 @@ class _VoucherPromoPageState extends State<VoucherPromoPage> {
         else ...[
           const Text(
             'Voucher',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           if (_voucher.isEmpty)
@@ -78,13 +79,13 @@ class _VoucherPromoPageState extends State<VoucherPromoPage> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: DataTable(
-                columns: const [
-                  DataColumn(label: Text('Kode')),
-                  DataColumn(label: Text('Judul')),
-                  DataColumn(label: Text('Persen')),
-                  DataColumn(label: Text('Min. belanja')),
-                  DataColumn(label: Text('Cap')),
-                  DataColumn(label: Text('Aktif')),
+                columns: [
+                  const DataColumn(label: Text('Kode')),
+                  const DataColumn(label: Text('Judul')),
+                  const DataColumn(label: Text('Persen')),
+                  if (!sempit) const DataColumn(label: Text('Min. belanja')),
+                  if (!sempit) const DataColumn(label: Text('Cap')),
+                  const DataColumn(label: Text('Aktif')),
                 ],
                 rows: _voucher.map((row) {
                   final v = Map<String, dynamic>.from(row as Map);
@@ -93,8 +94,9 @@ class _VoucherPromoPageState extends State<VoucherPromoPage> {
                       DataCell(Text(v['kode'] as String)),
                       DataCell(Text(v['judul'] as String)),
                       DataCell(Text('${v['persen']}%')),
-                      DataCell(Text(rupiah(v['min_belanja'] as int))),
-                      DataCell(Text(rupiah(v['cap'] as int))),
+                      if (!sempit)
+                        DataCell(Text(rupiah(v['min_belanja'] as int))),
+                      if (!sempit) DataCell(Text(rupiah(v['cap'] as int))),
                       DataCell(Text((v['aktif'] as bool) ? 'Ya' : 'Tidak')),
                     ],
                   );
@@ -104,7 +106,7 @@ class _VoucherPromoPageState extends State<VoucherPromoPage> {
           const SizedBox(height: 24),
           const Text(
             'Promo',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           if (_promo.isEmpty)
@@ -113,13 +115,13 @@ class _VoucherPromoPageState extends State<VoucherPromoPage> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: DataTable(
-                columns: const [
-                  DataColumn(label: Text('Judul')),
-                  DataColumn(label: Text('Jenis')),
-                  DataColumn(label: Text('Harga promo')),
-                  DataColumn(label: Text('Min. belanja')),
-                  DataColumn(label: Text('Aktif')),
-                  DataColumn(label: Text('Berakhir')),
+                columns: [
+                  const DataColumn(label: Text('Judul')),
+                  const DataColumn(label: Text('Jenis')),
+                  const DataColumn(label: Text('Harga promo')),
+                  if (!sempit) const DataColumn(label: Text('Min. belanja')),
+                  const DataColumn(label: Text('Aktif')),
+                  if (!sempit) const DataColumn(label: Text('Berakhir')),
                 ],
                 rows: _promo.map((row) {
                   final p = Map<String, dynamic>.from(row as Map);
@@ -128,11 +130,13 @@ class _VoucherPromoPageState extends State<VoucherPromoPage> {
                       DataCell(Text(p['judul'] as String)),
                       DataCell(Text(p['jenis'] as String)),
                       DataCell(Text(rupiah(p['harga_promo'] as int))),
-                      DataCell(Text(rupiah(p['min_belanja'] as int))),
+                      if (!sempit)
+                        DataCell(Text(rupiah(p['min_belanja'] as int))),
                       DataCell(Text((p['aktif'] as bool) ? 'Ya' : 'Tidak')),
-                      DataCell(
-                        Text(tanggal(p['berakhir_at'] as String?)),
-                      ),
+                      if (!sempit)
+                        DataCell(
+                          Text(tanggal(p['berakhir_at'] as String?)),
+                        ),
                     ],
                   );
                 }).toList(),

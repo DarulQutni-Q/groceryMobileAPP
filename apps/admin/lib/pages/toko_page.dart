@@ -76,12 +76,13 @@ class _TokoPageState extends State<TokoPage> {
   Widget build(BuildContext context) {
     final totalPages = _meta['total_pages'] as int? ?? 1;
     final total = _meta['total'] as int? ?? _rows.length;
+    final sempit = MediaQuery.sizeOf(context).width < 600;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           'Toko',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 16),
         DropdownButton<String?>(
@@ -107,12 +108,12 @@ class _TokoPageState extends State<TokoPage> {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: DataTable(
-              columns: const [
-                DataColumn(label: Text('Nama')),
-                DataColumn(label: Text('Alamat')),
-                DataColumn(label: Text('Telepon')),
-                DataColumn(label: Text('Status')),
-                DataColumn(label: Text('')),
+              columns: [
+                const DataColumn(label: Text('Nama')),
+                if (!sempit) const DataColumn(label: Text('Alamat')),
+                if (!sempit) const DataColumn(label: Text('Telepon')),
+                const DataColumn(label: Text('Status')),
+                const DataColumn(label: Text('')),
               ],
               rows: _rows.map((row) {
                 final toko = Map<String, dynamic>.from(row as Map);
@@ -120,8 +121,8 @@ class _TokoPageState extends State<TokoPage> {
                 return DataRow(
                   cells: [
                     DataCell(Text(toko['nama'] as String)),
-                    DataCell(Text(toko['alamat'] as String)),
-                    DataCell(Text(toko['telepon'] as String)),
+                    if (!sempit) DataCell(Text(toko['alamat'] as String)),
+                    if (!sempit) DataCell(Text(toko['telepon'] as String)),
                     DataCell(Text(buka ? 'Buka' : 'Tutup')),
                     DataCell(
                       TextButton(

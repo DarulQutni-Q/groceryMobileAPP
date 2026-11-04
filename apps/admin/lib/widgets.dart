@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 const hijauTua = Color(0xFF1E3A1E);
-const hijauLime = Color(0xFF75BF26);
 const latar = Color(0xFFF4F7F0);
 
 class KartuStat extends StatelessWidget {
@@ -11,15 +10,17 @@ class KartuStat extends StatelessWidget {
     required this.judul,
     required this.nilai,
     this.subjudul,
+    this.lebar,
   });
 
   final String judul;
   final String nilai;
   final String? subjudul;
+  final double? lebar;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    final kartu = Card(
       color: Colors.white,
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -37,8 +38,9 @@ class KartuStat extends StatelessWidget {
               nilai,
               style: const TextStyle(
                 fontSize: 26,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
                 color: hijauTua,
+                fontFeatures: [FontFeature.tabularFigures()],
               ),
             ),
             if (subjudul != null) ...[
@@ -49,6 +51,8 @@ class KartuStat extends StatelessWidget {
         ),
       ),
     );
+    if (lebar == null) return kartu;
+    return SizedBox(width: lebar, child: kartu);
   }
 }
 
@@ -68,20 +72,28 @@ class BarisPaginasi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
+      spacing: 8,
+      runSpacing: 4,
+      alignment: WrapAlignment.spaceBetween,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Text('Total $total data'),
-        const Spacer(),
-        IconButton(
-          tooltip: 'Halaman sebelumnya',
-          onPressed: page > 1 ? () => onPage(page - 1) : null,
-          icon: const Icon(Icons.chevron_left),
-        ),
-        Text('Halaman $page dari $totalPages'),
-        IconButton(
-          tooltip: 'Halaman berikutnya',
-          onPressed: page < totalPages ? () => onPage(page + 1) : null,
-          icon: const Icon(Icons.chevron_right),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              tooltip: 'Halaman sebelumnya',
+              onPressed: page > 1 ? () => onPage(page - 1) : null,
+              icon: const Icon(Icons.chevron_left),
+            ),
+            Text('Halaman $page dari $totalPages'),
+            IconButton(
+              tooltip: 'Halaman berikutnya',
+              onPressed: page < totalPages ? () => onPage(page + 1) : null,
+              icon: const Icon(Icons.chevron_right),
+            ),
+          ],
         ),
       ],
     );

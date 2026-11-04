@@ -94,12 +94,13 @@ class _PenggunaPageState extends State<PenggunaPage> {
   Widget build(BuildContext context) {
     final totalPages = _meta['total_pages'] as int? ?? 1;
     final total = _meta['total'] as int? ?? _rows.length;
+    final sempit = MediaQuery.sizeOf(context).width < 600;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           'Pengguna',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 16),
         Wrap(
@@ -128,7 +129,7 @@ class _PenggunaPageState extends State<PenggunaPage> {
                 controller: _cari,
                 decoration: const InputDecoration(
                   labelText: 'Cari nama atau email',
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                   isDense: true,
                 ),
                 onSubmitted: (_) => setState(() {
@@ -149,13 +150,13 @@ class _PenggunaPageState extends State<PenggunaPage> {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: DataTable(
-              columns: const [
-                DataColumn(label: Text('Nama')),
-                DataColumn(label: Text('Email')),
-                DataColumn(label: Text('Role')),
-                DataColumn(label: Text('Toko')),
-                DataColumn(label: Text('Pesanan')),
-                DataColumn(label: Text('')),
+              columns: [
+                const DataColumn(label: Text('Nama')),
+                const DataColumn(label: Text('Email')),
+                const DataColumn(label: Text('Role')),
+                if (!sempit) const DataColumn(label: Text('Toko')),
+                if (!sempit) const DataColumn(label: Text('Pesanan')),
+                const DataColumn(label: Text('')),
               ],
               rows: _rows.map((row) {
                 final user = Map<String, dynamic>.from(row as Map);
@@ -164,8 +165,9 @@ class _PenggunaPageState extends State<PenggunaPage> {
                     DataCell(Text(user['nama'] as String)),
                     DataCell(Text(user['email'] as String)),
                     DataCell(Text(user['role'] as String)),
-                    DataCell(Text(user['toko_nama'] as String? ?? '-')),
-                    DataCell(Text('${user['pesanan_total']}')),
+                    if (!sempit)
+                      DataCell(Text(user['toko_nama'] as String? ?? '-')),
+                    if (!sempit) DataCell(Text('${user['pesanan_total']}')),
                     DataCell(
                       TextButton(
                         onPressed: () => _hapus(user),

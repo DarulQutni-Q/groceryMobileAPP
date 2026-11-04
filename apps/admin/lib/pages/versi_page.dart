@@ -94,7 +94,7 @@ class _VersiKesehatanPageState extends State<VersiKesehatanPage> {
       children: [
         const Text(
           'Versi & Kesehatan',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 16),
         if (_galat != null)
@@ -104,7 +104,7 @@ class _VersiKesehatanPageState extends State<VersiKesehatanPage> {
         else ...[
           const Text(
             'Versi minimum (force-update)',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Text(
@@ -124,7 +124,7 @@ class _VersiKesehatanPageState extends State<VersiKesehatanPage> {
                   controller: _customer,
                   decoration: const InputDecoration(
                     labelText: 'Customer (mis. 0.1.0)',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                     isDense: true,
                   ),
                 ),
@@ -135,7 +135,7 @@ class _VersiKesehatanPageState extends State<VersiKesehatanPage> {
                   controller: _seller,
                   decoration: const InputDecoration(
                     labelText: 'Seller (mis. 1.0.0)',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                     isDense: true,
                   ),
                 ),
@@ -149,7 +149,7 @@ class _VersiKesehatanPageState extends State<VersiKesehatanPage> {
           const SizedBox(height: 24),
           const Text(
             'Kesehatan sistem',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
           Wrap(

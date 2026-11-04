@@ -55,6 +55,30 @@ class _AdminAppState extends State<AdminApp> {
         ),
         scaffoldBackgroundColor: latar,
         useMaterial3: true,
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+        ),
+        dialogTheme: DialogThemeData(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
       ),
       home: _memuat
           ? const Scaffold(body: Center(child: CircularProgressIndicator()))
@@ -134,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                       'GardenMart Admin',
                       style: TextStyle(
                         fontSize: 26,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                         color: hijauTua,
                       ),
                     ),
@@ -149,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _email,
                       decoration: const InputDecoration(
                         labelText: 'Email admin',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                       ),
                       validator: (v) =>
                           (v ?? '').contains('@') ? null : 'Email tidak valid',
@@ -161,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                       obscureText: true,
                       decoration: const InputDecoration(
                         labelText: 'Kata sandi',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                       ),
                       validator: (v) =>
                           (v ?? '').isEmpty ? 'Kata sandi wajib diisi' : null,
@@ -290,7 +314,12 @@ class _ShellState extends State<Shell> {
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(24),
-                    child: _halaman(),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 1280),
+                        child: _halaman(),
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -335,7 +364,12 @@ class _ShellState extends State<Shell> {
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
-            child: _halaman(),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1280),
+                child: _halaman(),
+              ),
+            ),
           ),
         );
       },

@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:gardenmart_admin/api.dart';
 import 'package:gardenmart_admin/main.dart';
 import 'package:gardenmart_admin/models.dart';
+import 'package:gardenmart_admin/pages/pengguna_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _Adapter implements HttpClientAdapter {
@@ -38,6 +39,21 @@ AdminApi _apiDenganStub() {
         return _json({'access_token': 'token-admin'});
       }
       return _json({'detail': 'Email atau kata sandi salah'}, 401);
+    }
+    if (request.path == '/admin/pengguna') {
+      return _json({
+        'data': [
+          {
+            'id': 'u1',
+            'nama': 'Budi',
+            'email': 'budi@example.com',
+            'role': 'seller',
+            'toko_nama': 'Toko Budi',
+            'pesanan_total': 3,
+          },
+        ],
+        'meta': {'total': 1, 'total_pages': 1},
+      });
     }
     if (request.path == '/admin/ringkasan') {
       return _json({
@@ -87,6 +103,25 @@ void main() {
     } catch (error) {
       expect(AdminApi.pesanGalat(error), 'Email atau kata sandi salah');
     }
+  });
+
+  testWidgets('tabel pengguna menyembunyikan kolom sekunder di HP',
+      (tester) async {
+    tester.view.physicalSize = const Size(360, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final api = _apiDenganStub();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: PenggunaPage(api: api, onUnauthorized: () {})),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Nama'), findsOneWidget);
+    expect(find.text('Budi'), findsOneWidget);
+    expect(find.text('Toko'), findsNothing);
+    expect(find.text('Toko Budi'), findsNothing);
   });
 
   testWidgets('login menolak email tidak valid tanpa request', (tester) async {
