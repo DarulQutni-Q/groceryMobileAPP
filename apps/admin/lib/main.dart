@@ -79,6 +79,12 @@ class _AdminAppState extends State<AdminApp> {
             borderRadius: BorderRadius.circular(16),
           ),
         ),
+        dataTableTheme: const DataTableThemeData(
+          // Default DataTable membatasi tinggi baris ke 48px sehingga teks
+          // multi-baris (mis. alamat toko) terpotong; biarkan baris tumbuh
+          // mengikuti isi.
+          dataRowMaxHeight: double.infinity,
+        ),
       ),
       home: _memuat
           ? const Scaffold(body: Center(child: CircularProgressIndicator()))
