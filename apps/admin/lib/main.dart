@@ -160,14 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'GardenMart Admin',
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w600,
-                        color: hijauTua,
-                      ),
-                    ),
+                    const LogoGardenMart(gelap: false, ukuranJudul: 20, ukuranUbin: 40),
                     const SizedBox(height: 4),
                     Text(
                       'Masuk dengan akun admin server.',
@@ -288,7 +281,7 @@ class _ShellState extends State<Shell> {
         if (batas.maxWidth >= 900) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('GardenMart Admin'),
+              title: const LogoGardenMart(gelap: true),
               backgroundColor: hijauTua,
               foregroundColor: Colors.white,
               actions: [
@@ -334,7 +327,7 @@ class _ShellState extends State<Shell> {
         }
         return Scaffold(
           appBar: AppBar(
-            title: const Text('GardenMart Admin'),
+            title: const LogoGardenMart(gelap: true, ukuranJudul: 16, ukuranUbin: 32, denganTag: false),
             backgroundColor: hijauTua,
             foregroundColor: Colors.white,
             actions: [
@@ -348,11 +341,19 @@ class _ShellState extends State<Shell> {
           drawer: Drawer(
             child: ListView(
               children: [
-                const DrawerHeader(
-                  decoration: BoxDecoration(color: hijauTua),
-                  child: Text(
-                    'GardenMart Admin',
-                    style: TextStyle(color: Colors.white, fontSize: 22),
+                DrawerHeader(
+                  decoration: const BoxDecoration(color: hijauTua),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      LogoGardenMart(gelap: true, denganTag: false),
+                      SizedBox(height: 8),
+                      Text(
+                        'Kelola toko, pesanan, dan pengguna',
+                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                      ),
+                    ],
                   ),
                 ),
                 for (final m in _Menu.values)

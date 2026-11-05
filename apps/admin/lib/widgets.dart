@@ -4,6 +4,81 @@ import 'package:flutter/material.dart';
 const hijauTua = Color(0xFF1E3A1E);
 const latar = Color(0xFFF4F7F0);
 
+/// Warna lime khas GardenMart, dipakai hanya untuk ubin logo.
+const hijauLime = Color(0xFF75BF26);
+
+/// Lockup merek GardenMart: ubin lime berisi ikon toko, kata "GardenMart",
+/// dan label kecil "Admin". Dipakai di header, drawer, dan kartu login
+/// supaya ketiganya punya satu identitas yang sama.
+class LogoGardenMart extends StatelessWidget {
+  const LogoGardenMart({
+    super.key,
+    required this.gelap,
+    this.ukuranJudul = 18,
+    this.ukuranUbin = 36,
+    this.denganTag = true,
+  });
+
+  /// true bila diletakkan di atas latar gelap (header/drawer): teks putih.
+  /// false bila di atas latar terang (kartu login): teks hijau tua.
+  final bool gelap;
+  final double ukuranJudul;
+  final double ukuranUbin;
+
+  /// false di tempat sempit (AppBar HP, drawer) supaya lockup tidak meluber.
+  final bool denganTag;
+
+  @override
+  Widget build(BuildContext context) {
+    final warnaTeks = gelap ? Colors.white : hijauTua;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: ukuranUbin,
+          height: ukuranUbin,
+          decoration: BoxDecoration(
+            color: hijauLime,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            Icons.storefront,
+            color: hijauTua,
+            size: ukuranUbin * 0.6,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          'GardenMart',
+          style: TextStyle(
+            fontSize: ukuranJudul,
+            fontWeight: FontWeight.w600,
+            color: warnaTeks,
+          ),
+        ),
+        if (denganTag) ...[
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              border: Border.all(color: warnaTeks.withAlpha(140)),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              'Admin',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: warnaTeks,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
 class KartuStat extends StatelessWidget {
   const KartuStat({
     super.key,
