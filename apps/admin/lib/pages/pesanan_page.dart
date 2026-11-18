@@ -78,8 +78,26 @@ class _PesananPageState extends State<PesananPage> {
     }
   }
 
-  void _tampilDetail(Map<String, dynamic> order) {
+  Future<void> _tampilDetail(Map<String, dynamic> order) async {
     final items = List<dynamic>.from(order['items'] as List? ?? []);
+    Map<String, dynamic>? bayar;
+    try {
+      final hasil = await widget.api.daftar(
+        '/admin/pembayaran',
+        filter: {'pesanan_id': order['id'] as String},
+      );
+      final rows = List<dynamic>.from(hasil['data'] as List);
+      if (rows.isNotEmpty) {
+        bayar = Map<String, dynamic>.from(rows.first as Map);
+      }
+    } catch (error) {
+      if (sesiHabis(error)) {
+        widget.onUnauthorized();
+        return;
+      }
+      // Info bayar gagal dimuat: dialog tetap tampil tanpa baris bayar.
+    }
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -93,6 +111,14 @@ class _PesananPageState extends State<PesananPage> {
               Text('Toko: ${order['toko_id']}'),
               Text('Alamat: ${order['alamat_kirim']}'),
               Text('Total: ${rupiah(order['total'] as int)}'),
+              if (bayar != null) ...[
+                Text(
+                  'Bayar: ${labelMetode(bayar['metode'] as String)} - '
+                  '${labelPembayaran(bayar['status'] as String)}',
+                ),
+                if ((bayar['paid_at'] as String?) != null)
+                  Text('Dibayar: ${tanggal(bayar['paid_at'] as String?)}'),
+              ],
               const SizedBox(height: 12),
               const Text('Isi pesanan:',
                   style: TextStyle(fontWeight: FontWeight.w600)),

@@ -27,6 +27,9 @@ class RingkasanAdmin(BaseModel):
     omzet_selesai_30h: int
     baru_lewat_70_menit: int
     token_fcm_total: int
+    produk_total: int
+    pembayaran_total: int
+    pembayaran_per_status: dict[str, int]
 
 
 class PenggunaAdmin(BaseModel):
@@ -41,6 +44,37 @@ class PenggunaAdmin(BaseModel):
     toko_id: UUID | None = None
     toko_nama: str | None = None
     pesanan_total: int = 0
+    created_at: datetime
+
+
+class ProdukAdmin(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    toko_id: UUID
+    toko_nama: str | None = None
+    nama: str
+    harga: int
+    stok: int
+    satuan: str
+    kategori: str
+    foto_url: str | None = None
+    is_tersedia: bool
+    created_at: datetime
+    updated_at: datetime
+
+
+class PembayaranAdmin(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    pesanan_id: UUID
+    pesanan_kode: str | None = None
+    metode: str
+    status: str
+    jumlah: int
+    paid_at: datetime | None = None
+    perlu_rekonsiliasi: bool
     created_at: datetime
 
 
@@ -71,7 +105,9 @@ class KesehatanAdmin(BaseModel):
 
 __all__ = [
     "KesehatanAdmin",
+    "PembayaranAdmin",
     "PenggunaAdmin",
+    "ProdukAdmin",
     "PesananResponse",
     "PromoResponse",
     "RingkasanAdmin",

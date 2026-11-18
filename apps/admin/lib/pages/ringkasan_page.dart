@@ -64,6 +64,8 @@ class _RingkasanPageState extends State<RingkasanPage> {
     final perStatus =
         Map<String, dynamic>.from(data['pesanan_per_status'] as Map);
     final perRole = Map<String, dynamic>.from(data['pengguna_per_role'] as Map);
+    final perBayar =
+        Map<String, dynamic>.from(data['pembayaran_per_status'] as Map);
     final sempit = MediaQuery.sizeOf(context).width < 600;
     final kartu = <Widget>[
       KartuStat(
@@ -93,6 +95,19 @@ class _RingkasanPageState extends State<RingkasanPage> {
         judul: 'Omzet selesai 30 hari',
         nilai: rupiah(data['omzet_selesai_30h'] as int),
         lebar: 220,
+      ),
+      KartuStat(
+        judul: 'Produk',
+        nilai: '${data['produk_total']}',
+        lebar: 220,
+      ),
+      KartuStat(
+        judul: 'Pembayaran',
+        nilai: '${data['pembayaran_total']}',
+        lebar: 220,
+        subjudul: perBayar.entries
+            .map((e) => '${labelPembayaran(e.key)}: ${e.value}')
+            .join('  •  '),
       ),
       KartuStat(
         judul: 'Baru lewat 70 menit',
@@ -145,6 +160,23 @@ class _RingkasanPageState extends State<RingkasanPage> {
               .map(
                 (e) => Chip(
                   label: Text('${labelStatus(e.key)}: ${e.value}'),
+                ),
+              )
+              .toList(),
+        ),
+        const SizedBox(height: 24),
+        const Text(
+          'Pembayaran per status',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: perBayar.entries
+              .map(
+                (e) => Chip(
+                  label: Text('${labelPembayaran(e.key)}: ${e.value}'),
                 ),
               )
               .toList(),

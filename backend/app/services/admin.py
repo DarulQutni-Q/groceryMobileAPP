@@ -10,8 +10,10 @@ from datetime import datetime, time, timedelta, timezone
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
+from app.models.pembayaran import Pembayaran
 from app.models.pengaturan import Pengaturan
 from app.models.pesanan import Pesanan
+from app.models.produk import Produk
 from app.models.promo import Promo
 from app.models.toko import Toko
 from app.models.user import User
@@ -88,6 +90,17 @@ def ringkasan(db: Session) -> dict:
             .select_from(User)
             .where(User.fcm_token.is_not(None))
         ),
+        "produk_total": db.scalar(select(func.count()).select_from(Produk)),
+        "pembayaran_total": db.scalar(
+            select(func.count()).select_from(Pembayaran)
+        ),
+        "pembayaran_per_status": dict(
+            db.execute(
+                select(Pembayaran.status, func.count()).group_by(
+                    Pembayaran.status
+                )
+            ).all()
+        ),
     }
 
 
@@ -144,6 +157,66 @@ def pengguna_detail(db: Session, user: User) -> dict:
         "toko_nama": toko.nama if toko else None,
         "pesanan_total": pesanan_total,
         "created_at": user.created_at,
+    }
+
+
+def daftar_produk(db: Session, toko_id=None, kategori=None, q=None):
+    query = select(Produk).order_by(Produk.nama)
+    if toko_id:
+        query = query.where(Produk.toko_id == toko_id)
+    if kategori:
+        query = query.where(Produk.kategori == kategori)
+    if q:
+        query = query.where(Produk.nama.ilike(f"%{q}%"))
+    return query
+
+
+def produk_detail(db: Session, produk: Produk) -> dict:
+    toko = db.get(Toko, produk.toko_id)
+    return {
+        "id": produk.id,
+        "toko_id": produk.toko_id,
+        "toko_nama": toko.nama if toko else None,
+        "nama": produk.nama,
+        "harga": produk.harga,
+        "stok": produk.stok,
+        "satuan": produk.satuan,
+        "kategori": produk.kategori,
+        "foto_url": produk.foto_url,
+        "is_tersedia": produk.is_tersedia,
+        "created_at": produk.created_at,
+        "updated_at": produk.updated_at,
+    }
+
+
+def daftar_pembayaran(db: Session, status=None, metode=None, pesanan_id=None, q=None):
+    query = select(Pembayaran).order_by(Pembayaran.created_at.desc())
+    if status:
+        query = query.where(Pembayaran.status == status)
+    if metode:
+        query = query.where(Pembayaran.metode == metode)
+    if pesanan_id:
+        query = query.where(Pembayaran.pesanan_id == pesanan_id)
+    if q:
+        query = query.join(Pesanan, Pesanan.id == Pembayaran.pesanan_id).where(
+            (Pesanan.kode.ilike(f"%{q}%"))
+            | (Pembayaran.external_id.ilike(f"%{q}%"))
+        )
+    return query
+
+
+def pembayaran_detail(db: Session, bayar: Pembayaran) -> dict:
+    pesanan = db.get(Pesanan, bayar.pesanan_id)
+    return {
+        "id": bayar.id,
+        "pesanan_id": bayar.pesanan_id,
+        "pesanan_kode": pesanan.kode if pesanan else None,
+        "metode": bayar.metode,
+        "status": bayar.status,
+        "jumlah": bayar.jumlah,
+        "paid_at": bayar.paid_at,
+        "perlu_rekonsiliasi": bayar.perlu_rekonsiliasi,
+        "created_at": bayar.created_at,
     }
 
 

@@ -33,3 +33,25 @@ const Map<String, String> labelStatusPesanan = {
 };
 
 String labelStatus(String status) => labelStatusPesanan[status] ?? status;
+
+const Map<String, String> labelStatusPembayaran = {
+  'paid': 'Dibayar',
+  'pending': 'Menunggu bayar',
+  'expired': 'Kedaluarsa',
+  'failed': 'Gagal',
+};
+
+String labelPembayaran(String status) =>
+    labelStatusPembayaran[status] ?? status;
+
+const Map<String, String> labelMetodeBayar = {
+  'qris': 'QRIS',
+  'gopay': 'GoPay',
+  'shopeepay': 'ShopeePay',
+  'va_bca': 'VA BCA',
+  'va_bri': 'VA BRI',
+  'va_mandiri': 'VA Mandiri',
+  'cod': 'COD',
+};
+
+String labelMetode(String metode) => labelMetodeBayar[metode] ?? metode;

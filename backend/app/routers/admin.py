@@ -17,13 +17,17 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.core.security import get_admin_user
 from app.db.session import get_db
+from app.models.pembayaran import Pembayaran
 from app.models.pengaturan import Pengaturan
 from app.models.pesanan import Pesanan
+from app.models.produk import Produk
 from app.models.toko import Toko
 from app.models.user import User
 from app.schemas.admin import (
     KesehatanAdmin,
+    PembayaranAdmin,
     PenggunaAdmin,
+    ProdukAdmin,
     RingkasanAdmin,
     VersiMinimumAdmin,
     VersiMinimumUpdate,
@@ -73,6 +77,45 @@ def detail_pesanan(
     if pesanan is None:
         raise HTTPException(404, "Pesanan tidak ditemukan")
     return pesanan
+
+
+@router.get("/produk", response_model=list[ProdukAdmin] | Page[ProdukAdmin])
+def daftar_produk(
+    toko_id: UUID | None = None,
+    kategori: str | None = None,
+    q: str | None = None,
+    pagination: Pagination | None = Depends(pagination_params),
+    _: User = Depends(get_admin_user),
+    db: Session = Depends(get_db),
+):
+    query = layanan.daftar_produk(db, toko_id, kategori, q)
+    rows = list_response(db, query, pagination)
+    items = rows["data"] if isinstance(rows, dict) else rows
+    detail = [layanan.produk_detail(db, produk) for produk in items]
+    if isinstance(rows, dict):
+        return {"data": detail, "meta": rows["meta"]}
+    return detail
+
+
+@router.get(
+    "/pembayaran", response_model=list[PembayaranAdmin] | Page[PembayaranAdmin]
+)
+def daftar_pembayaran(
+    status: str | None = None,
+    metode: str | None = None,
+    pesanan_id: UUID | None = None,
+    q: str | None = None,
+    pagination: Pagination | None = Depends(pagination_params),
+    _: User = Depends(get_admin_user),
+    db: Session = Depends(get_db),
+):
+    query = layanan.daftar_pembayaran(db, status, metode, pesanan_id, q)
+    rows = list_response(db, query, pagination)
+    items = rows["data"] if isinstance(rows, dict) else rows
+    detail = [layanan.pembayaran_detail(db, bayar) for bayar in items]
+    if isinstance(rows, dict):
+        return {"data": detail, "meta": rows["meta"]}
+    return detail
 
 
 @router.get("/toko", response_model=list[TokoResponse] | Page[TokoResponse])

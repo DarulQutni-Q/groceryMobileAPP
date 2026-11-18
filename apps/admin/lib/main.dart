@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'api.dart';
+import 'pages/pembayaran_page.dart';
 import 'pages/pengguna_page.dart';
 import 'pages/pesanan_page.dart';
+import 'pages/produk_page.dart';
 import 'pages/ringkasan_page.dart';
 import 'pages/toko_page.dart';
 import 'pages/versi_page.dart';
@@ -228,6 +230,8 @@ class _LoginPageState extends State<LoginPage> {
 enum _Menu {
   ringkasan('Ringkasan', Icons.dashboard),
   pesanan('Pesanan', Icons.receipt_long),
+  produk('Produk', Icons.inventory_2),
+  pembayaran('Pembayaran', Icons.payments),
   toko('Toko', Icons.store),
   pengguna('Pengguna', Icons.people),
   voucherPromo('Voucher & Promo', Icons.local_offer),
@@ -257,6 +261,10 @@ class _ShellState extends State<Shell> {
         return RingkasanPage(api: widget.api, onUnauthorized: widget.onKeluar);
       case _Menu.pesanan:
         return PesananPage(api: widget.api, onUnauthorized: widget.onKeluar);
+      case _Menu.produk:
+        return ProdukPage(api: widget.api, onUnauthorized: widget.onKeluar);
+      case _Menu.pembayaran:
+        return PembayaranPage(api: widget.api, onUnauthorized: widget.onKeluar);
       case _Menu.toko:
         return TokoPage(api: widget.api, onUnauthorized: widget.onKeluar);
       case _Menu.pengguna:
