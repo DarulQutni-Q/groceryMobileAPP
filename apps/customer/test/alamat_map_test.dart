@@ -86,7 +86,7 @@ void main() {
     await tester.pump();
     expect(find.byIcon(Icons.location_pin), findsOneWidget);
     expect(find.text('Gunakan Lokasi Saya'), findsOneWidget);
-    expect(find.text('© OpenStreetMap contributors'), findsOneWidget);
+    // Atribusi Google Maps tampil native di device, bukan Text widget.
     expect(find.text('Lat: -6.900000, Lng: 107.600000'), findsOneWidget);
     await tester.tap(find.byKey(const Key('peta-gps')));
     await tester.pumpAndSettle();

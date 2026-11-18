@@ -4,6 +4,18 @@ plugins {
     id("com.google.gms.google-services")
 }
 
+// Google Maps API key: dibaca dari android/local.properties
+// (MAPS_API_KEY=...). File itu di-gitignore, jadi key tidak
+// masuk repo. Kalau belum diisi, placeholder di bawah dipakai
+// dan peta akan blank sampai key diisi.
+val localProperties = java.util.Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(java.io.FileInputStream(localPropertiesFile))
+}
+val mapsApiKey: String =
+    localProperties.getProperty("MAPS_API_KEY", "YOUR_GOOGLE_MAPS_API_KEY")
+
 android {
     namespace = "com.gardenmart.gardenmart_customer"
     compileSdk = flutter.compileSdkVersion
@@ -22,6 +34,7 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         manifestPlaceholders["usesCleartextTraffic"] = "true"
+        manifestPlaceholders["mapsApiKey"] = mapsApiKey
     }
     buildTypes {
         release {

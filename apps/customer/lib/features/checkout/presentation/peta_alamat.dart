@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:latlong2/latlong.dart';
 
 import '../../../core/theme.dart';
@@ -13,9 +13,15 @@ import '../../../core/theme.dart';
 /// ke backend kalau user tidak menggeser peta atau memakai GPS.
 const dewantaraDefault = LatLng(5.2443, 97.0248);
 
-/// Peta OpenStreetMap dengan pin tengah: pin diam di tengah layar,
+gmaps.LatLng _keGmaps(LatLng p) => gmaps.LatLng(p.latitude, p.longitude);
+LatLng _dariGmaps(gmaps.LatLng p) => LatLng(p.latitude, p.longitude);
+
+/// Peta Google Maps dengan pin tengah: pin diam di tengah layar,
 /// koordinatnya mengikuti posisi peta saat digeser. Dipakai di formulir
 /// alamat dan di halaman pemilih titik GPS.
+///
+/// API key Google Maps dibaca Android dari local.properties
+/// (MAPS_API_KEY) lewat manifest placeholder; iOS dari AppDelegate.
 class PetaAlamat extends StatefulWidget {
   const PetaAlamat({
     super.key,
@@ -42,18 +48,19 @@ class PetaAlamat extends StatefulWidget {
 }
 
 class _PetaAlamatState extends State<PetaAlamat> {
-  late final _controller = MapController();
+  gmaps.GoogleMapController? _controller;
   late final _pin = ValueNotifier<LatLng>(widget.initial);
   bool _gpsBusy = false;
+  bool _suppressCameraMove = false;
 
-  /// Di widget test, ubin jaringan dimatikan supaya tidak ada HTTP dan
-  /// hasil tetap deterministik. Di aplikasi nyata ubin selalu aktif.
+  /// Di widget test, GoogleMap tidak dirender (platform view tidak ada
+  /// di flutter_test). Sebagai gantinya tampil placeholder polos supaya
+  /// pin, tombol GPS, dan teks koordinat tetap bisa dites.
   static bool get _isTest =>
       Platform.environment['FLUTTER_TEST'] == 'true';
 
   @override
   void dispose() {
-    _controller.dispose();
     _pin.dispose();
     super.dispose();
   }
@@ -77,9 +84,15 @@ class _PetaAlamatState extends State<PetaAlamat> {
         );
         return;
       }
-      _controller.move(target, 16);
       _pin.value = target;
       widget.onPointChanged?.call(target, true);
+      final controller = _controller;
+      if (controller != null) {
+        _suppressCameraMove = true;
+        await controller.animateCamera(
+          gmaps.CameraUpdate.newLatLngZoom(_keGmaps(target), 16),
+        );
+      }
     } finally {
       if (mounted) setState(() => _gpsBusy = false);
     }
@@ -108,89 +121,86 @@ class _PetaAlamatState extends State<PetaAlamat> {
     }
   }
 
+  void _onCameraMove(gmaps.CameraPosition position) {
+    final center = _dariGmaps(position.target);
+    _pin.value = center;
+    if (_suppressCameraMove) return;
+    widget.onPointChanged?.call(center, true);
+  }
+
+  void _onCameraIdle() {
+    _suppressCameraMove = false;
+  }
+
   @override
   Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      SizedBox(
-        height: widget.height,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Stack(
-            children: [
-              Container(color: limePale),
-              FlutterMap(
-                mapController: _controller,
-                options: MapOptions(
-                  initialCenter: widget.initial,
-                  initialZoom: 15,
-                  minZoom: 3,
-                  maxZoom: 19,
-                  onPositionChanged: (camera, hasGesture) {
-                    final center = camera.center;
-                    _pin.value = center;
-                    widget.onPointChanged?.call(center, hasGesture);
-                  },
-                ),
-                children: [
-                  if (!_isTest)
-                    TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'gardenmart_customer',
-                    ),
-                ],
-              ),
-              const Center(
-                child: IgnorePointer(
-                  child: Icon(
-                    Icons.location_pin,
-                    size: 48,
-                    color: dangerRed,
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 6,
-                bottom: 6,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 3,
-                  ),
-                  color: Colors.white70,
-                  child: const Text(
-                    '© OpenStreetMap contributors',
-                    style: TextStyle(fontSize: 10, color: Colors.black54),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      const SizedBox(height: 8),
-      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: ValueListenableBuilder<LatLng>(
-              valueListenable: _pin,
-              builder: (context, point, _) => Text(
-                key: const Key('peta-koordinat'),
-                'Lat: ${point.latitude.toStringAsFixed(6)}, '
-                'Lng: ${point.longitude.toStringAsFixed(6)}',
-                style: const TextStyle(fontSize: 12, color: textGrey),
+          SizedBox(
+            height: widget.height,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Stack(
+                children: [
+                  Container(color: limePale),
+                  if (_isTest)
+                    const Center(
+                      child: Text(
+                        'Peta Google Maps',
+                        style: TextStyle(color: textGrey),
+                      ),
+                    )
+                  else
+                    gmaps.GoogleMap(
+                      initialCameraPosition: gmaps.CameraPosition(
+                        target: _keGmaps(widget.initial),
+                        zoom: 15,
+                      ),
+                      minMaxZoomPreference:
+                          const gmaps.MinMaxZoomPreference(3, 19),
+                      onMapCreated: (controller) {
+                        _controller = controller;
+                      },
+                      onCameraMove: _onCameraMove,
+                      onCameraIdle: _onCameraIdle,
+                      myLocationButtonEnabled: false,
+                      zoomControlsEnabled: false,
+                    ),
+                  const Center(
+                    child: IgnorePointer(
+                      child: Icon(
+                        Icons.location_pin,
+                        size: 48,
+                        color: dangerRed,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          TextButton.icon(
-            key: const Key('peta-gps'),
-            onPressed: _gpsBusy ? null : _pakaiGps,
-            icon: const Icon(Icons.my_location, size: 18),
-            label: Text(_gpsBusy ? 'Mencari...' : 'Gunakan Lokasi Saya'),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: ValueListenableBuilder<LatLng>(
+                  valueListenable: _pin,
+                  builder: (context, point, _) => Text(
+                    key: const Key('peta-koordinat'),
+                    'Lat: ${point.latitude.toStringAsFixed(6)}, '
+                    'Lng: ${point.longitude.toStringAsFixed(6)}',
+                    style: const TextStyle(fontSize: 12, color: textGrey),
+                  ),
+                ),
+              ),
+              TextButton.icon(
+                key: const Key('peta-gps'),
+                onPressed: _gpsBusy ? null : _pakaiGps,
+                icon: const Icon(Icons.my_location, size: 18),
+                label: Text(_gpsBusy ? 'Mencari...' : 'Gunakan Lokasi Saya'),
+              ),
+            ],
           ),
         ],
-      ),
-    ],
-  );
+      );
 }
