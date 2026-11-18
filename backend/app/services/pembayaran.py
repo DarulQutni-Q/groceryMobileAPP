@@ -8,6 +8,8 @@ from app.models.pesanan import Pesanan
 from app.models.produk import Produk
 from app.models.user import now_utc
 from app.schemas.pembayaran import InvoiceEvent
+from app.services.notifikasi import catat_status_pesanan
+from app.services.riwayat import catat_riwayat
 
 
 def release_stock(db, order, payment):
@@ -62,6 +64,10 @@ def apply_invoice(db, event):
             db.commit()
             raise HTTPException(409, "Pembayaran pesanan batal perlu rekonsiliasi")
         payment.status, payment.paid_at = "paid", event.paid_at or now_utc()
+        if order.status == "baru":
+            order.status, order.accepted_at = "diproses", now_utc()
+            catat_status_pesanan(db, order)
+            catat_riwayat(db, order, "diproses")
     elif event.status in {"EXPIRED", "FAILED"} and payment.status == "pending":
         payment.status = event.status.lower()
         order.status = "dibatalkan"

@@ -16,6 +16,7 @@ from sqlalchemy import select
 from app.models.pembayaran import Pembayaran
 from app.models.pesanan import Pesanan
 from app.models.produk import Produk
+from app.models.riwayat import RiwayatStatus
 from app.services.xendit import get_gateway
 
 
@@ -122,6 +123,15 @@ def test_status_merekonsiliasi_paid_dari_xendit(order_xendit):
     assert payment.stok_direservasi is True
     with http.app.state.sessions() as db:
         assert [p.stok for p in db.scalars(select(Produk).order_by(Produk.nama))] == [8, 8]
+        order = db.get(Pesanan, UUID(value["pesanan"]["id"]))
+        assert order.status == "diproses"
+        assert order.accepted_at is not None
+        assert {
+            row.status
+            for row in db.scalars(
+                select(RiwayatStatus).where(RiwayatStatus.pesanan_id == order.id)
+            )
+        } == {"baru", "diproses"}
 
 
 def test_status_tetap_pending_saat_xendit_gagal(order_xendit):

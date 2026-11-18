@@ -1,5 +1,5 @@
 import secrets
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 import requests
@@ -211,10 +211,8 @@ def test_qris_signed_webhook_duplicate_and_no_status_downgrade(checkout, invoice
     assert status.json()["status"] == "paid"
     assert status.json()["paid_at"] is not None
     assert calls == ["POST"]
-    assert (
-        http.patch(f"/pesanan/{value['pesanan']['id']}/terima", headers=seller).status_code == 200
-    )
     with http.app.state.sessions() as db:
+        assert db.get(Pesanan, UUID(value["pesanan"]["id"])).status == "diproses"
         assert all(p.stok == 8 for p in db.scalars(select(Produk)))
     assert (
         http.patch(
